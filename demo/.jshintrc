@@ -1,0 +1,23 @@
+{
+  "undef": true,
+  "nonew": true,
+  "curly": false,
+  "noarg": true,
+  "forin": true,
+  "noempty": false,
+  "eqeqeq": false,
+  "strict": false,
+  "bitwise": true,
+  "newcap": false,
+  "camelcase": true,
+  "browser": true,
+  "node": true,
+  "devel": true,
+  "shadow": true,
+  "eqnull": true,
+  "mocha": true,
+  "jasmine": true,
+  "qunit": true,
+  "predef": [ "android", "__extends", "java", "javax", "Promise" ]
+
+}

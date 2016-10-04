@@ -1,0 +1,43 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" xmlns:accordion="nativescript-accordion">
+  <ScrollView>
+  <StackLayout>
+<accordion:Accordion bgColor="red" duration="2000">
+<Image tap="toggle" src="http://static.srcdn.com/wp-content/uploads/flash-movie-director-writer-grahame-smith.jpg" stretch ="none" />
+<StackLayout >
+<Label text="accordion"/>
+<Button text="tap it !!!!!"/>
+<StackLayout>
+
+<accordion:Accordion bgColor="blue">
+<Label text="Lvl 2" tap="toggle"/>
+<accordion:Accordion bgColor="grey">
+<Label text="lvl 3" tap="toggle"/>
+<StackLayout>
+<Label text="Body"/>
+</StackLayout>
+</accordion:Accordion>
+</accordion:Accordion>
+
+</StackLayout>
+</StackLayout>
+</accordion:Accordion>
+
+<accordion:Accordion bgColor="yellow">
+<Label text="Second" tap="toggle" />
+<StackLayout >
+<Label text="accordion"/>
+<Image src="http://img.lum.dolimg.com/v1/images/open-uri20150608-27674-1jdbpa8_be64ca1b.png" stretch ="none" />
+</StackLayout>
+</accordion:Accordion>
+
+<accordion:Accordion bgColor="green">
+<Label text="Third" tap="toggle"/>
+<StackLayout>
+<Image src="http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg"/>
+<Label text="accordion"/>
+<Button text="tap it !!!!!"/>
+</StackLayout>
+</accordion:Accordion>
+ </StackLayout>
+ </ScrollView>
+</Page>

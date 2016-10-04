@@ -1,0 +1,18 @@
+android {
+    productFlavors {
+        "nativescriptaccordion" {
+            dimension "nativescriptaccordion"
+        }
+    }
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+
+
+   dependencies {
+    compile 'net.cachapa.expandablelayout:expandablelayout:2.3'
+}
