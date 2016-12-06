@@ -1,9 +1,10 @@
 // Add your native dependencies here:
 
 // Uncomment to add recyclerview-v7 dependency
-//dependencies {
+dependencies {
 //	compile 'com.android.support:recyclerview-v7:+'
-//}
+compile 'com.riyagayasen.android:easyaccordion:1.0.2'
+}
 
 android {  
   defaultConfig {  

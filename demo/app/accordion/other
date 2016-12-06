@@ -1,0 +1,90 @@
+import { StackLayout } from "ui/layouts/stack-layout";
+import { Color } from "color";
+import * as utils from "utils/utils";
+import * as app from "application"
+export class Accordion extends StackLayout {
+    private _android:any;
+    private _androidViewId: number;
+    public bgColor: any;
+    public duration: any;
+    private _headerText: string;
+    private isShown: boolean = false;
+    constructor() {
+        super();
+    }
+    get headerText() {
+        return this._headerText;
+    }
+    set headerText(value: string) {
+        this._headerText = value;
+    }
+    get android() {
+        return this._android;
+    }
+    get _nativeView() {
+        return this._android;
+    }
+
+    _createUI() {
+        const that = new WeakRef(this);
+
+        if (!this._androidViewId) {
+            this._androidViewId = android.view.View.generateViewId();
+        }
+        this._android = new com.riyagayasen.easyaccordion.AccordionView(this._context);
+
+        if (this.headerText) {
+            this._android.setHeadingString(this.headerText);
+        }
+        this._android.setId(this._androidViewId);
+
+
+         if (this.bgColor) {
+            //this._android.setBackgroundColor(new Color(this.bgColor).android);
+            //const body = this._android.findViewById(com.riyagayasen.easyaccordion.R.id.paragraph_layout);
+            //body.setBackgroundColor(new Color(this.bgColor).android);
+         }
+        if (this.isShown) {
+            this._android.setExpanded(new java.lang.Boolean("true"));
+        }
+        const ctx: android.content.Context = utils.ad.getApplicationContext();
+        const down: android.widget.ImageView = this._android.findViewById(com.riyagayasen.easyaccordion.R.id.dropdown_image);
+        const up: android.widget.ImageView = this._android.findViewById(com.riyagayasen.easyaccordion.R.id.dropup_image);
+        down.setVisibility(android.view.View.GONE);
+        up.setVisibility(android.view.View.GONE);
+        //this._android.setBack
+        //this._android.setBackgroundResource(0);
+        //console.log(this._android.getBackground())
+        this._android.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+        this._android.setOnExpandCollapseListener(new com.riyagayasen.easyaccordion.AccordionExpansionCollapseListener({
+            onExpanded(view) {
+                down.setVisibility(android.view.View.GONE);
+                up.setVisibility(android.view.View.GONE);
+            },
+            onCollapsed(view) {
+                down.setVisibility(android.view.View.GONE);
+                up.setVisibility(android.view.View.GONE);
+            }
+        }))
+    }
+    onLoaded() {
+        const body = this._android.getChildAt(1);
+        this._android.removeView(body);
+        this._android.addViewToBody(body);
+        // const header = this._android.getChildAt(0);
+        // const body = this._android.getChildAt(1);
+        // this._android.removeView(header);
+        // this._android.removeView(body);
+        // this._android.addView(header);
+        // this._android.addView(this._expandableLayout);
+        // this._expandableLayout.addView(body);
+        // this._expandableLayout.setVisibility(android.view.View.GONE);
+        // this._android.addViewToBody();
+        super.onLoaded();
+    }
+    isExpanded(): boolean {
+        return this._android.isExpanded();
+    }
+}
+
+

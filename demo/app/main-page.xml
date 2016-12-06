@@ -1,43 +1,36 @@
-<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" xmlns:accordion="nativescript-accordion">
-  <ScrollView>
-  <StackLayout>
-<accordion:Accordion bgColor="red" duration="2000">
-<Image tap="toggle" src="http://static.srcdn.com/wp-content/uploads/flash-movie-director-writer-grahame-smith.jpg" stretch ="none" />
-<StackLayout >
-<Label text="accordion"/>
-<Button text="tap it !!!!!"/>
-<StackLayout>
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
+      xmlns:accordion="./accordion/accordion">
+    <!--<ScrollView>-->
+        <!--<StackLayout>-->
 
-<accordion:Accordion bgColor="blue">
-<Label text="Lvl 2" tap="toggle"/>
-<accordion:Accordion bgColor="grey">
-<Label text="lvl 3" tap="toggle"/>
-<StackLayout>
-<Label text="Body"/>
-</StackLayout>
-</accordion:Accordion>
-</accordion:Accordion>
+           <!---->
 
-</StackLayout>
-</StackLayout>
-</accordion:Accordion>
 
-<accordion:Accordion bgColor="yellow">
-<Label text="Second" tap="toggle" />
-<StackLayout >
-<Label text="accordion"/>
-<Image src="http://img.lum.dolimg.com/v1/images/open-uri20150608-27674-1jdbpa8_be64ca1b.png" stretch ="none" />
-</StackLayout>
-</accordion:Accordion>
+        <!--</StackLayout>-->
+    <!--</ScrollView>-->
 
-<accordion:Accordion bgColor="green">
-<Label text="Third" tap="toggle"/>
-<StackLayout>
-<Image src="http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg"/>
-<Label text="accordion"/>
-<Button text="tap it !!!!!"/>
-</StackLayout>
-</accordion:Accordion>
- </StackLayout>
- </ScrollView>
+    <accordion:Accordion selectedIndex="2">
+        <accordion:Accordion.items>
+
+            <GridLayout rows="auto,*" headerHeight="60" headerText="First" headerColor="red" bodyColor="green">
+                <Image src="~/images/a9ff17db85f8136619feb0d5a200c0e4.png"/>
+                <Image row="1" src="~/images/f29.png"/>
+            </GridLayout>
+
+            <StackLayout headerText="Second" headerColor="pink">
+                <Button text="tap it !!!!!"/>
+            </StackLayout>
+
+            <StackLayout headerText="Third" headerColor="orange">
+                <Button text="tap it !!!!!"/>
+            </StackLayout>
+
+            <StackLayout headerText="Fourth" headerTextColor="black">
+                <Image src="http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg"/>
+                <Label text="accordion"/>
+                <Button text="tap it !!!!!"/>
+            </StackLayout>
+
+        </accordion:Accordion.items>
+    </accordion:Accordion>
 </Page>
