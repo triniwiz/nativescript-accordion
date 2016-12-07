@@ -1,1 +1,1 @@
-pod "AccordionView"
+pod 'ODSAccordionView', :git => 'https://github.com/triniwiz/ODSAccordionView'
