@@ -14,13 +14,19 @@ declare class ODSAccordionSection extends NSObject {
 
 	static new(): ODSAccordionSection; // inherited from NSObject
 
+	collapse: boolean;
+
 	title: string;
 
 	view: UIView;
 
 	constructor(o: { title: string; andView: UIView; });
 
+	constructor(o: { title: string; andView: UIView; collapse: boolean; });
+
 	initWithTitleAndView(sectionTitle: string, sectionView: UIView): this;
+
+	initWithTitleAndViewCollapse(sectionTitle: string, sectionView: UIView, collapse: boolean): this;
 }
 
 declare class ODSAccordionSectionStyle extends NSObject {
@@ -29,7 +35,11 @@ declare class ODSAccordionSectionStyle extends NSObject {
 
 	static new(): ODSAccordionSectionStyle; // inherited from NSObject
 
+	animationDuration: number;
+
 	arrowColor: UIColor;
+
+	arrowHeight: number;
 
 	arrowVisible: boolean;
 
@@ -80,7 +90,11 @@ declare class ODSAccordionSectionView extends UIView {
 
 	constructor(o: { title: string; andView: UIView; sectionStyle: ODSAccordionSectionStyle; });
 
+	constructor(o: { title: string; andView: UIView; sectionStyle: ODSAccordionSectionStyle; collapse: boolean; });
+
 	initWithTitleAndViewSectionStyle(sectionTitle: string, sectionView: UIView, sectionStyle: ODSAccordionSectionStyle): this;
+
+	initWithTitleAndViewSectionStyleCollapse(sectionTitle: string, sectionView: UIView, sectionStyle: ODSAccordionSectionStyle, collapse: boolean): this;
 }
 
 declare class ODSAccordionView extends UIScrollView {
@@ -102,6 +116,8 @@ declare class ODSAccordionView extends UIScrollView {
 	static new(): ODSAccordionView; // inherited from NSObject
 
 	constructor(o: { sections: NSArray<any>; andSectionStyle: ODSAccordionSectionStyle; });
+
+	addSection(newSection: ODSAccordionSectionView): void;
 
 	initWithSectionsAndSectionStyle(sections: NSArray<any>, sectionStyle: ODSAccordionSectionStyle): this;
 }
