@@ -6,19 +6,32 @@
 
 IMPORTANT: Make sure you include xmlns:accordion="nativescript-accordion" on the Page element
 
-Accordion element needs two views first the header you can use any view you like and another for the body
-the following uses `Label` follow by `StackLayout`;
-{N} vanilla
 
 ```xml
-<accordion:Accordion bgColor="green">
-<Label text="Third" tap="toggle"/>
-<StackLayout>
-<Image src="http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg"/>
-<Label text="accordion"/>
-<Button text="tap it !!!!!"/>
-</StackLayout>
-</accordion:Accordion>
+<accordion:Accordion headerTextAlignment="center" headerTextColor="blue" allowMultiple="true" id="ac" selectedIndex="2" separatorColor="transparent">
+            <accordion:Accordion.items>
+                <StackLayout headerText="First">
+                    <Image src="~/images/a9ff17db85f8136619feb0d5a200c0e4.png"/>
+                    <Image row="1" src="~/images/f29.png"/>
+                </StackLayout>
+
+                <StackLayout headerText="Second">
+                    <Label text="Yolo"/>
+                    <Button text="tap it !!!!!"/>
+                </StackLayout>
+
+                <StackLayout  headerText="Third">
+                    <Button text="tap it !!!!!"/>
+                </StackLayout>
+
+                <StackLayout  headerText="Fourth">
+                    <Image src="http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg"/>
+                    <Label text="accordion"/>
+                    <Button text="tap it !!!!!"/>
+                </StackLayout>
+
+            </accordion:Accordion.items>
+        </accordion:Accordion>
 ```
 
 AgularNative
@@ -28,32 +41,45 @@ import {registerElement} from "nativescript-angular/element-registry";
 registerElement("Accordion", () => require("nativescript-accordion").Accordion);
 ```
 
-```xml
-<Accordion bgColor="green">
-<Label text="Third" tap="toggle"/>
-<StackLayout>
-<Image src="http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg"/>
-<Label text="accordion"/>
-<Button text="tap it !!!!!"/>
-</StackLayout>
-</Accordion>
+```html
+<Accordion headerTextAlignment="center" headerTextColor="blue" allowMultiple="true" id="ac" selectedIndex="2" separatorColor="transparent">
+                <StackLayout headerText="First">
+                    <Image src="~/images/a9ff17db85f8136619feb0d5a200c0e4.png"></Image>
+                    <Image row="1" src="~/images/f29.png"></Image>
+                </StackLayout>
+
+                <StackLayout headerText="Second">
+                    <Label text="Yolo"></Label>
+                    <Button text="tap it !!!!!"></Button>
+                </StackLayout>
+
+                <StackLayout  headerText="Third">
+                    <Button text="tap it !!!!!"></Button>
+                </StackLayout>
+
+                <StackLayout  headerText="Fourth">
+                    <Image src="http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg"></Image>
+                    <Label text="accordion"></Label>
+                    <Button text="tap it !!!!!"></Button>
+                </StackLayout>
+        </Accordion>
 ```
 
 ##Config
 ```
-bgColor="green"
-duration="2000"
+headerTextAlignment="center"
+headerTextColor="blue" 
+allowMultiple="true"
+selectedIndex="2"
+separatorColor="transparent"
 ```
 
 ##Instance methods
-```js
-.toggle();  //Toggle the view
-.expand(); //Expand / Open the view
-.collapse(); // Close / Collapse the view
-isExpanded(); // Check if view is Expanded / Opened
+```ts
+addItem(view:View);  add item to the view;
 ```
 
 ##ScreenShots
-Android |
---------|
-![SS](ss/android.gif?raw=true) |
+Android | IOS
+--------|---------
+![SS](ss/android.gif?raw=true) | ![SS](ss/ios.gif?raw=true)
