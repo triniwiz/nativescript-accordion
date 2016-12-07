@@ -1,7 +1,4 @@
 import {View} from "ui/core/view";
-import {Property} from "ui/core/dependency-observable";
-import {PropertyMetadata} from "ui/core/dependency-observable";
-import {PropertyMetadataSettings} from "ui/core/dependency-observable";
 import * as common from "./accordion.common";
 import {AccordionItem} from "./accordion.common";
 import {Color} from "color";
