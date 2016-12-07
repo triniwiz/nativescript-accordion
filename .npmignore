@@ -5,3 +5,6 @@ demo/
 *.ts
 !*.d.ts
 ss/
+references.d.ts
+tsconfig.json
+manual_typings
