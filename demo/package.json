@@ -2,16 +2,15 @@
   "nativescript": {
     "id": "org.nativescript.demo",
     "tns-ios": {
-      "version": "2.3.0"
+      "version": "2.4.0"
     },
     "tns-android": {
-      "version": "2.3.0"
+      "version": "2.4.1"
     }
   },
   "dependencies": {
     "nativescript-accordion": "file:..",
-    "nativescript-liveedit": "^2.3.0",
-    "tns-core-modules": "^2.3.0"
+    "tns-core-modules": "^2.4.0"
   },
   "devDependencies": {
     "babel-traverse": "6.12.0",
