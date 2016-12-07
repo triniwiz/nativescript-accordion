@@ -18,22 +18,25 @@ export function pageLoaded(args: observable.EventData) {
     page = <pages.Page>args.object;
     page.bindingContext = new HelloWorldModel();
     setTimeout(()=>{
-     //   addItem()
+     addItem()
     },1000)
 }
 
 export function addItem(){
+
         const sl = new StackLayout();
-        sl.backgroundColor = new Color("red");
         sl.headerText = "New";
         sl.headerColor = "brown";
         const img = new Image();
-        img.imageSource = imgSrc.fromFile("~/images/a9ff17db85f8136619feb0d5a200c0e4.png");
+        img.src= "~/images/a9ff17db85f8136619feb0d5a200c0e4.png";
         const btn = new Button();
         btn.text = "Nice!!";
         sl.addChild(btn);
         sl.addChild(img);
-        let items = page.getViewById("ac").addItem(sl);
+         page.getViewById("ac").addItem(sl);
+
+
+
 
 }
 

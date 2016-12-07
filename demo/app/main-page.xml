@@ -1,36 +1,29 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
-      xmlns:accordion="./accordion/accordion">
-    <!--<ScrollView>-->
-        <!--<StackLayout>-->
+      xmlns:accordion="nativescript-accordion">
 
-           <!---->
+        <accordion:Accordion headerTextAlignment="center" headerTextColor="blue" allowMultiple="true" id="ac" selectedIndex="2" separatorColor="transparent">
+            <accordion:Accordion.items>
+                <StackLayout headerText="First">
+                    <Image src="~/images/a9ff17db85f8136619feb0d5a200c0e4.png"/>
+                    <Image row="1" src="~/images/f29.png"/>
+                </StackLayout>
 
+                <StackLayout headerText="Second">
+                    <Label text="Yolo"/>
+                    <Button text="tap it !!!!!"/>
+                </StackLayout>
 
-        <!--</StackLayout>-->
-    <!--</ScrollView>-->
+                <StackLayout  headerText="Third">
+                    <Button text="tap it !!!!!"/>
+                </StackLayout>
 
-    <accordion:Accordion selectedIndex="2">
-        <accordion:Accordion.items>
+                <StackLayout  headerText="Fourth">
+                    <Image src="http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg"/>
+                    <Label text="accordion"/>
+                    <Button text="tap it !!!!!"/>
+                </StackLayout>
 
-            <GridLayout rows="auto,*" headerHeight="60" headerText="First" headerColor="red" bodyColor="green">
-                <Image src="~/images/a9ff17db85f8136619feb0d5a200c0e4.png"/>
-                <Image row="1" src="~/images/f29.png"/>
-            </GridLayout>
+            </accordion:Accordion.items>
+        </accordion:Accordion>
 
-            <StackLayout headerText="Second" headerColor="pink">
-                <Button text="tap it !!!!!"/>
-            </StackLayout>
-
-            <StackLayout headerText="Third" headerColor="orange">
-                <Button text="tap it !!!!!"/>
-            </StackLayout>
-
-            <StackLayout headerText="Fourth" headerTextColor="black">
-                <Image src="http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg"/>
-                <Label text="accordion"/>
-                <Button text="tap it !!!!!"/>
-            </StackLayout>
-
-        </accordion:Accordion.items>
-    </accordion:Accordion>
 </Page>
