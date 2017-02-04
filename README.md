@@ -1,7 +1,7 @@
 #NativeScript Accordion
 
 ##Install
-`tns plugin add nativescript-Accordion`
+`tns plugin add nativescript-accordion`
 ##Usage
 
 IMPORTANT: Make sure you include xmlns:accordion="nativescript-accordion" on the Page element
@@ -34,11 +34,16 @@ IMPORTANT: Make sure you include xmlns:accordion="nativescript-accordion" on the
         </accordion:Accordion>
 ```
 
-AgularNative
+AngularNative
 
 ```js
-import {registerElement} from "nativescript-angular/element-registry";
-registerElement("Accordion", () => require("nativescript-accordion").Accordion);
+import {AccordionComponent} from "nativescript-accordion/angular";
+
+@NgModule({
+    declarations: [
+        AccordionComponent
+    ]
+    })
 ```
 
 ```html
