@@ -2,30 +2,45 @@ import {View, AddArrayFromBuilder} from "ui/core/view";
 import {PropertyMetadata} from "ui/core/proxy";
 import {Property, PropertyChangeData, PropertyMetadataSettings} from "ui/core/dependency-observable";
 import {StackLayout} from "ui/layouts/stack-layout";
-
+import {isAndroid} from "platform";
 export module knownCollections {
     export const items = "items";
 }
-function onItemsChanged(data: PropertyChangeData) {
-    const accordion = <Accordion>data.object;
-    accordion.updateItems(<Array<AccordionItem>>data.oldValue, <Array<AccordionItem>>data.newValue);
-}
+// function onItemsChanged(data: PropertyChangeData) {
+//     const accordion = <any>data.object;
+//     accordion.updateItems(<Array<any>>data.oldValue, <Array<any>>data.newValue);
+// }
 
-export abstract class Accordion extends StackLayout implements AddArrayFromBuilder {
+// on Android we explicitly set propertySettings to None because android will invalidate its layout (skip unnecessary native call).
+let AffectsLayout = isAndroid ? PropertyMetadataSettings.None : PropertyMetadataSettings.AffectsLayout;
+
+const itemsProperty = new Property("items", "Accordion", new PropertyMetadata(undefined, AffectsLayout));
+const selectedIndexProperty = new Property("selectedIndex", "Accordion", new PropertyMetadata(undefined, PropertyMetadataSettings.None));
+(<PropertyMetadata>itemsProperty.metadata).onSetNativeValue = function (data: PropertyChangeData) {
+    const accordion = <Accordion>data.object;
+    accordion.updateItems(<Array<any>>data.oldValue, <Array<any>>data.newValue);
+};
+
+(<PropertyMetadata>selectedIndexProperty.metadata).onSetNativeValue = function (data: PropertyChangeData) {
+    const accordion = <Accordion>data.object;
+    accordion.indexChanged(data.newValue);
+};
+
+export abstract class Accordion extends View implements AddArrayFromBuilder {
     private _selectedIndexes;
-    private _selectedIndex;
     private _allowMultiple: boolean;
     private _separatorColor: string;
     private _headerHeight: number;
     private _headerTextColor: string;
     private _headerColor: string;
-    private _headerTextAlignment: string;
+    private _headerTextVerticalAlignment: string;
+    private _headerTextHorizontalAlignment: string;
     private _headerTextSize: number;
+    public static itemsProperty = itemsProperty;
+    public static selectedIndexProperty = selectedIndexProperty;
     constructor() {
         super();
     }
-
-    public static itemsProperty = new Property("items", "Accordion", new PropertyMetadata(undefined, PropertyMetadataSettings.None, onItemsChanged));
 
     public _addArrayFromBuilder(name: string, value: Array<any>) {
         if (name === "items") {
@@ -59,12 +74,20 @@ export abstract class Accordion extends StackLayout implements AddArrayFromBuild
     }
 
 
-    get headerTextAlignment(): string {
-        return this._headerTextAlignment;
+    get headerTextVerticalAlignment(): string {
+        return this._headerTextVerticalAlignment;
     }
 
-    set headerTextAlignment(value: string) {
-        this._headerTextAlignment = value;
+    set headerTextVerticalAlignment(value: string) {
+        this._headerTextVerticalAlignment = value;
+    }
+
+    get headerTextHorizontalAlignment(): string {
+        return this._headerTextHorizontalAlignment;
+    }
+
+    set headerTextHorizontalAlignment(value: string) {
+        this._headerTextHorizontalAlignment = value;
     }
 
     get headerTextSize(): number {
@@ -84,11 +107,11 @@ export abstract class Accordion extends StackLayout implements AddArrayFromBuild
     }
 
     get selectedIndex() {
-        return this._selectedIndex;
+        return this._getValue(Accordion.selectedIndexProperty);
     }
 
-    set selectedIndex(value) {
-        this._selectedIndex = value;
+    set selectedIndex(value:number) {
+        this._setValue(Accordion.selectedIndexProperty,value);
     }
 
     get selectedIndexes() {
@@ -115,12 +138,13 @@ export abstract class Accordion extends StackLayout implements AddArrayFromBuild
         this._separatorColor = value;
     }
 
-    public abstract updateItems(oldItems: Array<AccordionItem>, newItems: Array<AccordionItem>): void;
+    public abstract updateItems(oldItems: Array<any>, newItems: Array<any>): void;
 
-    public abstract  addItem(view: AccordionItem): void;
+    public abstract addItem(view: any): void;
+
+    public abstract indexChanged(index:number):void;
+
+    public abstract groupCollapsed(index:number):void;
 
 }
 
-export interface AccordionItem extends View {
-    headerText: string;
-}

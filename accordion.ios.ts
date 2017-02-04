@@ -2,6 +2,13 @@ import {View} from "ui/core/view";
 import * as common from "./accordion.common";
 import {AccordionItem} from "./accordion.common";
 import {Color} from "color";
+import * as utils from "utils/utils";
+import * as platform from "platform";
+import {StackLayout} from "ui/layouts/stack-layout";
+import {Property} from "ui/core/dependency-observable";
+import {PropertyMetadataSettings} from "ui/core/dependency-observable";
+import {PropertyChangeData} from "ui/core/dependency-observable";
+import {PropertyMetadata} from "ui/core/proxy";
 global.moduleMerge(common, exports);
 export class Accordion extends common.Accordion {
     private _ios;
@@ -18,6 +25,7 @@ export class Accordion extends common.Accordion {
     constructor() {
         super();
         this._ios = UIView.new();
+        this._ios.frame = CGRectMake(0, 0, platform.screen.mainScreen.widthPixels, platform.screen.mainScreen.heightPixels)
     }
 
     get ios() {
@@ -29,15 +37,14 @@ export class Accordion extends common.Accordion {
     }
 
 
-    public updateItems(oldItems: Array<AccordionItem>, newItems: Array<AccordionItem>) {
-
+    public updateItems(oldItems: Array<any>, newItems: Array<any>) {
     }
 
     addItem(view: AccordionItem) {
         this._addView(view);
         this.prepareView(view);
-        let section = ODSAccordionSectionView.alloc().initWithTitleAndViewSectionStyle(view.headerText,view.ios,this._accordionStyle);
-       this._accordion.addSection(section);
+        let section = ODSAccordionSectionView.alloc().initWithTitleAndViewSectionStyle(view.headerText, view.ios, this._accordionStyle);
+        this._accordion.addSection(section);
     }
 
     onLoaded() {
@@ -62,6 +69,7 @@ export class Accordion extends common.Accordion {
         if (this.headerColor) {
             this._accordionStyle.headerBackgroundColor = new Color(this.headerColor).ios;
         }
+        this._accordionStyle.headerBackgroundColor = new Color(this.headerColor).ios;
 
         if (this.headerTextColor) {
             this._accordionStyle.headerTitleLabelTextColor = new Color(this.headerTextColor).ios;
@@ -70,19 +78,21 @@ export class Accordion extends common.Accordion {
         if (this.headerTextSize) {
             this._accordionStyle.headerTitleLabelFont = UIFont.systemFontOfSize(this.headerTextSize);
         }
-        if(this.separatorColor){
+        if (this.separatorColor) {
             this._accordionStyle.dividerColor = new Color(this.separatorColor).ios;
         }
-
         if (this.items) {
-            this._accordionSections = this.items.map((item: AccordionItem) => {
-                this._addView(item);
+            this._accordionSections = this.items.map((item: AccordionItem, index: number) => {
+                item.tag = index;
+                if (item && !item.parent) {
+                    this._addView(item);
+                }
                 return ODSAccordionSection.alloc().initWithTitleAndView(item.headerText, item.ios);
             });
-
             this._accordion = ODSAccordionView.alloc().initWithSectionsAndSectionStyle(this._accordionSections, this._accordionStyle);
             this._accordion.frame = CGRectMake(0, 0, this._ios.frame.size.width, this._ios.frame.size.height);
-            this._ios.addSubview(this._accordion)
+            this._ios.addSubview(this._accordion);
+            /// this._accordion.subviews[0].subviews[0].setTitleForState("Week 1",UIControlState.Normal);
         }
 
     }
@@ -101,9 +111,11 @@ export class Accordion extends common.Accordion {
         this.top = top;
         this.right = right;
         this.bottom = bottom;
-        this.items.forEach((item, index) => {
-            this.prepareView(item);
-        });
+        if (this.items) {
+            this.items.forEach((item, index) => {
+                this.prepareView(item);
+            });
+        }
     }
 
     private prepareView(view: View): void {
@@ -125,4 +137,38 @@ export class Accordion extends common.Accordion {
             callback(this.items[i]);
         }
     }
+
+    indexChanged(index: number) {
+        this.notifyPropertyChange("selectedIndex", index);
+    }
+}
+
+const headerTextProperty = new Property("headerText", "Item", new PropertyMetadata(undefined, PropertyMetadataSettings.None));
+(<PropertyMetadata>headerTextProperty.metadata).onSetNativeValue = function (data: PropertyChangeData) {
+    const item = <Item>data.object;
+    item.headerTextChanged(data.newValue, item);
+};
+
+export class Item extends StackLayout {
+    public static headerTextProperty = headerTextProperty;
+
+    constructor() {
+        super();
+    }
+
+    public headerTextChanged(text: string, view: any) {
+        const index = view.tag;
+        if (view && view.parent.ios) {
+            view.parent.ios.subviews[0].subviews[index].subviews[0].setTitleForState(text, UIControlState.Normal);
+        }
+    }
+
+    get headerText() {
+        return this._getValue(Item.headerTextProperty);
+    }
+
+    set headerText(text: string) {
+        this._setValue(Item.headerTextProperty, text);
+    }
+
 }
