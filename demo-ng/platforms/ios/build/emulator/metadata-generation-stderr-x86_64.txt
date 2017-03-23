@@ -1,0 +1,100 @@
+clang version 3.9.0 (tags/RELEASE_390/final)
+Target: x86_64-apple-darwin16.4.0
+Thread model: posix
+InstalledDir: 
+clang Invocation:
+ "clang-tool" "-cc1" "-triple" "x86_64-apple-ios8.0.0" "-Wdeprecated-objc-isa-usage" "-Werror=deprecated-objc-isa-usage" "-Werror=implicit-function-declaration" "-fsyntax-only" "-disable-free" "-disable-llvm-verifier" "-discard-value-names" "-main-file-name" "umbrella.h" "-mrelocation-model" "pic" "-pic-level" "2" "-mthread-model" "posix" "-mdisable-fp-elim" "-masm-verbose" "-munwind-tables" "-target-cpu" "core2" "-target-linker-version" "264.3.102" "-v" "-dwarf-column-info" "-debugger-tuning=lldb" "-resource-dir" "../lib/clang/3.9.0" "-isysroot" "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.2.sdk" "-iquote" "/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/FZAccordionTableView/FZAccordionTableView.framework/Headers" "-iquote" "/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/ODSAccordionView/ODSAccordionView.framework/Headers" "-I" "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/include" "-I" "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/internal" "-F/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator" "-F/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/FZAccordionTableView" "-F/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/ODSAccordionView" "-F/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/internal/" "-F/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/../../node_modules/tns-core-modules-widgets/platforms/ios" "-D" "COCOAPODS=1" "-D" "DEBUG=1" "-Wno-unknown-pragmas" "-Wno-ignored-attributes" "-Wno-nullability-completeness" "-Wno-expansion-to-defined" "-std=gnu99" "-fdebug-compilation-dir" "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/internal/metadata-generator/bin" "-ferror-limit" "0" "-fmessage-length" "0" "-stack-protector" "1" "-fblocks" "-fimplicit-module-maps" "-fobjc-runtime=ios-8.0.0" "-fencode-extended-block-signature" "-fobjc-exceptions" "-fexceptions" "-fmax-type-align=16" "-fdiagnostics-show-option" "-x" "objective-c" "umbrella.h"
+
+ignoring nonexistent directory "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/include"
+ignoring nonexistent directory "/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/FZAccordionTableView"
+ignoring nonexistent directory "/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/ODSAccordionView"
+ignoring nonexistent directory "/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/FZAccordionTableView/FZAccordionTableView.framework/Headers"
+ignoring nonexistent directory "/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/ODSAccordionView/ODSAccordionView.framework/Headers"
+ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.2.sdk/usr/local/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/internal
+ /Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator (framework directory)
+ /Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/internal (framework directory)
+ /Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/../../node_modules/tns-core-modules-widgets/platforms/ios (framework directory)
+ ../lib/clang/3.9.0/include
+ /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.2.sdk/usr/include
+ /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.2.sdk/System/Library/Frameworks (framework directory)
+ /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.2.sdk/Library/Frameworks (framework directory)
+End of search list.
+clang version 3.9.0 (tags/RELEASE_390/final)
+Target: x86_64-apple-darwin16.4.0
+Thread model: posix
+InstalledDir: 
+clang Invocation:
+ "objc-metadata-generator" "-cc1" "-triple" "x86_64-apple-ios8.0.0" "-Wdeprecated-objc-isa-usage" "-Werror=deprecated-objc-isa-usage" "-Werror=implicit-function-declaration" "-fsyntax-only" "-disable-free" "-disable-llvm-verifier" "-discard-value-names" "-main-file-name" "umbrella.h" "-mrelocation-model" "pic" "-pic-level" "2" "-mthread-model" "posix" "-mdisable-fp-elim" "-masm-verbose" "-munwind-tables" "-target-cpu" "core2" "-target-linker-version" "264.3.102" "-v" "-dwarf-column-info" "-debugger-tuning=lldb" "-resource-dir" "../lib/clang/3.9.0" "-isysroot" "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.2.sdk" "-iquote" "/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/FZAccordionTableView/FZAccordionTableView.framework/Headers" "-iquote" "/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/ODSAccordionView/ODSAccordionView.framework/Headers" "-I" "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/include" "-I" "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/internal" "-F/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator" "-F/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/FZAccordionTableView" "-F/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/ODSAccordionView" "-F/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/internal/" "-F/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/../../node_modules/tns-core-modules-widgets/platforms/ios" "-D" "COCOAPODS=1" "-D" "DEBUG=1" "-Wno-unknown-pragmas" "-Wno-ignored-attributes" "-Wno-nullability-completeness" "-Wno-expansion-to-defined" "-std=gnu99" "-fdebug-compilation-dir" "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/internal/metadata-generator/bin" "-ferror-limit" "0" "-fmessage-length" "0" "-stack-protector" "1" "-fblocks" "-fimplicit-module-maps" "-fobjc-runtime=ios-8.0.0" "-fencode-extended-block-signature" "-fobjc-exceptions" "-fexceptions" "-fmax-type-align=16" "-fdiagnostics-show-option" "-x" "objective-c" "umbrella.h"
+
+clang -cc1 version 3.9.0 based upon LLVM 3.9.0 default target x86_64-apple-darwin16.4.0
+ignoring nonexistent directory "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/include"
+ignoring nonexistent directory "/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/FZAccordionTableView"
+ignoring nonexistent directory "/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/ODSAccordionView"
+ignoring nonexistent directory "/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/FZAccordionTableView/FZAccordionTableView.framework/Headers"
+ignoring nonexistent directory "/Users/triniwiz/Library/Developer/Xcode/DerivedData/demong-ajpvfoeqnawjcwbjjlakoqgtossr/Build/Products/Debug-iphonesimulator/ODSAccordionView/ODSAccordionView.framework/Headers"
+ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.2.sdk/usr/local/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/internal
+ /Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator (framework directory)
+ /Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/internal (framework directory)
+ /Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/../../node_modules/tns-core-modules-widgets/platforms/ios (framework directory)
+ ../lib/clang/3.9.0/include
+ /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.2.sdk/usr/include
+ /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.2.sdk/System/Library/Frameworks (framework directory)
+ /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.2.sdk/Library/Frameworks (framework directory)
+End of search list.
+In file included from umbrella.h:541:
+In file included from /Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionView-umbrella.h:5:
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSection.h:17:1: warning: no 'assign', 'retain', or 'copy' attribute is specified - 'assign' is assumed [-Wobjc-property-no-attribute]
+@property (nonatomic) UIView *view;
+^
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSection.h:17:1: warning: default property attribute 'assign' not appropriate for non-GC object [-Wobjc-property-no-attribute]
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSection.h:18:1: warning: no 'assign', 'retain', or 'copy' attribute is specified - 'assign' is assumed [-Wobjc-property-no-attribute]
+@property (nonatomic) NSString *title;
+^
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSection.h:18:1: warning: default property attribute 'assign' not appropriate for non-GC object [-Wobjc-property-no-attribute]
+In file included from umbrella.h:541:
+In file included from /Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionView-umbrella.h:6:
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:19:1: warning: no 'assign', 'retain', or 'copy' attribute is specified - 'assign' is assumed [-Wobjc-property-no-attribute]
+@property (nonatomic) UIFont  *headerTitleLabelFont;
+^
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:19:1: warning: default property attribute 'assign' not appropriate for non-GC object [-Wobjc-property-no-attribute]
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:21:1: warning: no 'assign', 'retain', or 'copy' attribute is specified - 'assign' is assumed [-Wobjc-property-no-attribute]
+@property (nonatomic) UIColor *headerTitleLabelTextColor;
+^
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:21:1: warning: default property attribute 'assign' not appropriate for non-GC object [-Wobjc-property-no-attribute]
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:23:1: warning: no 'assign', 'retain', or 'copy' attribute is specified - 'assign' is assumed [-Wobjc-property-no-attribute]
+@property (nonatomic) UIColor *headerTitleLabelHighlightedTextColor;
+^
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:23:1: warning: default property attribute 'assign' not appropriate for non-GC object [-Wobjc-property-no-attribute]
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:27:1: warning: no 'assign', 'retain', or 'copy' attribute is specified - 'assign' is assumed [-Wobjc-property-no-attribute]
+@property (nonatomic) UIColor *headerBackgroundColor;
+^
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:27:1: warning: default property attribute 'assign' not appropriate for non-GC object [-Wobjc-property-no-attribute]
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:29:1: warning: no 'assign', 'retain', or 'copy' attribute is specified - 'assign' is assumed [-Wobjc-property-no-attribute]
+@property (nonatomic) UIColor *backgroundColor;
+^
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:29:1: warning: default property attribute 'assign' not appropriate for non-GC object [-Wobjc-property-no-attribute]
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:31:1: warning: no 'assign', 'retain', or 'copy' attribute is specified - 'assign' is assumed [-Wobjc-property-no-attribute]
+@property (nonatomic) UIColor *dividerColor;
+^
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:31:1: warning: default property attribute 'assign' not appropriate for non-GC object [-Wobjc-property-no-attribute]
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:33:1: warning: no 'assign', 'retain', or 'copy' attribute is specified - 'assign' is assumed [-Wobjc-property-no-attribute]
+@property (nonatomic) UIColor *arrowColor;
+^
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionSectionStyle.h:33:1: warning: default property attribute 'assign' not appropriate for non-GC object [-Wobjc-property-no-attribute]
+In file included from umbrella.h:541:
+In file included from /Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSAccordionView-umbrella.h:9:
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSArrowIcon.h:13:1: warning: no 'assign', 'retain', or 'copy' attribute is specified - 'assign' is assumed [-Wobjc-property-no-attribute]
+@property (nonatomic) UIColor *color; /// Defaults to [UIColor lightGreyColor]
+^
+/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/platforms/ios/build/emulator/ODSAccordionView.framework/Headers/ODSArrowIcon.h:13:1: warning: default property attribute 'assign' not appropriate for non-GC object [-Wobjc-property-no-attribute]
+In file included from umbrella.h:732:
+/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.2.sdk/usr/include/os/log.h:35:2: error: using os/log.h requires Xcode 8 or later
+#error using os/log.h requires Xcode 8 or later
+ ^
+20 warnings and 1 error generated.

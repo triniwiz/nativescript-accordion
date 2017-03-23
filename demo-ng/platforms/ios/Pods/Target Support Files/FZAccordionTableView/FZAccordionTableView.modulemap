@@ -1,0 +1,6 @@
+framework module FZAccordionTableView {
+  umbrella header "FZAccordionTableView-umbrella.h"
+
+  export *
+  module * { export * }
+}

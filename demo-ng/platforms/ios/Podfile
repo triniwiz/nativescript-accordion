@@ -1,0 +1,10 @@
+use_frameworks!
+
+target "demong" do
+# Begin Podfile - /Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/node_modules/nativescript-accordion/platforms/ios/Podfile 
+ pod 'ODSAccordionView', :git => 'https://github.com/triniwiz/ODSAccordionView'
+pod 'FZAccordionTableView', '~> 0.2.3'
+ 
+ # End Podfile 
+
+end

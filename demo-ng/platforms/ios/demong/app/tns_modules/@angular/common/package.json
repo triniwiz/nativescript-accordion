@@ -1,0 +1,86 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "@angular/common@2.4.3",
+        "scope": "@angular",
+        "escapedName": "@angular%2fcommon",
+        "name": "@angular/common",
+        "rawSpec": "2.4.3",
+        "spec": "2.4.3",
+        "type": "version"
+      },
+      "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/node_modules/tns-template-hello-world-ng"
+    ]
+  ],
+  "_from": "@angular/common@2.4.3",
+  "_id": "@angular/common@2.4.3",
+  "_inCache": true,
+  "_location": "/@angular/common",
+  "_nodeVersion": "5.10.1",
+  "_npmOperationalInternal": {
+    "host": "packages-18-east.internal.npmjs.com",
+    "tmp": "tmp/common-2.4.3.tgz_1484172135787_0.6166547092143446"
+  },
+  "_npmUser": {
+    "name": "angular",
+    "email": "angular-core+npm@google.com"
+  },
+  "_npmVersion": "3.8.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "@angular/common@2.4.3",
+    "scope": "@angular",
+    "escapedName": "@angular%2fcommon",
+    "name": "@angular/common",
+    "rawSpec": "2.4.3",
+    "spec": "2.4.3",
+    "type": "version"
+  },
+  "_requiredBy": [
+    "/nativescript-angular",
+    "/tns-template-hello-world-ng"
+  ],
+  "_resolved": "https://registry.npmjs.org/@angular/common/-/common-2.4.3.tgz",
+  "_shasum": "78d96bd2f8a1a105f635cd25e362ba5704b47f56",
+  "_shrinkwrap": null,
+  "_spec": "@angular/common@2.4.3",
+  "_where": "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/node_modules/tns-template-hello-world-ng",
+  "author": {
+    "name": "angular"
+  },
+  "bugs": {
+    "url": "https://github.com/angular/angular/issues"
+  },
+  "dependencies": {},
+  "description": "Angular - commonly needed directives and services",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "78d96bd2f8a1a105f635cd25e362ba5704b47f56",
+    "tarball": "https://registry.npmjs.org/@angular/common/-/common-2.4.3.tgz"
+  },
+  "homepage": "https://github.com/angular/angular#readme",
+  "license": "MIT",
+  "main": "bundles/common.umd.js",
+  "maintainers": [
+    {
+      "name": "angular",
+      "email": "angular-core+npm@google.com"
+    }
+  ],
+  "module": "index.js",
+  "name": "@angular/common",
+  "optionalDependencies": {},
+  "peerDependencies": {
+    "@angular/core": "2.4.3"
+  },
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angular/angular.git"
+  },
+  "scripts": {},
+  "typings": "index.d.ts",
+  "version": "2.4.3"
+}

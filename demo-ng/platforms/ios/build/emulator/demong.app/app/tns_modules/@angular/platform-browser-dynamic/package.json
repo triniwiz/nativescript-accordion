@@ -1,0 +1,89 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "@angular/platform-browser-dynamic@2.4.3",
+        "scope": "@angular",
+        "escapedName": "@angular%2fplatform-browser-dynamic",
+        "name": "@angular/platform-browser-dynamic",
+        "rawSpec": "2.4.3",
+        "spec": "2.4.3",
+        "type": "version"
+      },
+      "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/node_modules/tns-template-hello-world-ng"
+    ]
+  ],
+  "_from": "@angular/platform-browser-dynamic@2.4.3",
+  "_id": "@angular/platform-browser-dynamic@2.4.3",
+  "_inCache": true,
+  "_location": "/@angular/platform-browser-dynamic",
+  "_nodeVersion": "5.10.1",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/platform-browser-dynamic-2.4.3.tgz_1484172153838_0.8956514911260456"
+  },
+  "_npmUser": {
+    "name": "angular",
+    "email": "angular-core+npm@google.com"
+  },
+  "_npmVersion": "3.8.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "@angular/platform-browser-dynamic@2.4.3",
+    "scope": "@angular",
+    "escapedName": "@angular%2fplatform-browser-dynamic",
+    "name": "@angular/platform-browser-dynamic",
+    "rawSpec": "2.4.3",
+    "spec": "2.4.3",
+    "type": "version"
+  },
+  "_requiredBy": [
+    "/nativescript-angular",
+    "/tns-template-hello-world-ng"
+  ],
+  "_resolved": "https://registry.npmjs.org/@angular/platform-browser-dynamic/-/platform-browser-dynamic-2.4.3.tgz",
+  "_shasum": "d65cc9bc4487e2a86e2c6f6641c711fccfa90c5a",
+  "_shrinkwrap": null,
+  "_spec": "@angular/platform-browser-dynamic@2.4.3",
+  "_where": "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/node_modules/tns-template-hello-world-ng",
+  "author": {
+    "name": "angular"
+  },
+  "bugs": {
+    "url": "https://github.com/angular/angular/issues"
+  },
+  "dependencies": {},
+  "description": "Angular - library for using Angular in a web browser with JIT compilation",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "d65cc9bc4487e2a86e2c6f6641c711fccfa90c5a",
+    "tarball": "https://registry.npmjs.org/@angular/platform-browser-dynamic/-/platform-browser-dynamic-2.4.3.tgz"
+  },
+  "homepage": "https://github.com/angular/angular#readme",
+  "license": "MIT",
+  "main": "bundles/platform-browser-dynamic.umd.js",
+  "maintainers": [
+    {
+      "name": "angular",
+      "email": "angular-core+npm@google.com"
+    }
+  ],
+  "module": "index.js",
+  "name": "@angular/platform-browser-dynamic",
+  "optionalDependencies": {},
+  "peerDependencies": {
+    "@angular/core": "2.4.3",
+    "@angular/common": "2.4.3",
+    "@angular/compiler": "2.4.3",
+    "@angular/platform-browser": "2.4.3"
+  },
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angular/angular.git"
+  },
+  "scripts": {},
+  "typings": "index.d.ts",
+  "version": "2.4.3"
+}

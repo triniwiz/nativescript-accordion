@@ -1,0 +1,88 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "@angular/http@2.4.3",
+        "scope": "@angular",
+        "escapedName": "@angular%2fhttp",
+        "name": "@angular/http",
+        "rawSpec": "2.4.3",
+        "spec": "2.4.3",
+        "type": "version"
+      },
+      "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/node_modules/tns-template-hello-world-ng"
+    ]
+  ],
+  "_from": "@angular/http@2.4.3",
+  "_id": "@angular/http@2.4.3",
+  "_inCache": true,
+  "_location": "/@angular/http",
+  "_nodeVersion": "5.10.1",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/http-2.4.3.tgz_1484172147601_0.7756907476577908"
+  },
+  "_npmUser": {
+    "name": "angular",
+    "email": "angular-core+npm@google.com"
+  },
+  "_npmVersion": "3.8.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "@angular/http@2.4.3",
+    "scope": "@angular",
+    "escapedName": "@angular%2fhttp",
+    "name": "@angular/http",
+    "rawSpec": "2.4.3",
+    "spec": "2.4.3",
+    "type": "version"
+  },
+  "_requiredBy": [
+    "/nativescript-angular",
+    "/tns-template-hello-world-ng"
+  ],
+  "_resolved": "https://registry.npmjs.org/@angular/http/-/http-2.4.3.tgz",
+  "_shasum": "d8afca7362efb010600fde02360e01e848579be6",
+  "_shrinkwrap": null,
+  "_spec": "@angular/http@2.4.3",
+  "_where": "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/node_modules/tns-template-hello-world-ng",
+  "author": {
+    "name": "angular"
+  },
+  "bugs": {
+    "url": "https://github.com/angular/angular/issues"
+  },
+  "dependencies": {},
+  "description": "Angular - the http service",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "d8afca7362efb010600fde02360e01e848579be6",
+    "tarball": "https://registry.npmjs.org/@angular/http/-/http-2.4.3.tgz"
+  },
+  "homepage": "https://github.com/angular/angular#readme",
+  "license": "MIT",
+  "main": "bundles/http.umd.js",
+  "maintainers": [
+    {
+      "name": "angular",
+      "email": "angular-core+npm@google.com"
+    }
+  ],
+  "module": "index.js",
+  "name": "@angular/http",
+  "optionalDependencies": {},
+  "peerDependencies": {
+    "rxjs": "^5.0.1",
+    "@angular/core": "2.4.3",
+    "@angular/platform-browser": "2.4.3"
+  },
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angular/angular.git"
+  },
+  "scripts": {},
+  "typings": "index.d.ts",
+  "version": "2.4.3"
+}

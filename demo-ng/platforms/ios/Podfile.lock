@@ -1,0 +1,24 @@
+PODS:
+  - FZAccordionTableView (0.2.3)
+  - ODSAccordionView (0.4.5)
+
+DEPENDENCIES:
+  - FZAccordionTableView (~> 0.2.3)
+  - ODSAccordionView (from `https://github.com/triniwiz/ODSAccordionView`)
+
+EXTERNAL SOURCES:
+  ODSAccordionView:
+    :git: https://github.com/triniwiz/ODSAccordionView
+
+CHECKOUT OPTIONS:
+  ODSAccordionView:
+    :commit: a16ed038ee05055f40e2ab1dea13508920b17418
+    :git: https://github.com/triniwiz/ODSAccordionView
+
+SPEC CHECKSUMS:
+  FZAccordionTableView: e64f49c71c32d750feda14025b088bcd25d1a71f
+  ODSAccordionView: 0b66977b613cd4690fd66e35a62b40f9f3e6870e
+
+PODFILE CHECKSUM: ec6e98da38f2127f1d5b7389b1117676c76c0526
+
+COCOAPODS: 1.1.1

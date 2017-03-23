@@ -1,0 +1,94 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "@angular/router@3.4.3",
+        "scope": "@angular",
+        "escapedName": "@angular%2frouter",
+        "name": "@angular/router",
+        "rawSpec": "3.4.3",
+        "spec": "3.4.3",
+        "type": "version"
+      },
+      "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/node_modules/tns-template-hello-world-ng"
+    ]
+  ],
+  "_from": "@angular/router@3.4.3",
+  "_id": "@angular/router@3.4.3",
+  "_inCache": true,
+  "_location": "/@angular/router",
+  "_nodeVersion": "5.10.1",
+  "_npmOperationalInternal": {
+    "host": "packages-18-east.internal.npmjs.com",
+    "tmp": "tmp/router-3.4.3.tgz_1484172162111_0.5247643627226353"
+  },
+  "_npmUser": {
+    "name": "angular",
+    "email": "angular-core+npm@google.com"
+  },
+  "_npmVersion": "3.8.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "@angular/router@3.4.3",
+    "scope": "@angular",
+    "escapedName": "@angular%2frouter",
+    "name": "@angular/router",
+    "rawSpec": "3.4.3",
+    "spec": "3.4.3",
+    "type": "version"
+  },
+  "_requiredBy": [
+    "/nativescript-angular",
+    "/tns-template-hello-world-ng"
+  ],
+  "_resolved": "https://registry.npmjs.org/@angular/router/-/router-3.4.3.tgz",
+  "_shasum": "19846caa1f87d9b83f005f45a2be15b6744db8fd",
+  "_shrinkwrap": null,
+  "_spec": "@angular/router@3.4.3",
+  "_where": "/Users/triniwiz/Desktop/oss/nativescript-accordion/demo-ng/node_modules/tns-template-hello-world-ng",
+  "author": {
+    "name": "angular"
+  },
+  "bugs": {
+    "url": "https://github.com/angular/angular/issues"
+  },
+  "dependencies": {},
+  "description": "Angular - the routing library",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "19846caa1f87d9b83f005f45a2be15b6744db8fd",
+    "tarball": "https://registry.npmjs.org/@angular/router/-/router-3.4.3.tgz"
+  },
+  "homepage": "https://github.com/angular/angular/blob/master/modules/%40angular/router/README.md",
+  "keywords": [
+    "angular2",
+    "angular",
+    "router"
+  ],
+  "license": "MIT",
+  "main": "bundles/router.umd.js",
+  "maintainers": [
+    {
+      "name": "angular",
+      "email": "angular-core+npm@google.com"
+    }
+  ],
+  "module": "index.js",
+  "name": "@angular/router",
+  "optionalDependencies": {},
+  "peerDependencies": {
+    "@angular/core": "2.4.3",
+    "@angular/common": "2.4.3",
+    "@angular/platform-browser": "2.4.3",
+    "rxjs": "^5.0.1"
+  },
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angular/angular.git"
+  },
+  "scripts": {},
+  "typings": "index.d.ts",
+  "version": "3.4.3"
+}
