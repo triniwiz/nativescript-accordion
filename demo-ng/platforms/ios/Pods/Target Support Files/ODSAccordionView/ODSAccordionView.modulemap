@@ -1,6 +1,0 @@
-framework module ODSAccordionView {
-  umbrella header "ODSAccordionView-umbrella.h"
-
-  export *
-  module * { export * }
-}

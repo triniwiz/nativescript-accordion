@@ -7,6 +7,11 @@ demo/*.d.ts
 demo/lib
 demo/platforms
 demo/node_modules
+demo-ng/app/*.js
+demo-ng/*.d.ts
+demo-ng/lib
+demo-ng/platforms
+demo-ng/node_modules
 node_modules
 .vscode
 .idea
