@@ -1,7 +1,7 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
-      xmlns:accordion="./accordion/accordion">
+      xmlns:accordion="nativescript-accordion">
 
-        <accordion:Accordion items="{{items}}" itemTapped="tapped" headerTextBold="true" headerTextColor="white" headerColor="pink"  headerTextColor="blue" allowMultiple="true" id="ac" selectedIndex="1">
+        <accordion:Accordion items="{{items}}" headerTextBold="true" headerTextColor="white" headerColor="pink"  headerTextColor="blue" allowMultiple="true"  selectedIndex="1">
             <accordion:Accordion.headerTemplate>
                 <GridLayout backgroundColor="green" columns="auto,*">
                     <Label text="{{title}}"/>

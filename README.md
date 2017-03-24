@@ -4,70 +4,92 @@
 `tns plugin add nativescript-accordion`
 ##Usage
 
+
 IMPORTANT: Make sure you include xmlns:accordion="nativescript-accordion" on the Page element
 
 
+###Data
+
+```
+let items = [
+      {
+        title: "1", footer: "10", headerText: "First", footerText: "4",
+        items: [
+          { image: "~/images/a9ff17db85f8136619feb0d5a200c0e4.png", text: "Stop" },
+          { text: "Drop", image: "http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg" }
+        ]
+      }
+    ]
+```
+By setting headerText/footerText in the item child the text would be used for the header/footer label if no header/footer template is available.
+
+The items prop will be used for the expand view children.
+
 ```xml
-<accordion:Accordion headerTextAlignment="center" headerTextColor="blue" allowMultiple="true" id="ac" selectedIndex="2" separatorColor="transparent">
-            <accordion:Accordion.items>
+<accordion:Accordion items="{{items}}" itemTapped="tapped" headerTextBold="true" headerTextColor="white" headerColor="pink"  headerTextColor="blue" allowMultiple="true" id="ac" selectedIndex="1">
+            <accordion:Accordion.headerTemplate>
+                <GridLayout backgroundColor="green" columns="auto,*">
+                    <Label text="{{title}}"/>
+                    <Label col="1" text="+"/>
+                </GridLayout>
+            </accordion:Accordion.headerTemplate>
+
+            <accordion:Accordion.itemTemplate>
                 <StackLayout headerText="First">
-                    <Image src="~/images/a9ff17db85f8136619feb0d5a200c0e4.png"/>
-                    <Image row="1" src="~/images/f29.png"/>
+                    <Image src="{{image}}"/>
+                    <Label text="{{text}}"/>
                 </StackLayout>
+            </accordion:Accordion.itemTemplate>
+            
 
-                <StackLayout headerText="Second">
-                    <Label text="Yolo"/>
-                    <Button text="tap it !!!!!"/>
-                </StackLayout>
+            <accordion:Accordion.footerTemplate>
+                <GridLayout backgroundColor="yellow" columns="auto,*">
+                    <Label text="{{footer}}"/>
+                    <Label col="1" text="-"/>
+                </GridLayout>
+            </accordion:Accordion.footerTemplate>
 
-                <StackLayout  headerText="Third">
-                    <Button text="tap it !!!!!"/>
-                </StackLayout>
-
-                <StackLayout  headerText="Fourth">
-                    <Image src="http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg"/>
-                    <Label text="accordion"/>
-                    <Button text="tap it !!!!!"/>
-                </StackLayout>
-
-            </accordion:Accordion.items>
         </accordion:Accordion>
 ```
 
 AngularNative
 
 ```js
-import {AccordionComponent} from "nativescript-accordion/angular";
+import { AccordionModule } from "nativescript-accordion/angular";
 
 @NgModule({
-    declarations: [
-        AccordionComponent
+    imports: [
+        AccordionModule
     ]
     })
 ```
 
 ```html
-<Accordion headerTextAlignment="center" headerTextColor="blue" allowMultiple="true" id="ac" selectedIndex="2" separatorColor="transparent">
-                <StackLayout headerText="First">
-                    <Image src="~/images/a9ff17db85f8136619feb0d5a200c0e4.png"></Image>
-                    <Image row="1" src="~/images/f29.png"></Image>
-                </StackLayout>
+<Accordion [items]="items" itemTapped="tapped" headerTextBold="true" headerTextColor="white" headerColor="pink" headerTextColor="blue"
+    allowMultiple="true"  selectedIndex="2">
 
-                <StackLayout headerText="Second">
-                    <Label text="Yolo"></Label>
-                    <Button text="tap it !!!!!"></Button>
-                </StackLayout>
+    <template accordionHeaderTemplate let-item="item" let-i="index">
+        <GridLayout backgroundColor="blue" columns="auto,*">
+            <Label [text]="item.title"></Label>
+        </GridLayout>
+    </template>
 
-                <StackLayout  headerText="Third">
-                    <Button text="tap it !!!!!"></Button>
-                </StackLayout>
+    <template accordionItemTemplate let-item="item" let-parent="parentIndex" let-even="even" let-child="childIndex">
+        <StackLayout>
+            <Image [src]="item.image"></Image>
+            <Label [text]="item.text"></Label>
+        </StackLayout>
+    </template>
 
-                <StackLayout  headerText="Fourth">
-                    <Image src="http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg"></Image>
-                    <Label text="accordion"></Label>
-                    <Button text="tap it !!!!!"></Button>
-                </StackLayout>
-        </Accordion>
+    <!-- IOS Only -->
+    <template accordionFooterTemplate let-item="item" let-i="index">
+        <GridLayout backgroundColor="yellow" columns="auto,*">
+            <Label [text]="item.footer"></Label>
+            <Label col="1" text="-"></Label>
+        </GridLayout>
+    </template>
+    <!-- IOS Only -->
+</Accordion>
 ```
 
 ##Config
@@ -79,10 +101,6 @@ selectedIndex="2"
 separatorColor="transparent"
 ```
 
-##Instance methods
-```ts
-addItem(view:View);  add item to the view;
-```
 
 ##ScreenShots
 Android | IOS

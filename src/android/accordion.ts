@@ -3,24 +3,57 @@ import { parse } from "ui/builder";
 import * as types from "utils/types";
 import * as utils from "utils/utils";
 import { View } from "ui/core/view";
-import * as common from "./accordion.common";
+import * as common from "../accordion.common";
 import { StackLayout } from "ui/layouts/stack-layout";
 import { PropertyChangeData } from "ui/core/dependency-observable";
 import { PropertyMetadata } from "ui/core/proxy";
 import { PropertyMetadataSettings } from "ui/core/dependency-observable";
 import { Property } from "ui/core/dependency-observable";
 import { Observable } from "data/observable";
+export const ITEMSLOADING = "itemsLoading";
+export const HEADERLOADING = "headerLoading";
+export const FOOTERLOADING = "footerLoading";
+export const STARTHEADERLOADING = "startHeaderLoading";
+export const STARTITEMLOADING = "startItemLoading";
+export const STARTFOOTERLOADING = "startFooterLoading";
+const NG_VIEW = "_ngViewRef";
 global.moduleMerge(common, exports);
+function notifyForItemAtIndex(owner, nativeView: any, view: any, eventName: string, parentIndex: number, childIndex: number) {
+    let args = { eventName: eventName, object: owner, parentIndex: parentIndex, childIndex: childIndex, view: view, ios: undefined, android: nativeView };
+    owner.notify(args);
+    return args;
+}
+
+function notifyForHeaderOrFooterAtIndex(owner, nativeView: any, view: any, eventName: string, parentIndex: number) {
+    let args = { eventName: eventName, object: owner, parentIndex: parentIndex, view: view, ios: undefined, android: nativeView };
+    owner.notify(args);
+    return args;
+}
+
+function notifyForHeaderOrFooterStartAtIndex(owner, eventName: string, parentIndex: number) {
+    let args = { eventName: eventName, object: owner, parentIndex: parentIndex };
+    owner.notify(args);
+    return args;
+}
+
+function notifyForItemStartAtIndex(owner, eventName: string, parentIndex: number, childIndex: number) {
+    let args = { eventName: eventName, object: owner, parentIndex: parentIndex, childIndex: childIndex };
+    owner.notify(args);
+    return args;
+}
+
+
 export class Accordion extends common.Accordion {
     // private _android: android.widget.LinearLayout;
     private _android: android.widget.ExpandableListView;
     private _listAdapter: AccordionListAdapter;
     private _previousGroup: number = -1;
     private _views: any[] = [];
-
+    _itemsMap: Map<any, any>;
     constructor() {
         super();
         this.selectedIndexes = [];
+        this._itemsMap = new Map();
     }
 
     public headerTemplateUpdated(oldData: any, newData: any): void {
@@ -34,18 +67,20 @@ export class Accordion extends common.Accordion {
     }
 
     public updateItems(oldItems: any, newItems: any) {
-        // if (newItems) {
-        //     if (this._listAdapter) {
-        //         this._listAdapter.notifyDataSetChanged();
-        //     }
-        // }
-
         if (newItems) {
-            newItems.on("change", (args) => {
+            if (Array.isArray(newItems)) {
                 if (this._listAdapter) {
                     this._listAdapter.notifyDataSetChanged();
                 }
-            });
+            } else {
+                if (newItems && newItems.on) {
+                    newItems.on("change", (args) => {
+                        if (this._listAdapter) {
+                            this._listAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            }
         }
     }
 
@@ -118,7 +153,7 @@ export class Accordion extends common.Accordion {
         this._listAdapter.notifyDataSetChanged();
     }
 
-    refresh() {
+    public refresh() {
         this._android.setAdapter(null);
         this._listAdapter = null;
         this._listAdapter = new AccordionListAdapter(this);
@@ -138,34 +173,11 @@ export class Accordion extends common.Accordion {
             this._android.expandGroup(id);
         }
     }
-
     public isItemExpanded(id: number): boolean {
         return this._android.isGroupExpanded(id);
     }
 }
-const headerTextProperty = new Property("headerText", "Item", new PropertyMetadata(undefined, PropertyMetadataSettings.None));
-(<PropertyMetadata>headerTextProperty.metadata).onSetNativeValue = function (data: PropertyChangeData) {
-    const item = <Item>data.object;
-    item.headerTextChanged(data.newValue);
-};
-export class Item extends StackLayout {
-    public static headerTextProperty = headerTextProperty;
-    constructor() {
-        super();
-    }
-    public headerTextChanged(text: string) {
-        //  console.log(text)
-    }
 
-    get headerText() {
-        return this._getValue(Item.headerTextProperty);
-    }
-
-    set headerText(text: string) {
-        this._setValue(Item.headerTextProperty, text);
-    }
-
-}
 export class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
     owner: Accordion;
     constructor(owner: Accordion) {
@@ -189,8 +201,9 @@ export class AccordionListAdapter extends android.widget.BaseExpandableListAdapt
         if (convertView) {
             return convertView;
         }
-        let view = !types.isNullOrUndefined(owner.headerTemplate) ? parse(owner.headerTemplate, this) : null;
-
+        let view: any = !types.isNullOrUndefined(owner.headerTemplate) ? parse(owner.headerTemplate, this) : null;
+        let _args = notifyForHeaderOrFooterAtIndex(owner, view ? view._nativeView : null, view, HEADERLOADING, groupPosition);
+        view = view || _args.view;
         if (view) {
             const data = owner._getParentData(groupPosition);
             view.bindingContext = new Observable(data);
@@ -199,7 +212,6 @@ export class AccordionListAdapter extends android.widget.BaseExpandableListAdapt
             }
             return view._nativeView;
         }
-
         const header = new android.widget.TextView(owner._context);
         header.setText(owner._getParentData(groupPosition) ? owner._getParentData(groupPosition).headerText : "");
         if (owner.headerTextAlignment === "center") {
@@ -209,7 +221,6 @@ export class AccordionListAdapter extends android.widget.BaseExpandableListAdapt
         } else if (owner.headerTextAlignment === "left") {
             header.setTextAlignment(android.view.View.TEXT_ALIGNMENT_VIEW_START);
         }
-
 
         if (owner.headerHeight) {
             header.setHeight(owner.headerHeight);
@@ -241,7 +252,12 @@ export class AccordionListAdapter extends android.widget.BaseExpandableListAdapt
         if (convertView) {
             return convertView;
         }
-        const view = !types.isNullOrUndefined(owner.itemTemplate) ? parse(owner.itemTemplate, this) : null;
+        let view: any = !types.isNullOrUndefined(owner.itemTemplate) ? parse(owner.itemTemplate, this) : null;
+        let _args = notifyForItemAtIndex(owner, view ? view._nativeView : null, view, ITEMSLOADING, groupPosition, childPosition);
+        view = view || _args.view;
+
+        let prop = parseInt(`${groupPosition + 1}${childPosition}`);
+        owner._itemsMap.set(prop, view);
         if (view) {
             const data = owner._getChildData(groupPosition, childPosition);
             view.bindingContext = new Observable(data);
@@ -259,7 +275,6 @@ export class AccordionListAdapter extends android.widget.BaseExpandableListAdapt
     }
 
     getChildrenCount(groupPosition: number): number {
-        // return this.owner.items[groupPosition] ? 1 : 0;
         const owner = this.owner;
         return (owner && owner.items && owner._getParentData(groupPosition)['items']) ? owner._getParentData(groupPosition)['items'].length : 0;
     }

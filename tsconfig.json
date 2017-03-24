@@ -2,22 +2,27 @@
     "compilerOptions": {
         "target": "es5",
         "module": "commonjs",
-        "removeComments": true,
-        "experimentalDecorators": true,
-        "noEmitHelpers": true,
         "declaration": true,
-        "noLib": true
+        "removeComments": true,
+        "noLib": true,
+        "skipLibCheck": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "pretty": true,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "noEmitHelpers": true,
+        "noEmitOnError": false,
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "noImplicitUseStrict": false,
+        "noFallthroughCasesInSwitch": true
     },
-    "files": [
-      "node_modules/typescript/lib/lib.core.d.ts",
-      "manual_typings/base.d.ts",
-      "node_modules/tns-core-modules/tns-core-modules.d.ts",
-      "node_modules/tns-platform-declarations/android.d.ts",
-      "node_modules/tns-platform-declarations/ios.d.ts",
-      "node_modules/tns-platform-declarations/android/org.nativescript.widgets.d.ts",
-      "accordion.common.ts",
-      "accordion.android.ts", 
-      "accordion.ios.ts"
+    "exclude": [
+        "demo",
+        "demo-ng",
+        "node_modules"
     ],
     "compileOnSave": false
 }

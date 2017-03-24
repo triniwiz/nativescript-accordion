@@ -6,7 +6,7 @@ import { AppComponent } from "./app.component";
 import { ItemService } from "./item/item.service";
 import { ItemsComponent } from "./item/items.component";
 import { ItemDetailComponent } from "./item/item-detail.component";
-import { AccordionComponent, AccordionHeaderDirective, AccordionItemDirective, AccordionFooterDirective } from "./accordion/angular/index";
+import { AccordionModule } from "nativescript-accordion/angular";
 
 @NgModule({
     bootstrap: [
@@ -14,16 +14,13 @@ import { AccordionComponent, AccordionHeaderDirective, AccordionItemDirective, A
     ],
     imports: [
         NativeScriptModule,
-        AppRoutingModule
+        AppRoutingModule,
+        AccordionModule
     ],
     declarations: [
         AppComponent,
         ItemsComponent,
-        ItemDetailComponent,
-        AccordionComponent,
-        AccordionHeaderDirective,
-        AccordionItemDirective,
-        AccordionFooterDirective
+        ItemDetailComponent
     ],
     providers: [
         ItemService

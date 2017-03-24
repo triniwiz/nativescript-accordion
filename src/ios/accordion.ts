@@ -1,8 +1,7 @@
 import { View } from "ui/core/view";
 import { parse } from "ui/builder";
-import * as common from "./accordion.common";
+import * as common from "../accordion.common";
 import * as types from "utils/types";
-import { AccordionItem } from "./accordion.common";
 import { Color } from "color";
 import * as utils from "utils/utils";
 import * as platform from "platform";
@@ -12,25 +11,45 @@ import { PropertyMetadataSettings } from "ui/core/dependency-observable";
 import { PropertyChangeData } from "ui/core/dependency-observable";
 import { PropertyMetadata } from "ui/core/proxy";
 import { EventData, Observable } from "data/observable";
-export const ITEMLOADING = "itemLoading";
+export const ITEMSLOADING = "itemsLoading";
+export const HEADERLOADING = "headerLoading";
+export const FOOTERLOADING = "footerLoading";
+export const STARTHEADERLOADING = "startHeaderLoading";
+export const STARTITEMLOADING = "startItemLoading";
+export const STARTFOOTERLOADING = "startFooterLoading";
 export const ITEMTAP = "itemTap";
 export const LOADMOREITEMS = "loadMoreItems";
+export const ITEMHEIGHT = "itemHeight";
+const NG_VIEW = "_ngViewRef";
 import { ios } from "utils/utils";
 
 global.moduleMerge(common, exports);
 const DEFAULT_HEIGHT: number = 44;
 const infinity = utils.layout.makeMeasureSpec(0, utils.layout.UNSPECIFIED);
-function notifyForItemAtIndex(listView, cell: any, view: View, eventName: string, indexPath: NSIndexPath) {
-    let args = { eventName: eventName, object: listView, index: indexPath.row, view: view, ios: cell, android: undefined };
-    listView.notify(args);
+
+function notifyForItemAtIndex(owner, nativeView: any, view: any, eventName: string, indexPath: NSIndexPath) {
+    let args = { eventName: eventName, object: owner, parentIndex: indexPath.section, childIndex: indexPath.row, view: view, ios: nativeView, android: undefined };
+    owner.notify(args);
     return args;
 }
+
+function notifyForHeaderOrFooterAtIndex(owner, nativeView: any, view: any, eventName: string, parentIndex: number) {
+    let args = { eventName: eventName, object: owner, parentIndex: parentIndex, view: view, ios: nativeView, android: undefined };
+    owner.notify(args);
+    return args;
+}
+
+
 
 const AccordionViewCellReuseIdentifier = "AccordionCellReuseIdentifier";
 const DefaultAccordionHeaderViewHeight = 44.0;
 const AccordionHeaderViewReuseIdentifier = "AccordionHeaderViewReuseIdentifier";
+const AccordionFooterViewReuseIdentifier = "AccordionFooterViewReuseIdentifier";
 export class Accordion extends common.Accordion {
-
+    _isDataDirty: boolean;
+    _headerMap: Map<any, any>;
+    _itemsMap: Map<any, any>;
+    _footerMap: Map<any, any>;
     public headerTemplateUpdated(oldData: any, newData: any): void {
     }
 
@@ -40,11 +59,13 @@ export class Accordion extends common.Accordion {
     public templateUpdated(oldData: any, newData: any): void {
 
     }
-     public updateItems(oldItems: any, newItems: any) {
+
+    public updateItems(oldItems: any, newItems: any) {
         if (newItems) {
-            newItems.on("change", (args) => {
-                this._ios.reloadData();
-            });
+            this._ios.reloadData();
+            // newItems.on("change", (args) => {
+            //     this._ios.reloadData();
+            // });
         }
     }
 
@@ -56,8 +77,8 @@ export class Accordion extends common.Accordion {
 
     private _ios: UITableView;
     private _accordion;
-    widthMeasureSpec: number;
-    heightMeasureSpec: number;
+    public widthMeasureSpec: number;
+    public heightMeasureSpec: number;
     private left = 0;
     private top = 0;
     private right = 0;
@@ -68,8 +89,9 @@ export class Accordion extends common.Accordion {
     constructor() {
         super();
         this._ios = UITableView.new();
-        // this._ios.registerClassForCellReuseIdentifier(AccordionCell.class(), AccordionViewCellReuseIdentifier);
-        // this.ios.registerNibForHeaderFooterViewReuseIdentifier(UINib.nibWithNibNameBundle("AccordionHeaderView", null), AccordionHeaderViewReuseIdentifier);
+        this._ios.registerClassForCellReuseIdentifier(AccordionCell.class(), AccordionViewCellReuseIdentifier);
+        this.ios.registerNibForHeaderFooterViewReuseIdentifier(UINib.nibWithNibNameBundle("AccordionHeaderView", null), AccordionHeaderViewReuseIdentifier);
+        this.ios.registerNibForHeaderFooterViewReuseIdentifier(UINib.nibWithNibNameBundle("AccordionFooterView", null), AccordionFooterViewReuseIdentifier);
         this._ios.autoresizingMask = UIViewAutoresizing.None;
         this._ios.estimatedRowHeight = DEFAULT_HEIGHT;
         this._ios.rowHeight = UITableViewAutomaticDimension;
@@ -77,6 +99,7 @@ export class Accordion extends common.Accordion {
         this._delegate = UITableViewDelegateImpl.initWithOwner(new WeakRef(this));
         this._setNativeClipToBounds();
         this._expandedViews = new Map();
+        this._itemsMap = new Map();
         this._indexSet = NSMutableIndexSet.alloc().init();
     }
     _setNativeClipToBounds() {
@@ -91,14 +114,29 @@ export class Accordion extends common.Accordion {
         return this._ios;
     }
 
-    addItem(view: AccordionItem) {
+    addItem(view: any) {
     }
+
+    public refresh() {
+
+        if (this.isLoaded) {
+            this._ios.reloadData();
+            this.requestLayout();
+            this._isDataDirty = false;
+        } else {
+            this._isDataDirty = true;
+        }
+    }
+
 
     onLoaded() {
         super.onLoaded();
         this._expandedViews.set(this.selectedIndex, true);
         this._indexSet.addIndex(this.selectedIndex);
-        this.requestLayout();
+        if (this._isDataDirty) {
+            this.requestLayout();
+            this.refresh();
+        }
         this._ios.dataSource = this._dataSource;
         this._ios.delegate = this._delegate;
         if (this.separatorColor) {
@@ -121,7 +159,7 @@ export class Accordion extends common.Accordion {
 
     public measure(widthMeasureSpec: number, heightMeasureSpec: number): void {
         this.widthMeasureSpec = widthMeasureSpec;
-        var changed = this._setCurrentMeasureSpecs(widthMeasureSpec, heightMeasureSpec);
+        var changed = (<any>this)._setCurrentMeasureSpecs(widthMeasureSpec, heightMeasureSpec);
         super.measure(widthMeasureSpec, heightMeasureSpec);
         if (changed) {
             this._ios.reloadData();
@@ -136,38 +174,12 @@ export class Accordion extends common.Accordion {
     }
 }
 
-const headerTextProperty = new Property("headerText", "Item", new PropertyMetadata(undefined, PropertyMetadataSettings.None));
-(<PropertyMetadata>headerTextProperty.metadata).onSetNativeValue = function (data: PropertyChangeData) {
-    const item = <Item>data.object;
-    item.headerTextChanged(data.newValue, item);
-};
-
-export class AccordionHeaderViewCell extends UITableViewCell { }
-
-export class Item extends StackLayout {
-    public static headerTextProperty = headerTextProperty;
-
-    constructor() {
-        super();
+export class AccordionHeaderViewCell extends UITableViewCell {
+    public owner: WeakRef<any>;
+    get view() {
+        return this.owner ? this.owner.get() : null
     }
-
-    public headerTextChanged(text: string, view: any) {
-        const index = view.tag;
-        if (view && view.parent.ios) {
-            view.parent.ios.subviews[0].subviews[index].subviews[0].setTitleForState(text, UIControlState.Normal);
-        }
-    }
-
-    get headerText() {
-        return this._getValue(Item.headerTextProperty);
-    }
-
-    set headerText(text: string) {
-        this._setValue(Item.headerTextProperty, text);
-    }
-
 }
-
 
 export class AccordionDataSource extends NSObject implements UITableViewDataSource {
     public static ObjCProtocols = [UITableViewDataSource];
@@ -204,41 +216,42 @@ export class AccordionDataSource extends NSObject implements UITableViewDataSour
         if (owner) {
             const has = owner._expandedViews.has(indexPath.section);
             const selected = owner._expandedViews.get(indexPath.section);
+
             if (has && !selected) {
                 cell = <AccordionCell>AccordionCell.new();
             } else {
                 cell = <AccordionCell>AccordionCell.new();
-
                 owner._expandedViews.set(indexPath.section, true);
 
-                const view = !types.isNullOrUndefined(owner.itemTemplate) ? parse(owner.itemTemplate, this) : null;
-                const data = owner._getChildData(indexPath.section, indexPath.row);
-                view.bindingContext = new Observable(data);
+                let view: any = !types.isNullOrUndefined(owner.itemTemplate) ? parse(owner.itemTemplate, this) : null;
+                let _args = notifyForItemAtIndex(owner, null, view, ITEMSLOADING, indexPath);
+                view = view || _args.view;
 
-                const rowHeight = owner._effectiveRowHeight;
 
-                const heightMeasureSpec: number = rowHeight >= 0 ? utils.layout.makeMeasureSpec(rowHeight, utils.layout.EXACTLY) : infinity;
-                const measuredSize = View.measureChild(owner, view, owner.widthMeasureSpec, heightMeasureSpec);
-                const height = measuredSize.measuredHeight;
-                const width = measuredSize.measuredWidth;
-                View.layoutChild(owner, view, 0, 0, width, height);
-                cell.contentView.addSubview(view._nativeView);
-                owner._addView(view);
+                let prop = parseInt(`${indexPath.section + 1}${indexPath.row}`);
+                owner._itemsMap.set(prop, view);
+                if (view) {
+                    const data = owner._getChildData(indexPath.section, indexPath.row);
+                    if (!types.isNullOrUndefined(data)) {
+                        view.bindingContext = new Observable(data);
+                    }
+                    if (!view.parent) {
+                        owner._addView(view);
+                    }
+                    const rowHeight = owner._effectiveRowHeight;
+                    const heightMeasureSpec: number = rowHeight >= 0 ? utils.layout.makeMeasureSpec(rowHeight, utils.layout.EXACTLY) : infinity;
+                    const measuredSize = View.measureChild(owner, view, owner.widthMeasureSpec, heightMeasureSpec);
+                    const height = measuredSize.measuredHeight;
+                    const width = measuredSize.measuredWidth;
+                    View.layoutChild(owner, view, 0, 0, width, height);
+                    cell.contentView.addSubview(view._nativeView);
+                }
             }
         }
         else {
             cell = <AccordionCell>AccordionCell.new();
         }
-
-
         return cell;
-
-        // console.log("cell")
-        // let owner = this._owner.get();
-        // const cell = owner.ios.dequeueReusableCellWithIdentifierForIndexPath(AccordionViewCellReuseIdentifier, indexPath);
-        // cell.textLabel.text = "Cell";
-        // return cell;
-
     }
 
 
@@ -269,22 +282,29 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
     public tableViewHeightForRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath) {
         let owner = this._owner.get();
         if (owner._expandedViews.get(indexPath.section)) {
-            const view = parse(owner.itemTemplate, this);
-            view.bindingContext = owner._getChildData(indexPath.section, indexPath.row);
-            owner._addView(view);
-            const nativeView = view._nativeView;
-            // view.ios.frame = CGRectMake(0, 0, 300, 300);
-            //View.measureChild(owner, view, nativeView.frame.size.width, nativeView.frame.size.height);
+            let view: any = parse(owner.itemTemplate, this);
+            const data = owner._getChildData(indexPath.section, indexPath.row);
+            if (!view) {
+                let prop = parseInt(`${indexPath.section + 1}${indexPath.row}`);
+                view = owner._itemsMap.get(prop);
+                return (view && view.ios) ? view.ios.frame.size.height : DEFAULT_HEIGHT;
+            }
+            if (view) {
+                if (!types.isNullOrUndefined(data)) {
+                    view.bindingContext = data;
+                }
+                if (!view.parent) {
+                    owner._addView(view);
+                }
+                const rowHeight = owner._effectiveRowHeight;
+                const heightMeasureSpec: number = rowHeight >= 0 ? utils.layout.makeMeasureSpec(rowHeight, utils.layout.EXACTLY) : infinity;
+                const measuredSize = View.measureChild(owner, view, owner.widthMeasureSpec, heightMeasureSpec);
+                const height = measuredSize.measuredHeight;
+                const width = measuredSize.measuredWidth;
+                View.layoutChild(owner, view, 0, 0, width, height);
+            }
 
-            const rowHeight = owner._effectiveRowHeight;
-
-            const heightMeasureSpec: number = rowHeight >= 0 ? utils.layout.makeMeasureSpec(rowHeight, utils.layout.EXACTLY) : infinity;
-            const measuredSize = View.measureChild(owner, view, owner.widthMeasureSpec, heightMeasureSpec);
-            const height = measuredSize.measuredHeight;
-            const width = measuredSize.measuredWidth;
-            View.layoutChild(owner, view, 0, 0, width, height);
-
-            return view ? view.ios.frame.size.height : DEFAULT_HEIGHT;
+            return (view && view.ios) ? view.ios.frame.size.height : DEFAULT_HEIGHT;
         }
         return 0;
     }
@@ -309,9 +329,10 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
 
     public tableViewDidSelectRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath) {
         let owner = this._owner.get();
-        let view = parse(owner.itemTemplate, this);
-        view.bindingContext = new Observable(owner._getChildData(indexPath.section, indexPath.row))
-        let args = { eventName: "itemTapped", object: owner, childIndex: indexPath.row, index: indexPath.section, view: view, ios: view.ios, android: undefined };
+        //let view = parse(owner.itemTemplate, this);
+        //view.bindingContext = new Observable(owner._getChildData(indexPath.section, indexPath.row))
+        const data = owner._getChildData(indexPath.section, indexPath.row);
+        let args = { eventName: "itemTapped", data: data, object: owner, childIndex: indexPath.row, parentIndex: indexPath.section, view: null, ios: null, android: undefined };
         owner.notify(args);
     }
 
@@ -374,9 +395,9 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
     public tableViewViewForHeaderInSection(tableView: UITableView, section: number) {
         let owner = this._owner.get();
         const tapGesture = UITapGestureRecognizer.alloc().initWithTargetAction(AccordionHeaderTap.initWithOwner(this._owner), "tap");
-
-        let view = !types.isNullOrUndefined(owner.headerTemplate) ? parse(owner.headerTemplate, this) : null;
-
+        let view: any = !types.isNullOrUndefined(owner.headerTemplate) ? parse(owner.headerTemplate, this) : null;
+        let _args = notifyForHeaderOrFooterAtIndex(owner, view ? view._nativeView : null, view, HEADERLOADING, section);
+        view = view || _args.view;
         if (view) {
             const data = owner._getParentData(section);
             view.bindingContext = new Observable(data);
@@ -390,8 +411,6 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
             view.ios.addGestureRecognizer(tapGesture);
             return view._nativeView;
         }
-
-
         const hv = UITableViewHeaderFooterView.new();
         hv.tag = section;
         hv.textLabel.text = owner._getParentData(section) ? owner._getParentData(section).headerText : "";
@@ -402,13 +421,14 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
         }
         tapGesture.delegate = this;
         hv.addGestureRecognizer(tapGesture);
+
         return hv;
     }
     public tableViewViewForFooterInSection(tableView: UITableView, section: number) {
         let owner = this._owner.get();
-
-        let view = !types.isNullOrUndefined(owner.footerTemplate) ? parse(owner.footerTemplate, this) : null;
-
+        let view: any = !types.isNullOrUndefined(owner.footerTemplate) ? parse(owner.footerTemplate, this) : null;
+        let _args = notifyForHeaderOrFooterAtIndex(owner, view ? view._nativeView : null, view, FOOTERLOADING, section);
+        view = view || _args.view;
         if (view) {
             const data = owner._getParentData(section);
             view.bindingContext = new Observable(data);
