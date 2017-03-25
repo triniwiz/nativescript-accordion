@@ -39,8 +39,6 @@ function notifyForHeaderOrFooterAtIndex(owner, nativeView: any, view: any, event
     return args;
 }
 
-
-
 const AccordionViewCellReuseIdentifier = "AccordionCellReuseIdentifier";
 const DefaultAccordionHeaderViewHeight = 44.0;
 const AccordionHeaderViewReuseIdentifier = "AccordionHeaderViewReuseIdentifier";
@@ -62,7 +60,7 @@ export class Accordion extends common.Accordion {
 
     public updateItems(oldItems: any, newItems: any) {
         if (newItems) {
-            this._ios.reloadData();
+           // this._ios.reloadData();
             // newItems.on("change", (args) => {
             //     this._ios.reloadData();
             // });
@@ -118,7 +116,6 @@ export class Accordion extends common.Accordion {
     }
 
     public refresh() {
-
         if (this.isLoaded) {
             this._ios.reloadData();
             this.requestLayout();
