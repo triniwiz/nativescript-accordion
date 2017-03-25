@@ -60,10 +60,14 @@ export class Accordion extends common.Accordion {
 
     public updateItems(oldItems: any, newItems: any) {
         if (newItems) {
-           // this._ios.reloadData();
-            // newItems.on("change", (args) => {
-            //     this._ios.reloadData();
-            // });
+            if (Array.isArray(newItems)) {
+                this._ios.reloadData();
+            }
+            if (newItems && (typeof newItems === "function")) {
+                newItems.on("change", (args) => {
+                    this._ios.reloadData();
+                });
+            }
         }
     }
 
