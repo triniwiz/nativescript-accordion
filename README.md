@@ -1,3 +1,6 @@
+[![npm](https://img.shields.io/npm/v/nativescript-accordion.svg)](https://www.npmjs.com/package/nativescript-accordion)
+[![npm](https://img.shields.io/npm/dt/nativescript-accordion.svg?label=npm%20downloads)](https://www.npmjs.com/package/nativescript-accordion)
+
 #NativeScript Accordion
 
 ##Install
