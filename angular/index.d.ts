@@ -1,4 +1,4 @@
-import { ElementRef, ViewContainerRef, TemplateRef, ChangeDetectorRef, IterableDiffers, EventEmitter } from "@angular/core";
+import { ElementRef, ViewContainerRef, TemplateRef, ChangeDetectorRef, IterableDiffers } from "@angular/core";
 import { View } from "ui/core/view";
 export interface ComponentView {
     rootNodes: Array<any>;
@@ -30,7 +30,6 @@ export declare class AccordionComponent {
     private accordion;
     private _differ;
     private _items;
-    refresh: EventEmitter<{}>;
     headerTemplate: TemplateRef<AccordionHeaderContext>;
     itemTemplate: TemplateRef<AccordionItemContext>;
     footerTemplate: TemplateRef<AccordionFooterContext>;

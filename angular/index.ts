@@ -105,7 +105,6 @@ export class AccordionComponent {
     private accordion: any;
     private _differ: IterableDiffer;
     private _items: any;
-    @Output() public refresh = new EventEmitter();
     headerTemplate: TemplateRef<AccordionHeaderContext>;
     itemTemplate: TemplateRef<AccordionItemContext>;
     footerTemplate: TemplateRef<AccordionFooterContext>;
@@ -157,7 +156,6 @@ export class AccordionComponent {
             this.setupViewRefItem(viewRef, data, args.parentIndex, args.childIndex);
             this.detectChangesOnChild(viewRef, args.parentIndex);
         }
-
     }
     footerLoading(args): void {
         if (this.footerTemplate) {
@@ -212,7 +210,6 @@ export class AccordionComponent {
             }
         }
     }
-
 }
 
 export class AccordionItemContext {
@@ -254,7 +251,6 @@ export class AccordionFooterContext {
     }
 }
 
-
 @NgModule({
     declarations: [
         AccordionComponent,
@@ -263,7 +259,10 @@ export class AccordionFooterContext {
         AccordionFooterDirective
     ],
     exports: [
-        AccordionComponent
+        AccordionComponent,
+        AccordionHeaderDirective,
+        AccordionItemDirective,
+        AccordionFooterDirective
     ],
     schemas: [NO_ERRORS_SCHEMA]
 })
