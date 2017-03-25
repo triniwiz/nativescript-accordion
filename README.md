@@ -94,11 +94,16 @@ import { AccordionModule } from "nativescript-accordion/angular";
 
 ##Config
 ```
-headerTextAlignment="center"
+headerTextAlignment="left ||center || right"  
+footerTextAlignment="left ||center || right"
 headerTextColor="blue" 
 allowMultiple="true"
 selectedIndex="2"
 separatorColor="transparent"
+headerTextSize="20"
+footerTextSize="20"
+headerTextBold="true"
+footerTextBold="true"
 ```
 
 
