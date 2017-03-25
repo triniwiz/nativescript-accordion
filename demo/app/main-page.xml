@@ -1,29 +1,28 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
       xmlns:accordion="nativescript-accordion">
 
-        <accordion:Accordion headerTextAlignment="center" headerTextColor="blue" allowMultiple="true" id="ac" selectedIndex="2" separatorColor="transparent">
-            <accordion:Accordion.items>
+        <accordion:Accordion items="{{items}}" headerTextBold="true" headerTextColor="white" headerColor="pink"  headerTextColor="blue" allowMultiple="true"  selectedIndex="1">
+            <accordion:Accordion.headerTemplate>
+                <GridLayout backgroundColor="green" columns="auto,*">
+                    <Label text="{{title}}"/>
+                    <Label col="1" text="+"/>
+                </GridLayout>
+            </accordion:Accordion.headerTemplate>
+
+            <accordion:Accordion.itemTemplate>
                 <StackLayout headerText="First">
-                    <Image src="~/images/a9ff17db85f8136619feb0d5a200c0e4.png"/>
-                    <Image row="1" src="~/images/f29.png"/>
+                    <Image src="{{image}}"/>
+                    <Label text="{{text}}"/>
                 </StackLayout>
+            </accordion:Accordion.itemTemplate>
+            
 
-                <StackLayout headerText="Second">
-                    <Label text="Yolo"/>
-                    <Button text="tap it !!!!!"/>
-                </StackLayout>
+            <accordion:Accordion.footerTemplate>
+                <GridLayout backgroundColor="yellow" columns="auto,*">
+                    <Label text="{{footer}}"/>
+                    <Label col="1" text="-"/>
+                </GridLayout>
+            </accordion:Accordion.footerTemplate>
 
-                <StackLayout  headerText="Third">
-                    <Button text="tap it !!!!!"/>
-                </StackLayout>
-
-                <StackLayout  headerText="Fourth">
-                    <Image src="http://static.srcdn.com/wp-content/uploads/Superman-fighting-Goku.jpg"/>
-                    <Label text="accordion"/>
-                    <Button text="tap it !!!!!"/>
-                </StackLayout>
-
-            </accordion:Accordion.items>
         </accordion:Accordion>
-
 </Page>
