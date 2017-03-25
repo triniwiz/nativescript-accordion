@@ -1,6 +1,6 @@
 {
   "name": "nativescript-accordion",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A layout which supports expanding and collapsing child views",
   "main": "accordion",
   "nativescript": {
