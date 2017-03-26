@@ -58,7 +58,11 @@ export class Accordion extends common.Accordion {
 
     }
 
-    public updateItems(oldItems: any, newItems: any) {
+    public updateNativeItems(oldItems: any, newItems: any) {
+
+        if (oldItems) {
+            this._ios.reloadData();
+        }
         if (newItems) {
             if (Array.isArray(newItems)) {
                 this._ios.reloadData();
@@ -129,11 +133,17 @@ export class Accordion extends common.Accordion {
         }
     }
 
-
+    _selectedIndexUpdatedFromNative(newIndex: number) {
+        if (this.selectedIndex !== newIndex) {
+            let old = this.selectedIndex;
+            this._onPropertyChangedFromNative(common.Accordion.selectedIndexProperty, newIndex);
+            this.notify({ eventName: common.Accordion.selectedIndexChangedEvent, object: this, old, newIndex });
+        }
+    }
     onLoaded() {
         super.onLoaded();
-        this._expandedViews.set(this.selectedIndex, true);
-        this._indexSet.addIndex(this.selectedIndex);
+        //   this._expandedViews.set(this.selectedIndex, true);
+        //    this._indexSet.addIndex(this.selectedIndex);
         if (this._isDataDirty) {
             this.requestLayout();
             this.refresh();
@@ -147,6 +157,9 @@ export class Accordion extends common.Accordion {
 
     public onUnloaded() {
         this._ios.delegate = null;
+        if (this._indexSet) {
+            this._indexSet.removeAllIndexes();
+        }
         super.onUnloaded();
     }
 
@@ -156,8 +169,6 @@ export class Accordion extends common.Accordion {
                 UITableViewScrollPosition.Top, false);
         }
     }
-
-
     public measure(widthMeasureSpec: number, heightMeasureSpec: number): void {
         this.widthMeasureSpec = widthMeasureSpec;
         var changed = (<any>this)._setCurrentMeasureSpecs(widthMeasureSpec, heightMeasureSpec);
@@ -170,8 +181,51 @@ export class Accordion extends common.Accordion {
         return this.items ? this.items.length : 0;
     }
 
-    indexChanged(index: number) {
-        this.notifyPropertyChange("selectedIndex", index);
+    updateNativeIndex(oldIndex: number, newIndex: number) {
+        // this.notifyPropertyChange("selectedIndex", newIndex);
+        const reloadSection = (index: number, sections?: any) => {
+            let section = NSMutableIndexSet.alloc().initWithIndex(index);
+            if (!sections) {
+                this._ios.reloadSectionsWithRowAnimation(section, UITableViewRowAnimation.None);
+            } else {
+                this._ios.reloadSectionsWithRowAnimation(sections, UITableViewRowAnimation.Automatic);
+            }
+
+        }
+        if (this.allowMultiple) {
+            if (!this._expandedViews.get(newIndex)) {
+                this._expandedViews.set(newIndex, true);
+                this._indexSet.addIndex(newIndex);
+                this._selectedIndexUpdatedFromNative(newIndex);
+            }
+            // reloadSection(newIndex, this._indexSet);
+            this._ios.reloadData();
+        } else {
+
+            if (!this._expandedViews.get(newIndex)) {
+                if (this._indexSet.count > 0) {
+                    //const previous = this._indexSet.firstIndex;
+                    this._expandedViews.clear();
+                    // this._expandedViews.set(previous, false);
+                    this._indexSet.removeAllIndexes();
+
+                    // reloadSection(previous);
+                    this._selectedIndexUpdatedFromNative(newIndex);
+                    this._expandedViews.set(newIndex, true);
+                    this._indexSet.addIndex(newIndex);
+
+                } else {
+
+                    this._expandedViews.set(newIndex, true);
+                    this._indexSet.addIndex(newIndex);
+                }
+                this._ios.reloadData();
+                // reloadSection(newIndex, this._indexSet);
+
+            }
+
+        }
+
     }
 }
 
@@ -325,7 +379,7 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
         if (owner.footerHeight) {
             return owner.footerHeight;
         }
-        return DEFAULT_HEIGHT;
+        return -1;
     };
 
     public tableViewDidSelectRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath) {
@@ -489,6 +543,7 @@ class AccordionHeaderTap extends NSObject {
             /**
              * Call reload to expand or collapse section
              */
+            //owner.ios.reloadData();
             reloadSection(current);
         } else {
 
@@ -508,12 +563,14 @@ class AccordionHeaderTap extends NSObject {
                     /**
                      * Call reload to collapse section
                      */
+                    //owner.ios.reloadData();
                     reloadSection(previous);
-
+                    owner._selectedIndexUpdatedFromNative(current);
                     owner._expandedViews.set(current, true);
                     owner._indexSet.addIndex(current);
 
                 } else {
+                    owner._selectedIndexUpdatedFromNative(current);
                     owner._expandedViews.set(current, true);
                     owner._indexSet.addIndex(current);
                 }
@@ -522,20 +579,21 @@ class AccordionHeaderTap extends NSObject {
                  * Call reload to expand section
                  */
 
+                //owner.ios.reloadData();
                 reloadSection(current);
 
             } else {
+                owner._selectedIndexUpdatedFromNative(current);
                 owner._expandedViews.set(current, false);
                 owner._indexSet.removeIndex(current);
                 /**
                  * Call reload to collapse section
                  */
+                //owner.ios.reloadData();
                 reloadSection(current);
             }
 
         }
-
-
 
     }
     public static ObjCExposedMethods = {

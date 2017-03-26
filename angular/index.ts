@@ -12,6 +12,7 @@ import { Observable } from "data/observable";
 import * as types from "utils/types";
 import { isListLikeIterable } from "nativescript-angular/collection-facade"
 import { isBlank } from "nativescript-angular/lang-facade";
+import { convertToInt } from "nativescript-angular/common/utils";
 import { ProxyViewContainer } from "ui/proxy-view-container";
 const NG_VIEW = "_ngViewRef";
 const ITEMSLOADING = "itemsLoading";
@@ -94,7 +95,7 @@ export class AccordionFooterDirective {
 
 @Component({
     selector: "Accordion",
-    template: "",
+    template: ``,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AccordionComponent {
@@ -102,9 +103,11 @@ export class AccordionComponent {
         return this.accordion;
     }
     _nativeView;
+    private _selectedIndex: number;
     private accordion: any;
     private _differ: IterableDiffer;
     private _items: any;
+    private viewInitialized: boolean;
     headerTemplate: TemplateRef<AccordionHeaderContext>;
     itemTemplate: TemplateRef<AccordionItemContext>;
     footerTemplate: TemplateRef<AccordionFooterContext>;
@@ -122,7 +125,6 @@ export class AccordionComponent {
     get items() {
         return this._items;
     }
-
     set items(value: any) {
         this._items = value;
         let needDiffer = true;
@@ -137,6 +139,24 @@ export class AccordionComponent {
         this.accordion.items = this._items;
     }
 
+    @Input()
+    get selectedIndex(): number {
+        return this._selectedIndex;
+    }
+
+    set selectedIndex(value) {
+        this._selectedIndex = convertToInt(value);
+        if (this.viewInitialized) {
+            this.accordion.selectedIndex = this._selectedIndex;
+        }
+    }
+
+    ngAfterViewInit() {
+        this.viewInitialized = true;
+        if (!isBlank(this._selectedIndex)) {
+            this.accordion.selectedIndex = this._selectedIndex;
+        }
+    }
     headerLoading(args): void {
         if (this.headerTemplate) {
             const data = this.accordion._getParentData(args.parentIndex);
