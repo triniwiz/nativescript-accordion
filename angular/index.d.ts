@@ -27,14 +27,18 @@ export declare class AccordionComponent {
     private loader;
     readonly nativeElement: any;
     _nativeView: any;
+    private _selectedIndex;
     private accordion;
     private _differ;
     private _items;
+    private viewInitialized;
     headerTemplate: TemplateRef<AccordionHeaderContext>;
     itemTemplate: TemplateRef<AccordionItemContext>;
     footerTemplate: TemplateRef<AccordionFooterContext>;
     constructor(el: ElementRef, _iterableDiffers: IterableDiffers, _cdr: ChangeDetectorRef, loader: ViewContainerRef);
     items: any;
+    selectedIndex: number;
+    ngAfterViewInit(): void;
     headerLoading(args: any): void;
     itemsLoading(args: any): void;
     footerLoading(args: any): void;

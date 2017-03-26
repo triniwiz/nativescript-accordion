@@ -16,7 +16,7 @@ export declare class Accordion extends common.Accordion {
     headerTemplateUpdated(oldData: any, newData: any): void;
     footerTemplateUpdated(oldData: any, newData: any): void;
     templateUpdated(oldData: any, newData: any): void;
-    updateItems(oldItems: any, newItems: any): void;
+    updateNativeItems(oldItems: any, newItems: any): void;
     _expandedViews: Map<any, any>;
     _indexSet: NSMutableIndexSet;
     groupCollapsed(index: number): void;
@@ -37,12 +37,13 @@ export declare class Accordion extends common.Accordion {
     readonly _nativeView: UITableView;
     addItem(view: any): void;
     refresh(): void;
+    _selectedIndexUpdatedFromNative(newIndex: number): void;
     onLoaded(): void;
     onUnloaded(): void;
     scrollToIndex(index: number): void;
     measure(widthMeasureSpec: number, heightMeasureSpec: number): void;
     readonly _childrenCount: number;
-    indexChanged(index: number): void;
+    updateNativeIndex(oldIndex: number, newIndex: number): void;
 }
 export declare class AccordionHeaderViewCell extends UITableViewCell {
     owner: WeakRef<any>;
