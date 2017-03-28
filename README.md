@@ -1,17 +1,16 @@
 [![npm](https://img.shields.io/npm/v/nativescript-accordion.svg)](https://www.npmjs.com/package/nativescript-accordion)
 [![npm](https://img.shields.io/npm/dt/nativescript-accordion.svg?label=npm%20downloads)](https://www.npmjs.com/package/nativescript-accordion)
 
-#NativeScript Accordion
+# NativeScript Accordion
 
-##Install
+## Install
 `tns plugin add nativescript-accordion`
-##Usage
 
+## Usage
 
 IMPORTANT: Make sure you include xmlns:accordion="nativescript-accordion" on the Page element
 
-
-###Data
+### Data
 
 ```
 let items = [
@@ -95,7 +94,7 @@ import { AccordionModule } from "nativescript-accordion/angular";
 </Accordion>
 ```
 
-##Config
+## Config
 ```
 headerTextAlignment="left ||center || right"  
 footerTextAlignment="left ||center || right"
@@ -110,7 +109,7 @@ footerTextBold="true"
 ```
 
 
-##ScreenShots
+## ScreenShots
 Android | IOS
 --------|---------
 ![SS](ss/android.gif?raw=true) | ![SS](ss/ios.gif?raw=true)
