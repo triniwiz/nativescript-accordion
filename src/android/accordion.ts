@@ -53,12 +53,14 @@ export class Accordion extends common.Accordion {
     _itemsMap: Map<any, any>;
     _headerMap: Map<any, any>;
     _footerMap: Map<any, any>;
+    _expandedViews: Map<any, any>;
     constructor() {
         super();
         this.selectedIndexes = [];
         this._itemsMap = new Map();
         this._headerMap = new Map();
         this._itemsMap = new Map();
+        this._expandedViews = new Map();
     }
 
     public headerTemplateUpdated(oldData: any, newData: any): void {
@@ -119,6 +121,7 @@ export class Accordion extends common.Accordion {
         this._android.setOnGroupExpandListener(new android.widget.ExpandableListView.OnGroupExpandListener({
             onGroupExpand(groupPosition: number) {
                 const owner = that.get();
+                owner._expandedViews.set(groupPosition, true);
                 if (!owner.allowMultiple) {
                     owner._selectedIndexUpdatedFromNative(groupPosition);
                     if ((owner._previousGroup != -1) && (groupPosition != owner._previousGroup)) {
@@ -140,6 +143,7 @@ export class Accordion extends common.Accordion {
         this._android.setOnGroupCollapseListener(new android.widget.ExpandableListView.OnGroupCollapseListener({
             onGroupCollapse(groupPosition: number) {
                 const owner = that.get();
+                owner._expandedViews.set(groupPosition, false);
                 let items = owner.selectedIndexes;
                 owner.groupCollapsed(groupPosition);
                 owner.selectedIndexes = owner.selectedIndexes.map((item) => {
@@ -191,7 +195,7 @@ export class Accordion extends common.Accordion {
                 }
             });
         }
-           this._listAdapter.notifyDataSetChanged();
+        this._listAdapter.notifyDataSetChanged();
     }
 
 
