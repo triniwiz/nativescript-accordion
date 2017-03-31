@@ -1,5 +1,5 @@
 import { NgModule, Inject, forwardRef, Component, Directive, ElementRef, ViewContainerRef, TemplateRef, OnInit, ViewChild, ContentChild, Input, Optional, IterableDiffer, ChangeDetectorRef, IterableDiffers, ChangeDetectionStrategy, Output, EventEmitter, NO_ERRORS_SCHEMA } from "@angular/core";
-import { registerElement, ViewClassMeta, NgView, TemplateView, TEMPLATE } from "nativescript-angular/element-registry";
+import { registerElement, ViewClassMeta, NgView } from "nativescript-angular/element-registry";
 import { View } from "ui/core/view";
 import { Placeholder } from "ui/placeholder";
 import { Button } from "ui/button";
@@ -105,7 +105,7 @@ export class AccordionComponent {
     _nativeView;
     private _selectedIndex: number;
     private accordion: any;
-    private _differ: IterableDiffer;
+    private _differ: any //IterableDiffer;
     private _items: any;
     private viewInitialized: boolean;
     headerTemplate: TemplateRef<AccordionHeaderContext>;
