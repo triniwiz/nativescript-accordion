@@ -13,6 +13,7 @@ export declare class Accordion extends common.Accordion {
     _itemsMap: Map<any, any>;
     _headerMap: Map<any, any>;
     _footerMap: Map<any, any>;
+    _expandedViews: Map<any, any>;
     constructor();
     headerTemplateUpdated(oldData: any, newData: any): void;
     footerTemplateUpdated(oldData: any, newData: any): void;
@@ -26,6 +27,7 @@ export declare class Accordion extends common.Accordion {
     refresh(): void;
     updateNativeIndex(oldIndex: number, newIndex: number): void;
     _selectedIndexUpdatedFromNative(newIndex: number): void;
+    groupExpanded(index: number): void;
     groupCollapsed(index: number): void;
     expandItem(id: number): void;
     isItemExpanded(id: number): boolean;
