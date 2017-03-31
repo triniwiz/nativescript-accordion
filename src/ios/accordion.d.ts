@@ -20,6 +20,7 @@ export declare class Accordion extends common.Accordion {
     _expandedViews: Map<any, any>;
     _indexSet: NSMutableIndexSet;
     groupCollapsed(index: number): void;
+    groupExpanded(index: number): void;
     private _ios;
     private _accordion;
     widthMeasureSpec: number;

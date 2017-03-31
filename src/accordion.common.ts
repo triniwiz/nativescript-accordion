@@ -225,6 +225,8 @@ export abstract class Accordion extends View {
 
     public abstract groupCollapsed(index: number): void;
 
+    public abstract groupExpanded(index: number): void;
+
     public abstract headerTemplateUpdated(oldData, newData): void;
 
     public abstract templateUpdated(oldData, newData): void;

@@ -78,7 +78,11 @@ export class Accordion extends common.Accordion {
     _expandedViews: Map<any, any>;
     _indexSet: NSMutableIndexSet;
     public groupCollapsed(index: number): void {
-        //throw new Error('Method not implemented.');
+        this.notifyPropertyChange("groupCollapsed", index);
+    }
+
+    public groupExpanded(index: number): void {
+        this.notifyPropertyChange("groupExpanded", index);
     }
 
     private _ios: UITableView;
@@ -306,6 +310,7 @@ export class AccordionDataSource extends NSObject implements UITableViewDataSour
         else {
             cell = <AccordionCell>AccordionCell.new();
         }
+        cell.selectionStyle = UITableViewCellSelectionStyle.None;
         return cell;
     }
 
@@ -534,11 +539,13 @@ class AccordionHeaderTap extends NSObject {
              * If expanded close item then remove  item from the indexSet
              */
             if (!owner._expandedViews.get(current)) {
+                owner.groupExpanded(current);
                 owner._expandedViews.set(current, true);
                 owner._indexSet.addIndex(current);
             } else {
                 owner._expandedViews.set(current, false);
                 owner._indexSet.removeIndex(current);
+                owner.groupCollapsed(current);
             }
             /**
              * Call reload to expand or collapse section
@@ -558,6 +565,7 @@ class AccordionHeaderTap extends NSObject {
                 if (owner._indexSet.count > 0) {
                     const previous = owner._indexSet.firstIndex;
                     owner._expandedViews.set(previous, false);
+                    owner.groupCollapsed(previous);
                     owner._indexSet.removeAllIndexes();
 
                     /**
@@ -568,11 +576,13 @@ class AccordionHeaderTap extends NSObject {
                     owner._selectedIndexUpdatedFromNative(current);
                     owner._expandedViews.set(current, true);
                     owner._indexSet.addIndex(current);
+                    owner.groupExpanded(current);
 
                 } else {
                     owner._selectedIndexUpdatedFromNative(current);
                     owner._expandedViews.set(current, true);
                     owner._indexSet.addIndex(current);
+                    owner.groupExpanded(current);
                 }
 
                 /**
@@ -586,6 +596,7 @@ class AccordionHeaderTap extends NSObject {
                 owner._selectedIndexUpdatedFromNative(current);
                 owner._expandedViews.set(current, false);
                 owner._indexSet.removeIndex(current);
+                owner.groupCollapsed(current);
                 /**
                  * Call reload to collapse section
                  */

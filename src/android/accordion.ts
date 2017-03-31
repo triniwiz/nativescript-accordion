@@ -122,6 +122,7 @@ export class Accordion extends common.Accordion {
             onGroupExpand(groupPosition: number) {
                 const owner = that.get();
                 owner._expandedViews.set(groupPosition, true);
+                owner.groupExpanded(groupPosition);
                 if (!owner.allowMultiple) {
                     owner._selectedIndexUpdatedFromNative(groupPosition);
                     if ((owner._previousGroup != -1) && (groupPosition != owner._previousGroup)) {
@@ -140,6 +141,7 @@ export class Accordion extends common.Accordion {
                 })
             }
         }));
+
         this._android.setOnGroupCollapseListener(new android.widget.ExpandableListView.OnGroupCollapseListener({
             onGroupCollapse(groupPosition: number) {
                 const owner = that.get();
@@ -215,6 +217,9 @@ export class Accordion extends common.Accordion {
         }
     }
 
+    groupExpanded(index: number) {
+        this.notifyPropertyChange("groupExpanded", index);
+    }
     groupCollapsed(index: number) {
         this.notifyPropertyChange("groupCollapsed", index);
     }

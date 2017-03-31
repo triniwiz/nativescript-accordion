@@ -61,6 +61,7 @@ export declare abstract class Accordion extends View {
     abstract addItem(view: any): void;
     abstract updateNativeIndex(oldData: any, newData: any): void;
     abstract groupCollapsed(index: number): void;
+    abstract groupExpanded(index: number): void;
     abstract headerTemplateUpdated(oldData: any, newData: any): void;
     abstract templateUpdated(oldData: any, newData: any): void;
     abstract footerTemplateUpdated(oldData: any, newData: any): void;
