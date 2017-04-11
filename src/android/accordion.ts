@@ -254,13 +254,14 @@ export class AccordionListAdapter extends android.widget.BaseExpandableListAdapt
     }
     getGroupView(groupPosition: number, isExpanded: boolean, convertView: android.view.View, parent: android.view.ViewGroup) {
         let owner = this.owner;
-        if (convertView) {
+        //View Cache fix
+        /*if (convertView) {
             convertView = owner._headerMap.get(groupPosition) ? owner._headerMap.get(groupPosition)._nativeView : null;
             if (convertView) {
                 return convertView;
             }
 
-        }
+        }*/
         let view: any = !types.isNullOrUndefined(owner.headerTemplate) ? parse(owner.headerTemplate, this) : null;
         let _args = notifyForHeaderOrFooterAtIndex(owner, view ? view._nativeView : null, view, HEADERLOADING, groupPosition);
         view = view || _args.view;
@@ -314,13 +315,14 @@ export class AccordionListAdapter extends android.widget.BaseExpandableListAdapt
     getChildView(groupPosition: number, childPosition: number, isLastChild: boolean, convertView: android.view.View, parent: android.view.ViewGroup) {
         const owner = this.owner;
         let prop = parseInt(`${groupPosition + 1}${childPosition}`);
-        if (convertView) {
+        //View Cache fix
+        /*if (convertView) {
             convertView = owner._headerMap.get(prop) ? owner._headerMap.get(prop)._nativeView : null;
             if (convertView) {
                 return convertView;
             }
 
-        }
+        }*/
         let view: any = !types.isNullOrUndefined(owner.itemTemplate) ? parse(owner.itemTemplate, this) : null;
         let _args = notifyForItemAtIndex(owner, view ? view._nativeView : null, view, ITEMSLOADING, groupPosition, childPosition);
         view = view || _args.view;
