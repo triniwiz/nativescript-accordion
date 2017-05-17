@@ -1,16 +1,12 @@
-import { View } from "ui/core/view";
-import { parse } from "ui/builder";
+import { View } from "tns-core-modules/ui/core/view";
+import { parse } from "tns-core-modules/ui/builder";
 import * as common from "../accordion.common";
-import * as types from "utils/types";
-import { Color } from "color";
-import * as utils from "utils/utils";
-import * as platform from "platform";
-import { StackLayout } from "ui/layouts/stack-layout";
-import { Property } from "ui/core/dependency-observable";
-import { PropertyMetadataSettings } from "ui/core/dependency-observable";
-import { PropertyChangeData } from "ui/core/dependency-observable";
-import { PropertyMetadata } from "ui/core/proxy";
-import { EventData, Observable } from "data/observable";
+import * as types from "tns-core-modules/utils/types";
+import { Color } from "tns-core-modules/color";
+import * as utils from "tns-core-modules/utils/utils";
+import * as platform from "tns-core-modules/platform";
+import { StackLayout } from "tns-core-modules/ui/layouts/stack-layout";
+import { EventData, Observable, fromObject } from "tns-core-modules/data/observable";
 export const ITEMSLOADING = "itemsLoading";
 export const HEADERLOADING = "headerLoading";
 export const FOOTERLOADING = "footerLoading";
@@ -21,7 +17,7 @@ export const ITEMTAP = "itemTap";
 export const LOADMOREITEMS = "loadMoreItems";
 export const ITEMHEIGHT = "itemHeight";
 const NG_VIEW = "_ngViewRef";
-import { ios } from "utils/utils";
+import { ios } from "tns-core-modules/utils/utils";
 
 global.moduleMerge(common, exports);
 const DEFAULT_HEIGHT: number = 44;
@@ -49,12 +45,15 @@ export class Accordion extends common.Accordion {
     _itemsMap: Map<any, any>;
     _footerMap: Map<any, any>;
     public headerTemplateUpdated(oldData: any, newData: any): void {
+        this.refresh();
     }
 
     public footerTemplateUpdated(oldData: any, newData: any): void {
+        this.refresh();
     }
 
     public templateUpdated(oldData: any, newData: any): void {
+        this.refresh();
 
     }
 
@@ -89,15 +88,17 @@ export class Accordion extends common.Accordion {
     private _accordion;
     public widthMeasureSpec: number;
     public heightMeasureSpec: number;
-    private left = 0;
-    private top = 0;
-    private right = 0;
-    private bottom = 0;
+    left = 0;
+    top = 0;
+    right = 0;
+    bottom = 0;
     _dataSource: AccordionDataSource;
     _delegate;
     private _map: Map<AccordionCell, View>;
     constructor() {
         super();
+    }
+    public createNativeView() {
         this._ios = UITableView.new();
         this._ios.registerClassForCellReuseIdentifier(AccordionCell.class(), AccordionViewCellReuseIdentifier);
         this.ios.registerNibForHeaderFooterViewReuseIdentifier(UINib.nibWithNibNameBundle("AccordionHeaderView", null), AccordionHeaderViewReuseIdentifier);
@@ -111,16 +112,32 @@ export class Accordion extends common.Accordion {
         this._expandedViews = new Map();
         this._itemsMap = new Map();
         this._indexSet = NSMutableIndexSet.alloc().init();
+        return this._ios;
+    }
+    public initNativeView() {
+        //   this._expandedViews.set(this.selectedIndex, true);
+        //    this._indexSet.addIndex(this.selectedIndex);
+        if (this._isDataDirty) {
+            this.requestLayout();
+            this.refresh();
+        }
+        this._ios.dataSource = this._dataSource;
+        this._ios.delegate = this._delegate;
+        if (this.separatorColor) {
+            this.ios.separatorColor = new Color(this.separatorColor).ios;
+        }
+    }
+    public disposeNativeView() {
+        this._ios.delegate = null;
+        if (this._indexSet) {
+            this._indexSet.removeAllIndexes();
+        }
     }
     _setNativeClipToBounds() {
         this._ios.clipsToBounds = true;
     }
 
     get ios() {
-        return this._ios;
-    }
-
-    get _nativeView() {
         return this._ios;
     }
 
@@ -140,32 +157,11 @@ export class Accordion extends common.Accordion {
     _selectedIndexUpdatedFromNative(newIndex: number) {
         if (this.selectedIndex !== newIndex) {
             let old = this.selectedIndex;
-            this._onPropertyChangedFromNative(common.Accordion.selectedIndexProperty, newIndex);
+            common.selectedIndexProperty.nativeValueChange(this, newIndex);
             this.notify({ eventName: common.Accordion.selectedIndexChangedEvent, object: this, old, newIndex });
         }
     }
-    onLoaded() {
-        super.onLoaded();
-        //   this._expandedViews.set(this.selectedIndex, true);
-        //    this._indexSet.addIndex(this.selectedIndex);
-        if (this._isDataDirty) {
-            this.requestLayout();
-            this.refresh();
-        }
-        this._ios.dataSource = this._dataSource;
-        this._ios.delegate = this._delegate;
-        if (this.separatorColor) {
-            this.ios.separatorColor = new Color(this.separatorColor).ios;
-        }
-    }
 
-    public onUnloaded() {
-        this._ios.delegate = null;
-        if (this._indexSet) {
-            this._indexSet.removeAllIndexes();
-        }
-        super.onUnloaded();
-    }
 
     public scrollToIndex(index: number) {
         if (this._ios) {
@@ -286,13 +282,12 @@ export class AccordionDataSource extends NSObject implements UITableViewDataSour
                 let _args = notifyForItemAtIndex(owner, null, view, ITEMSLOADING, indexPath);
                 view = view || _args.view;
 
-
                 let prop = parseInt(`${indexPath.section + 1}${indexPath.row}`);
                 owner._itemsMap.set(prop, view);
                 if (view) {
                     const data = owner._getChildData(indexPath.section, indexPath.row);
                     if (!types.isNullOrUndefined(data)) {
-                        view.bindingContext = new Observable(data);
+                        view.bindingContext = fromObject(data);
                     }
                     if (!view.parent) {
                         owner._addView(view);
@@ -303,7 +298,7 @@ export class AccordionDataSource extends NSObject implements UITableViewDataSour
                     const height = measuredSize.measuredHeight;
                     const width = measuredSize.measuredWidth;
                     View.layoutChild(owner, view, 0, 0, width, height);
-                    cell.contentView.addSubview(view._nativeView);
+                    cell.contentView.addSubview(view.nativeView);
                 }
             }
         }
@@ -460,7 +455,15 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
         view = view || _args.view;
         if (view) {
             const data = owner._getParentData(section);
-            view.bindingContext = new Observable(data);
+           
+                    if (!types.isNullOrUndefined(data)) {
+                        view.bindingContext = fromObject(data);
+                    }
+                    if (!view.parent) {
+                        owner._addView(view);
+                    }
+
+
             const rowHeight = owner._effectiveRowHeight;
             const heightMeasureSpec: number = rowHeight >= 0 ? utils.layout.makeMeasureSpec(rowHeight, utils.layout.EXACTLY) : infinity;
             const measuredSize = View.measureChild(owner, view, owner.widthMeasureSpec, heightMeasureSpec);
@@ -469,7 +472,7 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
             View.layoutChild(owner, view, 0, 0, width, height);
             view.ios.tag = section;
             view.ios.addGestureRecognizer(tapGesture);
-            return view._nativeView;
+            return view.nativeView;
         }
         const hv = UITableViewHeaderFooterView.new();
         hv.tag = section;
@@ -491,14 +494,14 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
         view = view || _args.view;
         if (view) {
             const data = owner._getParentData(section);
-            view.bindingContext = new Observable(data);
+            view.bindingContext = fromObject(data);
             const rowHeight = owner._effectiveRowHeight;
             const heightMeasureSpec: number = rowHeight >= 0 ? utils.layout.makeMeasureSpec(rowHeight, utils.layout.EXACTLY) : infinity;
             const measuredSize = View.measureChild(owner, view, owner.widthMeasureSpec, heightMeasureSpec);
             const height = measuredSize.measuredHeight;
             const width = measuredSize.measuredWidth;
             View.layoutChild(owner, view, 0, 0, width, height);
-            return view._nativeView;
+            return view.nativeView;
         }
 
         if (owner._getParentData(section) && owner._getParentData(section).footerText) {

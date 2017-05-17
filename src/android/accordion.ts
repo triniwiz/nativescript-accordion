@@ -1,16 +1,12 @@
-import { Color } from "color";
-import { parse } from "ui/builder";
-import * as types from "utils/types";
-import * as utils from "utils/utils";
-import { View } from "ui/core/view";
+import { Color } from "tns-core-modules/color";
+import { parse } from "tns-core-modules/ui/builder";
+import * as types from "tns-core-modules/utils/types";
+import * as utils from "tns-core-modules/utils/utils";
+import { View } from "tns-core-modules/ui/core/view";
 import * as common from "../accordion.common";
-import { StackLayout } from "ui/layouts/stack-layout";
-import { PropertyChangeData } from "ui/core/dependency-observable";
-import { PropertyMetadata } from "ui/core/proxy";
-import { PropertyMetadataSettings } from "ui/core/dependency-observable";
-import { Property } from "ui/core/dependency-observable";
-import { Observable } from "data/observable";
-import { Label } from "ui/label";
+import { StackLayout } from "tns-core-modules/ui/layouts/stack-layout";
+import { Observable, fromObject } from "tns-core-modules/data/observable";
+import { Label } from "tns-core-modules/ui/label";
 export const ITEMSLOADING = "itemsLoading";
 export const HEADERLOADING = "headerLoading";
 export const FOOTERLOADING = "footerLoading";
@@ -99,18 +95,14 @@ export class Accordion extends common.Accordion {
     }
 
     get android() {
-        return this._android;
-    }
-
-    get _nativeView() {
-        return this._android;
+        return this.nativeView;
     }
 
     addToView(view) {
         this._addView(view);
     }
 
-    _createUI() {
+    public createNativeView() {
         this._android = new android.widget.ExpandableListView(utils.ad.getApplicationContext());
         const that = new WeakRef(this);
         if (this.separatorColor) {
@@ -164,6 +156,7 @@ export class Accordion extends common.Accordion {
                 this._android.expandGroup(item);
             });
         }
+        return this._android;
     }
 
     addItem(view: any) {
@@ -212,7 +205,7 @@ export class Accordion extends common.Accordion {
     _selectedIndexUpdatedFromNative(newIndex: number) {
         if (this.selectedIndex !== newIndex) {
             let old = this._previousGroup;
-            this._onPropertyChangedFromNative(common.Accordion.selectedIndexProperty, newIndex);
+            common.selectedIndexProperty.nativeValueChange(this, newIndex);
             this.notify({ eventName: common.Accordion.selectedIndexChangedEvent, object: this, old, newIndex });
         }
     }
@@ -263,40 +256,40 @@ export class AccordionListAdapter extends android.widget.BaseExpandableListAdapt
 
         }*/
         let view: any = !types.isNullOrUndefined(owner.headerTemplate) ? parse(owner.headerTemplate, this) : null;
-        let _args = notifyForHeaderOrFooterAtIndex(owner, view ? view._nativeView : null, view, HEADERLOADING, groupPosition);
+        let _args = notifyForHeaderOrFooterAtIndex(owner, view ? view.nativeView : null, view, HEADERLOADING, groupPosition);
         view = view || _args.view;
         if (view) {
             const data = owner._getParentData(groupPosition);
-            view.bindingContext = new Observable(data);
+            view.bindingContext = fromObject(data);
             if (!view.parent) {
                 owner._addView(view);
             }
             owner._headerMap.set(groupPosition, view);
-            return view._nativeView;
+            return view.nativeView;
         }
         const header = new Label();
         header.text = owner._getParentData(groupPosition) ? owner._getParentData(groupPosition).headerText : "";
         if (owner.headerTextAlignment === "center") {
-            header.android.setTextAlignment(android.view.View.TEXT_ALIGNMENT_CENTER);
+            header.nativeView.setTextAlignment(android.view.View.TEXT_ALIGNMENT_CENTER);
         } else if (owner.headerTextAlignment === "right") {
             header.android.setTextAlignment(android.view.View.TEXT_ALIGNMENT_VIEW_END);
         } else if (owner.headerTextAlignment === "left") {
-            header.android.setTextAlignment(android.view.View.TEXT_ALIGNMENT_VIEW_START);
+            header.nativeView.setTextAlignment(android.view.View.TEXT_ALIGNMENT_VIEW_START);
         }
 
         if (owner.headerHeight) {
-            header.android.setHeight(owner.headerHeight);
+            header.nativeView.setHeight(owner.headerHeight);
         }
         if (owner.headerColor) {
-            header.android.setBackgroundColor(new Color(owner.headerColor).android);
+            header.nativeView.setBackgroundColor(new Color(owner.headerColor).android);
         }
 
         if (owner.headerTextColor) {
-            header.android.setTextColor(new Color(owner.headerTextColor).android);
+            header.nativeView.setTextColor(new Color(owner.headerTextColor).android);
         }
 
         if (owner.headerTextSize) {
-            header.android.setTextSize(this.owner.headerTextSize);
+            header.nativeView.setTextSize(this.owner.headerTextSize);
         }
         owner._addView(header);
         owner._headerMap.set(groupPosition, header);
@@ -324,16 +317,16 @@ export class AccordionListAdapter extends android.widget.BaseExpandableListAdapt
 
         }*/
         let view: any = !types.isNullOrUndefined(owner.itemTemplate) ? parse(owner.itemTemplate, this) : null;
-        let _args = notifyForItemAtIndex(owner, view ? view._nativeView : null, view, ITEMSLOADING, groupPosition, childPosition);
+        let _args = notifyForItemAtIndex(owner, view ? view.nativeView : null, view, ITEMSLOADING, groupPosition, childPosition);
         view = view || _args.view;
         owner._itemsMap.set(prop, view);
         if (view) {
             const data = owner._getChildData(groupPosition, childPosition);
-            view.bindingContext = new Observable(data);
+            view.bindingContext = fromObject(data);
             if (!view.parent) {
                 owner._addView(view);
             }
-            return view._nativeView;
+            return view.nativeView;
         }
 
         return null;

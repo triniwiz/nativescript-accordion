@@ -25,22 +25,22 @@ export declare class Accordion extends common.Accordion {
     private _accordion;
     widthMeasureSpec: number;
     heightMeasureSpec: number;
-    private left;
-    private top;
-    private right;
-    private bottom;
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
     _dataSource: AccordionDataSource;
     _delegate: any;
     private _map;
     constructor();
+    createNativeView(): UITableView;
+    initNativeView(): void;
+    disposeNativeView(): void;
     _setNativeClipToBounds(): void;
     readonly ios: UITableView;
-    readonly _nativeView: UITableView;
     addItem(view: any): void;
     refresh(): void;
     _selectedIndexUpdatedFromNative(newIndex: number): void;
-    onLoaded(): void;
-    onUnloaded(): void;
     scrollToIndex(index: number): void;
     measure(widthMeasureSpec: number, heightMeasureSpec: number): void;
     readonly _childrenCount: number;
@@ -57,7 +57,7 @@ export declare class AccordionDataSource extends NSObject implements UITableView
     private _owner;
     static initWithOwner(owner: WeakRef<Accordion>): AccordionDataSource;
     tableViewNumberOfRowsInSection(tableView: UITableView, section: number): any;
-    numberOfSectionsInTableView(tableView: any): number;
+    numberOfSectionsInTableView(tableView: any): any;
     tableViewTitleForHeaderInSection(tableView: UITableView, section: number): any;
     tableViewCellForRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath): AccordionCell;
 }

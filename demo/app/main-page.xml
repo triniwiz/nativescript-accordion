@@ -1,10 +1,10 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
       xmlns:accordion="nativescript-accordion">
 
-        <accordion:Accordion items="{{items}}" headerTextBold="true" headerTextColor="white" headerColor="pink"  headerTextColor="blue" allowMultiple="true"  selectedIndex="1">
+        <accordion:Accordion items="{{items}}" headerTextBold="true" headerColor="pink"  headerTextColor="blue" allowMultiple="true"  selectedIndex="1">
             <accordion:Accordion.headerTemplate>
-                <GridLayout backgroundColor="green" columns="auto,*">
-                    <Label text="{{title}}"/>
+                <GridLayout columns="auto,*">
+                    <Label color="black" text="{{title}}"/>
                     <Label col="1" text="+"/>
                 </GridLayout>
             </accordion:Accordion.headerTemplate>
@@ -12,10 +12,10 @@
             <accordion:Accordion.itemTemplate>
                 <StackLayout headerText="First">
                     <Image src="{{image}}"/>
-                    <Label text="{{text}}"/>
+                    <Label backgroundColor="green" text="{{text}}"/>
                 </StackLayout>
             </accordion:Accordion.itemTemplate>
-            
+
 
             <accordion:Accordion.footerTemplate>
                 <GridLayout backgroundColor="yellow" columns="auto,*">

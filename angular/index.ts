@@ -8,7 +8,7 @@ import * as platform from "platform";
 import { LayoutBase } from "ui/layouts/layout-base";
 import { ObservableArray } from "data/observable-array";
 import * as utils from "utils/utils";
-import { Observable } from "data/observable";
+import { Observable ,fromObject} from "data/observable";
 import * as types from "utils/types";
 import { isListLikeIterable } from "nativescript-angular/collection-facade"
 import { isBlank } from "nativescript-angular/lang-facade";
@@ -169,7 +169,7 @@ export class AccordionComponent {
     }
     itemsLoading(args): void {
         if (this.itemTemplate) {
-            const data = new Observable(this.accordion._getChildData(args.parentIndex, args.childIndex));
+            const data = fromObject(this.accordion._getChildData(args.parentIndex, args.childIndex));
             const viewRef = this.loader.createEmbeddedView(this.itemTemplate, new AccordionItemContext(), args.childIndex);
             args.view = getItemViewRoot(viewRef);
             args.view[NG_VIEW] = viewRef;
@@ -272,6 +272,7 @@ export class AccordionFooterContext {
 }
 
 @NgModule({
+    schemas: [NO_ERRORS_SCHEMA],
     declarations: [
         AccordionComponent,
         AccordionHeaderDirective,
@@ -283,7 +284,6 @@ export class AccordionFooterContext {
         AccordionHeaderDirective,
         AccordionItemDirective,
         AccordionFooterDirective
-    ],
-    schemas: [NO_ERRORS_SCHEMA]
+    ]
 })
 export class AccordionModule { }

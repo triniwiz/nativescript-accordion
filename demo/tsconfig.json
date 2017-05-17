@@ -9,5 +9,16 @@
     "exclude": [
         "node_modules",
         "platforms"
-    ]
+    ],
+    "lib": [
+        "es6",
+        "dom"
+    ],
+    "baseUrl": ".",
+    "paths": {
+        "*": [
+            "./node_modules/tns-core-modules/*",
+            "./node_modules/*"
+        ]
+    }
 }

@@ -19,10 +19,9 @@ export declare class Accordion extends common.Accordion {
     footerTemplateUpdated(oldData: any, newData: any): void;
     templateUpdated(oldData: any, newData: any): void;
     updateNativeItems(oldItems: any, newItems: any): void;
-    readonly android: android.widget.ExpandableListView;
-    readonly _nativeView: android.widget.ExpandableListView;
+    readonly android: any;
     addToView(view: any): void;
-    _createUI(): void;
+    createNativeView(): android.widget.ExpandableListView;
     addItem(view: any): void;
     refresh(): void;
     updateNativeIndex(oldIndex: number, newIndex: number): void;
