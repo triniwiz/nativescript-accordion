@@ -13,7 +13,7 @@ IMPORTANT: Make sure you include xmlns:accordion="nativescript-accordion" on the
 ### Data
 
 ```
-let items = [
+this.items = [
       {
         title: "1", footer: "10", headerText: "First", footerText: "4",
         items: [
