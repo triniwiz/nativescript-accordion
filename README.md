@@ -3,6 +3,8 @@
 
 # NativeScript Accordion
 
+[![Buy Me A Beer](https://img.shields.io/badge/Buy%20Me%20A%20Beer-PayPal-brightgreen.svg)](https://www.paypal.me/triniwiz)
+
 ## Install
 `tns plugin add nativescript-accordion`
 
