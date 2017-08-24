@@ -1,5 +1,9 @@
-import { ElementRef, ViewContainerRef, TemplateRef, ChangeDetectorRef, IterableDiffers } from "@angular/core";
+import { ChangeDetectorRef, ElementRef, IterableDiffers, TemplateRef, ViewContainerRef } from "@angular/core";
 import { View } from "ui/core/view";
+export interface ComponentView {
+    rootNodes: Array<any>;
+    destroy(): void;
+}
 export interface ComponentView {
     rootNodes: Array<any>;
     destroy(): void;

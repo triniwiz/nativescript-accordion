@@ -1,19 +1,25 @@
-import { NgModule, Inject, forwardRef, Component, Directive, ElementRef, ViewContainerRef, TemplateRef, OnInit, ViewChild, ContentChild, Input, Optional, IterableDiffer, ChangeDetectorRef, IterableDiffers, ChangeDetectionStrategy, Output, EventEmitter, NO_ERRORS_SCHEMA } from "@angular/core";
-import { registerElement, ViewClassMeta, NgView } from "nativescript-angular/element-registry";
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Directive,
+    ElementRef,
+    forwardRef,
+    Inject,
+    Input,
+    IterableDiffers,
+    NgModule,
+    NO_ERRORS_SCHEMA,
+    TemplateRef,
+    ViewContainerRef
+} from "@angular/core";
+import { getSingleViewRecursive, registerElement } from "nativescript-angular/element-registry";
 import { View } from "ui/core/view";
-import { Placeholder } from "ui/placeholder";
-import { Button } from "ui/button";
-import { StackLayout } from "ui/layouts/stack-layout";
-import * as platform from "platform";
-import { LayoutBase } from "ui/layouts/layout-base";
 import { ObservableArray } from "data/observable-array";
-import * as utils from "utils/utils";
-import { Observable ,fromObject} from "data/observable";
-import * as types from "utils/types";
+import { fromObject } from "data/observable";
 import { isListLikeIterable } from "nativescript-angular/collection-facade"
 import { isBlank } from "nativescript-angular/lang-facade";
-import { convertToInt } from "nativescript-angular/common/utils";
-import { ProxyViewContainer } from "ui/proxy-view-container";
+
 const NG_VIEW = "_ngViewRef";
 const ITEMSLOADING = "itemsLoading";
 const HEADERLOADING = "headerLoading";
@@ -25,37 +31,19 @@ const STARTFOOTERLOADING = "startFooterLoading";
 export interface ComponentView {
     rootNodes: Array<any>;
     destroy(): void;
-};
+}
 
-function getSingleViewRecursive(nodes: Array<any>, nestLevel: number): View {
-    const actualNodes = nodes.filter((n) => !!n && n.nodeName !== "#text");
-
-    if (actualNodes.length === 0) {
-        throw new Error("No suitable views found in list template! Nesting level: " + nestLevel);
-    } else if (actualNodes.length > 1) {
-        throw new Error("More than one view found in list template! Nesting level: " + nestLevel);
-    } else {
-        if (actualNodes[0]) {
-            let parentLayout = actualNodes[0].parent;
-            if (parentLayout instanceof LayoutBase) {
-                parentLayout.removeChild(actualNodes[0]);
-            }
-            return actualNodes[0];
-        } else {
-            return getSingleViewRecursive(actualNodes[0].children, nestLevel + 1);
-        }
-    }
+export interface ComponentView {
+    rootNodes: Array<any>;
+    destroy(): void;
 }
 
 export type RootLocator = (nodes: Array<any>, nestLevel: number) => View;
 
 export function getItemViewRoot(viewRef: ComponentView, rootLocator: RootLocator = getSingleViewRecursive): View {
-    const rootView = rootLocator(viewRef.rootNodes, 0);
-    rootView.on("unloaded", () => {
-        viewRef.destroy();
-    });
-    return rootView;
+    return rootLocator(viewRef.rootNodes, 0);
 }
+
 
 registerElement("Accordion", () => require("../").Accordion);
 
@@ -105,7 +93,7 @@ export class AccordionComponent {
     _nativeView;
     private _selectedIndex: number;
     private accordion: any;
-    private _differ: any //IterableDiffer;
+    private _differ: any; //IterableDiffer;
     private _items: any;
     private viewInitialized: boolean;
     headerTemplate: TemplateRef<AccordionHeaderContext>;
@@ -145,7 +133,7 @@ export class AccordionComponent {
     }
 
     set selectedIndex(value) {
-        this._selectedIndex = convertToInt(value);
+        this._selectedIndex = Number(value);
         if (this.viewInitialized) {
             this.accordion.selectedIndex = this._selectedIndex;
         }
