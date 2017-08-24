@@ -206,7 +206,7 @@ export class Accordion extends common.Accordion {
         if (this.selectedIndex !== newIndex) {
             let old = this._previousGroup;
             common.selectedIndexProperty.nativeValueChange(this, newIndex);
-            this.notify({ eventName: common.Accordion.selectedIndexChangedEvent, object: this, old, newIndex });
+           // this.notify({ eventName: common.Accordion.selectedIndexChangedEvent, object: this, old, newIndex });
         }
     }
 

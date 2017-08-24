@@ -58,20 +58,7 @@ export class Accordion extends common.Accordion {
     }
 
     public updateNativeItems(oldItems: any, newItems: any) {
-
-        if (oldItems) {
-            this._ios.reloadData();
-        }
-        if (newItems) {
-            if (Array.isArray(newItems)) {
-                this._ios.reloadData();
-            }
-            if (newItems && (typeof newItems === "function")) {
-                newItems.on("change", (args) => {
-                    this._ios.reloadData();
-                });
-            }
-        }
+        this._ios.reloadData();
     }
 
     _expandedViews: Map<any, any>;
@@ -97,9 +84,9 @@ export class Accordion extends common.Accordion {
     private _map: Map<AccordionCell, View>;
     constructor() {
         super();
+        this._ios = UITableView.new();
     }
     public createNativeView() {
-        this._ios = UITableView.new();
         this._ios.registerClassForCellReuseIdentifier(AccordionCell.class(), AccordionViewCellReuseIdentifier);
         this.ios.registerNibForHeaderFooterViewReuseIdentifier(UINib.nibWithNibNameBundle("AccordionHeaderView", null), AccordionHeaderViewReuseIdentifier);
         this.ios.registerNibForHeaderFooterViewReuseIdentifier(UINib.nibWithNibNameBundle("AccordionFooterView", null), AccordionFooterViewReuseIdentifier);
@@ -115,8 +102,6 @@ export class Accordion extends common.Accordion {
         return this._ios;
     }
     public initNativeView() {
-        //   this._expandedViews.set(this.selectedIndex, true);
-        //    this._indexSet.addIndex(this.selectedIndex);
         if (this._isDataDirty) {
             this.requestLayout();
             this.refresh();
@@ -156,9 +141,7 @@ export class Accordion extends common.Accordion {
 
     _selectedIndexUpdatedFromNative(newIndex: number) {
         if (this.selectedIndex !== newIndex) {
-            let old = this.selectedIndex;
             common.selectedIndexProperty.nativeValueChange(this, newIndex);
-            this.notify({ eventName: common.Accordion.selectedIndexChangedEvent, object: this, old, newIndex });
         }
     }
 
