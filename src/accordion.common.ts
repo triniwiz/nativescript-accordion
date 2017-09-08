@@ -6,7 +6,7 @@ import {
     CssProperty,
     Style
 } from "tns-core-modules/ui/core/view";
-import {Property, CoercibleProperty} from "tns-core-modules/ui/core/view";
+import { Property, CoercibleProperty } from "tns-core-modules/ui/core/view";
 import * as types from "utils/types";
 const autoEffectiveRowHeight = -1;
 
@@ -42,18 +42,18 @@ function onItemsChanged(accordion: Accordion, oldValue, newValue) {
 function onSelectedIndexChanged(accordion: Accordion, oldValue, newValue) {
     if (accordion && accordion.items && types.isNumber(newValue)) {
         accordion.updateNativeIndex(oldValue, newValue);
-        accordion.notify({
-            eventName: Accordion.selectedIndexChangedEvent,
-            object: accordion,
-            oldIndex: oldValue,
-            newIndex: newValue
-        });
+        // accordion.notify({
+        //     eventName: Accordion.selectedIndexChangedEvent,
+        //     object: accordion,
+        //     oldIndex: oldValue,
+        //     newIndex: newValue
+        // });
     }
 }
 
 export abstract class Accordion extends View {
     private _selectedIndexes;
-    private _allowMultiple: boolean;
+    private _allowMultiple: boolean = false;
     public _effectiveRowHeight: number = autoEffectiveRowHeight;
     public static selectedIndexChangedEvent = "selectedIndexChanged";
     items: any;
@@ -213,106 +213,106 @@ export abstract class Accordion extends View {
 }
 
 
-export const footerTextSizeProperty  = new CssProperty<Style,number>({
-    name:'footerTextSize',
-    cssName:'footer-text-size',
-    valueConverter:(v) => parseInt(v)
+export const footerTextSizeProperty = new CssProperty<Style, number>({
+    name: 'footerTextSize',
+    cssName: 'footer-text-size',
+    valueConverter: (v) => parseInt(v)
 });
 
 footerTextSizeProperty.register(Style);
 
 export type TextAlignment = "left" | "center" | "right";
-export const footerTextAlignmentProperty  = new CssProperty<Style,TextAlignment>({
-    name:'footerTextAlignment',
-    cssName:'footer-text-align'
+export const footerTextAlignmentProperty = new CssProperty<Style, TextAlignment>({
+    name: 'footerTextAlignment',
+    cssName: 'footer-text-align'
 });
 
 footerTextAlignmentProperty.register(Style);
 
-export const footerColorProperty  = new CssProperty<Style,string>({
-    name:'footerColor',
-    cssName:'footer-color'
+export const footerColorProperty = new CssProperty<Style, string>({
+    name: 'footerColor',
+    cssName: 'footer-color'
 });
 
 footerColorProperty.register(Style);
 
 
-export const footerTextColorProperty  = new CssProperty<Style,string>({
-    name:'footerTextColor',
-    cssName:'footer-text-color'
+export const footerTextColorProperty = new CssProperty<Style, string>({
+    name: 'footerTextColor',
+    cssName: 'footer-text-color'
 });
 
 footerTextColorProperty.register(Style);
 
-export const footerHeightProperty  = new CssProperty<Style,number>({
-    name:'footerHeight',
-    cssName:'footer-height',
+export const footerHeightProperty = new CssProperty<Style, number>({
+    name: 'footerHeight',
+    cssName: 'footer-height',
     valueConverter: (v) => parseInt(v)
 });
 
 footerHeightProperty.register(Style);
 
 
-export const footerTextBoldProperty  = new CssProperty<Style,boolean>({
-    name:'footerTextBold',
-    cssName:'footer-text-bold',
+export const footerTextBoldProperty = new CssProperty<Style, boolean>({
+    name: 'footerTextBold',
+    cssName: 'footer-text-bold',
     valueConverter: (v) => Boolean(v)
 });
 
 footerTextBoldProperty.register(Style);
 
-export const separatorColorProperty  = new CssProperty<Style,string>({
-    name:'separatorColor',
-    cssName:'separator-color',
+export const separatorColorProperty = new CssProperty<Style, string>({
+    name: 'separatorColor',
+    cssName: 'separator-color',
     valueConverter: (v) => String(v)
 });
 
 separatorColorProperty.register(Style);
 
 
-export const headerTextSizeProperty  = new CssProperty<Style,number>({
-    name:'headerTextSize',
-    cssName:'header-text-size',
-    valueConverter:(v) => parseInt(v)
+export const headerTextSizeProperty = new CssProperty<Style, number>({
+    name: 'headerTextSize',
+    cssName: 'header-text-size',
+    valueConverter: (v) => parseInt(v)
 });
 
 headerTextSizeProperty.register(Style);
 
 
-export const headerTextAlignmentProperty  = new CssProperty<Style,TextAlignment>({
-    name:'headerTextAlignment',
-    cssName:'header-text-align'
+export const headerTextAlignmentProperty = new CssProperty<Style, TextAlignment>({
+    name: 'headerTextAlignment',
+    cssName: 'header-text-align'
 });
 
 headerTextAlignmentProperty.register(Style);
 
-export const headerColorProperty  = new CssProperty<Style,string>({
-    name:'headerColor',
-    cssName:'header-color'
+export const headerColorProperty = new CssProperty<Style, string>({
+    name: 'headerColor',
+    cssName: 'header-color'
 });
 
 headerColorProperty.register(Style);
 
 
-export const headerTextColorProperty  = new CssProperty<Style,string>({
-    name:'headerTextColor',
-    cssName:'header-text-color'
+export const headerTextColorProperty = new CssProperty<Style, string>({
+    name: 'headerTextColor',
+    cssName: 'header-text-color'
 });
 
 headerTextColorProperty.register(Style);
 
-export const headerHeightProperty  = new CssProperty<Style,number>({
-    name:'headerHeight',
-    cssName:'header-height',
+export const headerHeightProperty = new CssProperty<Style, number>({
+    name: 'headerHeight',
+    cssName: 'header-height',
     valueConverter: (v) => parseInt(v)
 });
 
 headerHeightProperty.register(Style);
 
 
-export const headerTextBoldProperty  = new CssProperty<Style,boolean>({
-    name:'headerTextBold',
-    cssName:'header-text-bold',
+export const headerTextBoldProperty = new CssProperty<Style, boolean>({
+    name: 'headerTextBold',
+    cssName: 'header-text-bold',
     valueConverter: (v) => Boolean(v)
 });
 
@@ -351,7 +351,7 @@ itemsProperty.register(Accordion);
 
 export const selectedIndexProperty = new CoercibleProperty<Accordion, number>({
     name: "selectedIndex",
-    defaultValue: 0,
+    defaultValue: -1,
     valueChanged: onSelectedIndexChanged,
     coerceValue: (target, value) => {
         const max = target.items ? target.items.length - 1 : 0;
