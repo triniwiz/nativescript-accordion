@@ -11,13 +11,13 @@ import {
     NgModule,
     NO_ERRORS_SCHEMA,
     TemplateRef,
-    ViewContainerRef
+    ViewContainerRef,
+    ɵisListLikeIterable as isListLikeIterable
 } from "@angular/core";
 import { getSingleViewRecursive, registerElement } from "nativescript-angular/element-registry";
 import { View } from "ui/core/view";
 import { ObservableArray } from "data/observable-array";
 import { fromObject } from "data/observable";
-import { isListLikeIterable } from "nativescript-angular/collection-facade"
 import { isBlank } from "nativescript-angular/lang-facade";
 
 const NG_VIEW = "_ngViewRef";
