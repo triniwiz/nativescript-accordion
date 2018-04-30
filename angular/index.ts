@@ -121,7 +121,7 @@ export class AccordionComponent {
         }
         if (needDiffer && !this._differ && isListLikeIterable(value)) {
             this._differ = this._iterableDiffers.find(this._items)
-                .create(null, (_index, item) => { return item; });
+                .create((_index, item) => { return item; });
         }
 
         this.accordion.items = this._items;
