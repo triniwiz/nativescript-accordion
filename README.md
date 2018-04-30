@@ -108,6 +108,7 @@ headerTextSize="20"
 footerTextSize="20"
 headerTextBold="true"
 footerTextBold="true"
+headerHeight="40"
 ```
 
 
