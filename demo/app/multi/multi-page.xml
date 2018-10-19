@@ -33,6 +33,7 @@
                 <template key="even">
                     <StackLayout>
                         <Label text="{{title}}"/>
+                        <Image decodeWidth="400" decodeHeight="400" loadMode="async" src="{{image}}"/>
                     </StackLayout>
                 </template>
             </Accordion.itemHeaderTemplates>

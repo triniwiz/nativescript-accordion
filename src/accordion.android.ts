@@ -197,7 +197,7 @@ export class Accordion extends AccordionBase {
 
     public disposeNativeView() {
         const nativeView = this.nativeViewProtected;
-        nativeView.setAdapter(null);
+        nativeView.setAdapter(new EmptyListAdapter());
         this.clearRealizedCells();
         super.disposeNativeView();
     }
@@ -366,6 +366,56 @@ export class Accordion extends AccordionBase {
         }
         this.refresh();
     }
+}
+
+class EmptyListAdapter extends android.widget.BaseExpandableListAdapter {
+
+    getChild(i: number, childPosition: number) {
+        return null;
+    }
+
+    getGroupId(i: number): number {
+        return 0;
+    }
+
+    getGroup(i: number) {
+        return null;
+    }
+
+    hasStableIds(): boolean {
+        return true;
+    }
+
+    getGroupView(groupPosition: number, isExpanded: boolean, convertView: android.view.View, parent: android.view.ViewGroup) {
+        return convertView;
+    }
+
+    getGroupCount(): number {
+        return 0;
+    }
+
+
+    getChildView(groupPosition: number, childPosition: number, isLastChild: boolean, convertView: android.view.View, parent: android.view.ViewGroup) {
+        return convertView;
+    }
+
+    getChildId(i: number, childPosition: number): number {
+        return 0;
+    }
+
+    getChildrenCount(groupPosition: number): number {
+        return 0;
+    }
+
+    isChildSelectable(groupPosition: number, childPosition: number) {
+        return false;
+    }
+
+    constructor() {
+        super();
+        return global.__native(this);
+    }
+
 }
 
 class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
