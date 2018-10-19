@@ -74,22 +74,6 @@ type ItemView = View & ItemIndex;
 export class Accordion extends AccordionBase {
     private _preparingCell: boolean;
     _isDataDirty: boolean;
-    _headerMap: Map<any, any>;
-    _itemsMap: Map<any, any>;
-    _footerMap: Map<any, any>;
-
-    public headerTemplateUpdated(oldData: any, newData: any): void {
-        this.refresh();
-    }
-
-    public footerTemplateUpdated(oldData: any, newData: any): void {
-        this.refresh();
-    }
-
-    public templateUpdated(oldData: any, newData: any): void {
-        this.refresh();
-
-    }
 
     public updateNativeItems(oldItems: any, newItems: any) {
         this._ios.reloadData();
@@ -97,25 +81,6 @@ export class Accordion extends AccordionBase {
 
     _expandedViews: Map<any, any>;
     _indexSet: NSMutableIndexSet;
-
-    groupExpanded(index: number) {
-        this.notify({
-            eventName: 'groupExpanded',
-            object: fromObject({
-                value: index
-            })
-        });
-    }
-
-    groupCollapsed(index: number) {
-        this.notify({
-            eventName: 'groupCollapsed',
-            object: fromObject({
-                value: index
-            })
-        });
-    }
-
 
     private _itemContentHeights: Array<number>;
     private _itemHeaderHeights: Array<number>;
@@ -126,10 +91,6 @@ export class Accordion extends AccordionBase {
     public widthMeasureSpec: number;
     public heightMeasureSpec: number;
     nativeViewProtected: UITableView;
-    left = 0;
-    top = 0;
-    right = 0;
-    bottom = 0;
     _dataSource: AccordionDataSource;
     _delegate;
     private _map: Map<AccordionCell, ChildItemView>;
@@ -640,29 +601,17 @@ export class Accordion extends AccordionBase {
     }
 
     updateNativeIndexes(oldIndexes: any, newIndexes: any) {
-        // this.notifyPropertyChange("selectedIndex", newIndex);
-        const reloadSection = (index: number, sections?: any) => {
-            let section = NSMutableIndexSet.alloc().initWithIndex(index);
-            if (!sections) {
-                this.ios.reloadSectionsWithRowAnimation(section, UITableViewRowAnimation.None);
-            } else {
-                this.ios.reloadSectionsWithRowAnimation(sections, UITableViewRowAnimation.Automatic);
-            }
-
-        };
         const allowMultiple = String(this.allowMultiple) === 'true';
         if (allowMultiple) {
-            /*  newIndexes.forEach(index => {
-                  if (!this._expandedViews.get(index)) {
-                      this._expandedViews.set(index, true);
-                      this._indexSet.addIndex(index);
-                      // this._selectedIndexesUpdatedFromNative(newIndex);
-                  }
-              });*/
-            // reloadSection(newIndex, this._indexSet);
+            newIndexes.forEach(index => {
+                if (!this._expandedViews.get(index)) {
+                    this._expandedViews.set(index, true);
+                    this._indexSet.addIndex(index);
+                }
+            });
             this.ios.reloadData();
         } else {
-            /*if (newIndexes.length > 0) {
+            if (newIndexes.length > 0) {
                 const index = newIndexes.length - 1;
                 const newItems = [index];
                 this._expandedViews.clear();
@@ -670,21 +619,119 @@ export class Accordion extends AccordionBase {
                 if (!this._expandedViews.get(index)) {
                     this._expandedViews.set(index, true);
                     this._indexSet.addIndex(index);
-                    //this.ios.reloadData();
-                    let section = NSMutableIndexSet.alloc().initWithIndex(index);
-                    this.ios.reloadSectionsWithRowAnimation(section, UITableViewRowAnimation.Automatic);
-                    //reloadSection(index, this._indexSet);
-
+                    this.ios.reloadData();
                 }
-            }*/
+            }
         }
 
     }
 
     expandAll(): void {
-        if (this.items) {
-
+        const length = this.items ? this.items.length : 0;
+        const allowMultiple = String(this.allowMultiple) === 'true';
+        if (!allowMultiple) {
+            this._expandedViews.clear();
+            this._indexSet.removeAllIndexes();
+            this._expandedViews.set(length - 1, true);
+            this._indexSet.addIndex(length - 1);
+            this.ios.reloadData();
+            return;
         }
+        for (let i = 0; i < length; i++) {
+            this._expandedViews.set(i, true);
+            this._indexSet.addIndex(0);
+        }
+        this.ios.reloadData();
+    }
+
+    collapseAll(): void {
+        this._expandedViews.clear();
+        this._indexSet.removeAllIndexes();
+        this.ios.reloadData();
+    }
+
+    collapseItem(index: number) {
+        if (this._expandedViews.has(index)) {
+            this._expandedViews.delete(index);
+            this._indexSet.removeIndex(index);
+            this.ios.reloadData();
+        }
+    }
+
+    expandItem(index: number) {
+        const reloadSection = (index: number) => {
+            let section = NSMutableIndexSet.alloc().initWithIndex(index);
+            this.ios.reloadSectionsWithRowAnimation(section, UITableViewRowAnimation.Automatic);
+        };
+
+        const removeSection = (index: number) => {
+            let section = NSMutableIndexSet.alloc().initWithIndex(index);
+            this.ios.reloadSectionsWithRowAnimation(section, UITableViewRowAnimation.Bottom);
+        };
+        const allowMultiple = String(this.allowMultiple) === 'true';
+
+        if (allowMultiple) {
+            if (!this._expandedViews.get(index)) {
+                this.itemExpanded(index);
+                this._expandedViews.set(index, true);
+                this._indexSet.addIndex(index);
+            } else {
+                this._expandedViews.set(index, false);
+                this._indexSet.removeIndex(index);
+                this.itemCollapsed(index);
+            }
+            reloadSection(index);
+            this._selectedIndexesUpdatedFromNative(Array.from(this._expandedViews.keys()));
+        } else {
+
+            if (this._expandedViews.has(index)) {
+                this._expandedViews.delete(index);
+                this._indexSet.removeIndex(index);
+                this.itemCollapsed(index);
+                reloadSection(index);
+            } else if (this._expandedViews.size > 0) {
+                const old = this._expandedViews.keys().next().value;
+                this._expandedViews.delete(old);
+                this._indexSet.removeIndex(old);
+                reloadSection(old);
+                this.itemCollapsed(old);
+                this._expandedViews.set(index, true);
+                this._indexSet.addIndex(index);
+                reloadSection(index);
+                this.itemExpanded(index);
+            } else {
+                this._expandedViews.set(index, true);
+                this._indexSet.addIndex(index);
+                this.itemExpanded(index);
+                reloadSection(index);
+            }
+            this._selectedIndexesUpdatedFromNative(Array.from(this._expandedViews.keys()));
+        }
+    }
+
+    itemIsExpanded(index: number): boolean {
+        if (this._expandedViews.has(index)) {
+            return this._expandedViews.get(index);
+        }
+        return false;
+    }
+
+    itemExpanded(index: number) {
+        this.notify({
+            eventName: 'itemExpanded',
+            object: fromObject({
+                value: index
+            })
+        });
+    }
+
+    itemCollapsed(index: number) {
+        this.notify({
+            eventName: 'itemCollapsed',
+            object: fromObject({
+                value: index
+            })
+        });
     }
 
     public _onRowHeightPropertyChanged(oldValue: Length, newValue: Length) {
@@ -834,40 +881,41 @@ class AccordionHeaderTap extends NSObject {
              * If expanded close item then remove  item from the indexSet
              */
             if (!owner._expandedViews.get(current)) {
-                owner.groupExpanded(current);
+                owner.itemExpanded(current);
                 owner._expandedViews.set(current, true);
                 owner._indexSet.addIndex(current);
             } else {
                 owner._expandedViews.set(current, false);
                 owner._indexSet.removeIndex(current);
-                owner.groupCollapsed(current);
+                owner.itemCollapsed(current);
             }
             /**
              * Call reload to expand or collapse section
              */
             // owner.ios.reloadData();
             reloadSection(current);
+            owner._selectedIndexesUpdatedFromNative(Array.from(owner._expandedViews.keys()));
         } else {
 
             if (owner._expandedViews.has(current)) {
                 owner._expandedViews.delete(current);
                 owner._indexSet.removeIndex(current);
-                owner.groupCollapsed(current);
+                owner.itemCollapsed(current);
                 reloadSection(current);
             } else if (owner._expandedViews.size > 0) {
                 const old = owner._expandedViews.keys().next().value;
                 owner._expandedViews.delete(old);
                 owner._indexSet.removeIndex(old);
                 reloadSection(old);
-                owner.groupCollapsed(old);
+                owner.itemCollapsed(old);
                 owner._expandedViews.set(current, true);
                 owner._indexSet.addIndex(current);
                 reloadSection(current);
-                owner.groupExpanded(current);
+                owner.itemExpanded(current);
             } else {
                 owner._expandedViews.set(current, true);
                 owner._indexSet.addIndex(current);
-                owner.groupExpanded(current);
+                owner.itemExpanded(current);
                 reloadSection(current);
             }
             owner._selectedIndexesUpdatedFromNative(Array.from(owner._expandedViews.keys()));

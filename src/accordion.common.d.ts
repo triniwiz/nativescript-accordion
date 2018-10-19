@@ -92,9 +92,13 @@ export declare abstract class AccordionBase extends View {
     _onItemsChanged(args: ChangedData<any>): void;
     abstract updateNativeItems(oldItems: Array<any>, newItems: Array<any>): void;
     abstract updateNativeIndexes(oldData: any, newData: any): void;
-    abstract groupCollapsed(index: number): void;
-    abstract groupExpanded(index: number): void;
+    abstract itemCollapsed(index: number): void;
+    abstract itemExpanded(index: number): void;
+    abstract itemIsExpanded(index: number): boolean;
     abstract expandAll(): void;
+    abstract collapseAll(): void;
+    abstract expandItem(index: number): void;
+    abstract collapseItem(index: number): void;
 }
 export declare const separatorColorProperty: CssProperty<Style, string>;
 export declare const headerTemplateProperty: Property<AccordionBase, string>;

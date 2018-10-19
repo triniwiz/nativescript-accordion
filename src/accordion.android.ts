@@ -89,6 +89,13 @@ export class Accordion extends AccordionBase {
         }
     }
 
+    collapseAll() {
+        const length = this.items.length;
+        for (let i = 0; i < length; i++) {
+            this.collapseItem(i);
+        }
+    }
+
     get android() {
         return this.nativeView;
     }
@@ -149,7 +156,7 @@ export class Accordion extends AccordionBase {
             onGroupExpand(groupPosition: number) {
                 const owner = that.get();
                 owner._expandedViews.set(groupPosition, true);
-                owner.groupExpanded(groupPosition);
+                owner.itemExpanded(groupPosition);
                 const allowMultiple = String(owner.allowMultiple) === 'true';
 
                 if (!allowMultiple) {
@@ -170,7 +177,7 @@ export class Accordion extends AccordionBase {
             onGroupCollapse(groupPosition: number) {
                 const owner = that.get();
                 owner._expandedViews.set(groupPosition, false);
-                owner.groupCollapsed(groupPosition);
+                owner.itemCollapsed(groupPosition);
                 const oldIndexes = owner.selectedIndexes.slice();
 
                 const newIndexes = oldIndexes.filter((item) => {
@@ -254,18 +261,18 @@ export class Accordion extends AccordionBase {
         selectedIndexesProperty.nativeValueChange(this, newIndex);
     }
 
-    groupExpanded(index: number) {
+    itemExpanded(index: number) {
         this.notify({
-            eventName: 'groupExpanded',
+            eventName: 'itemExpanded',
             object: fromObject({
                 value: index
             })
         });
     }
 
-    groupCollapsed(index: number) {
+    itemCollapsed(index: number) {
         this.notify({
-            eventName: 'groupCollapsed',
+            eventName: 'itemCollapsed',
             object: fromObject({
                 value: index
             })
@@ -273,12 +280,14 @@ export class Accordion extends AccordionBase {
     }
 
     public expandItem(id: number) {
-        if (id) {
-            this.nativeView.expandGroup(id);
-        }
+        this.nativeView.expandGroup(id);
     }
 
-    public isItemExpanded(id: number): boolean {
+    public collapseItem(id: number) {
+        this.nativeView.collapseGroup(id);
+    }
+
+    public itemIsExpanded(id: number): boolean {
         return this.nativeView.isGroupExpanded(id);
     }
 
@@ -495,7 +504,8 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
         if (convertView) {
             view = owner._realizedItemHeaderTemplates.get(template.key).get(convertView);
             if (!view) {
-                throw new Error(`There is no entry with key '${convertView}' in the realized views cache for template with key'${template.key}'.`);
+                // throw new Error(`There is no entry with key '${convertView}' in the realized views cache for template with key'${template.key}'.`);
+                view = template.createView();
             }
         }
         else {

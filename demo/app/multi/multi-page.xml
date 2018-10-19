@@ -1,7 +1,10 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page"
       xmlns:accordion="nativescript-accordion">
     <StackLayout class="p-20">
-        <accordion:Accordion childItems="children" id="accordion" selectedIndexesChange="onChange" height="100%" items="{{items}}" allowMultiple="true" selectedIndexes="{{selectedIndexes}}"
+        <Button text="Expand All" tap="expandAll"></Button>
+        <Button text="Collapse All" tap="collapseAll"></Button>
+        <accordion:Accordion childItems="children" id="accordion" selectedIndexesChange="onChange" height="100%"
+                             items="{{items}}" allowMultiple="true" selectedIndexes="{{selectedIndexes}}"
                              headerTemplateSelector="$index % 2 !== 0 ? 'odd' : 'even'"
                              itemHeaderTemplateSelector="$index % 2 !== 0  ? 'odd' : 'even'"
                              itemContentTemplateSelector="$childIndex % 2 !== 0  ? 'odd' : 'even'"

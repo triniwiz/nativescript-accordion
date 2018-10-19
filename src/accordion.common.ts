@@ -438,11 +438,20 @@ export abstract class AccordionBase extends View {
 
     public abstract updateNativeIndexes(oldData, newData): void;
 
-    public abstract groupCollapsed(index: number): void;
+    public abstract itemCollapsed(index: number): void;
 
-    public abstract groupExpanded(index: number): void;
+    public abstract itemExpanded(index: number): void;
+
+    public abstract itemIsExpanded(index: number): boolean;
 
     public abstract expandAll(): void;
+
+    public abstract collapseAll(): void;
+
+    public abstract expandItem(index: number): void;
+
+    public abstract collapseItem(index: number): void;
+
 
 }
 
