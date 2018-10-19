@@ -800,6 +800,19 @@ class AccordionHeaderTap extends NSObject {
     tap(args) {
         let owner = this._owner.get();
         let current = args.view.tag;
+
+        const data = owner._getParentData(current);
+        let _args = {
+            eventName: AccordionBase.itemHeaderTapEvent,
+            data: data,
+            object: owner,
+            parentIndex: current,
+            view: null,
+            ios: args.view,
+            android: undefined
+        };
+        owner.notify(_args);
+
         const reloadSection = (index: number) => {
             let section = NSMutableIndexSet.alloc().initWithIndex(index);
             owner.ios.reloadSectionsWithRowAnimation(section, UITableViewRowAnimation.Automatic);
@@ -1244,11 +1257,11 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
         let owner = this._owner.get();
         const data = owner._getChildData(indexPath.section, indexPath.row);
         let args = {
-            eventName: 'itemTapped',
+            eventName: AccordionBase.itemContentTapEvent,
             data: data,
             object: owner,
             childIndex: indexPath.row,
-            parentIndex: indexPath.section,
+            index: indexPath.section,
             view: null,
             ios: null,
             android: undefined

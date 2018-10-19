@@ -107,6 +107,43 @@ export class Accordion extends AccordionBase {
     public initNativeView() {
         super.initNativeView();
         const that = new WeakRef(this);
+        this.nativeView.setOnGroupClickListener(new android.widget.ExpandableListView.OnGroupClickListener({
+            onGroupClick(listView: android.widget.ExpandableListView, view: android.view.View, groupPosition: number, id: number): boolean {
+
+                let owner = that.get();
+                const data = owner._getParentData(groupPosition);
+                let args = {
+                    eventName: AccordionBase.itemHeaderTapEvent,
+                    data: data,
+                    object: owner,
+                    index: groupPosition,
+                    view: null,
+                    ios: null,
+                    android: view
+                };
+                owner.notify(args);
+
+                return false;
+            }
+        }));
+        this.nativeView.setOnChildClickListener(new android.widget.ExpandableListView.OnChildClickListener({
+            onChildClick(listView: android.widget.ExpandableListView, view: android.view.View, groupPosition: number, childPosition: number, id: number): boolean {
+                let owner = that.get();
+                const data = owner._getChildData(groupPosition, childPosition);
+                let args = {
+                    eventName: AccordionBase.itemContentTapEvent,
+                    data: data,
+                    object: owner,
+                    childIndex: childPosition,
+                    index: groupPosition,
+                    view: null,
+                    ios: null,
+                    android: view
+                };
+                owner.notify(args);
+                return false;
+            }
+        }));
         this.nativeView.setGroupIndicator(null);
         this.nativeView.setOnGroupExpandListener(new android.widget.ExpandableListView.OnGroupExpandListener({
             onGroupExpand(groupPosition: number) {
