@@ -12,7 +12,7 @@
 
 
             <accordion:Accordion.itemHeaderTemplate>
-                <GridLayout height="100">
+                <GridLayout>
                     <Label height="100%" text="{{title}}"/>
                 </GridLayout>
             </accordion:Accordion.itemHeaderTemplate>
