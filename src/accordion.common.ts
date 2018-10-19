@@ -1,69 +1,405 @@
 import {
-    View,
-    AddArrayFromBuilder,
-    KeyedTemplate,
-    Template,
+    CoercibleProperty,
     CssProperty,
-    Style
-} from "tns-core-modules/ui/core/view";
-import { Property, CoercibleProperty } from "tns-core-modules/ui/core/view";
-import * as types from "utils/types";
+    CSSType,
+    KeyedTemplate,
+    Length,
+    Property,
+    Style,
+    Template,
+    View
+} from 'tns-core-modules/ui/core/view';
+import { parse, parseMultipleTemplates } from 'tns-core-modules/ui/builder';
+import { Observable } from 'tns-core-modules/data/observable';
+import { ChangedData, ObservableArray } from 'tns-core-modules/data/observable-array';
+import { addWeakEventListener, removeWeakEventListener } from 'tns-core-modules/ui/core/weak-event-listener';
+import { Label } from 'tns-core-modules/ui/label';
+
 const autoEffectiveRowHeight = -1;
 
 export module knownCollections {
-    export const items = "items";
+    export const items = 'items';
 }
 export module knownTemplates {
-    export const itemTemplate = "itemTemplate";
-    export const headerTemplate = "headerTemplate";
-    export const footerTemplate = "footerTemplate";
+    export const itemHeaderTemplate = 'itemHeaderTemplate';
+    export const itemContentTemplate = 'itemContentTemplate';
+    export const headerTemplate = 'headerTemplate';
+    export const footerTemplate = 'footerTemplate';
 }
 
 export module knownMultiTemplates {
-    export const itemTemplates = "itemTemplates";
+    export const itemHeaderTemplates = 'itemHeaderTemplates';
+    export const itemContentTemplates = 'itemContentTemplates';
+    export const headerTemplates = 'headerTemplates';
+    export const footerTemplates = 'footerTemplates';
 }
 
-function onHeaderTemplateChanged(accordion: Accordion, oldValue, newValue) {
-    accordion.headerTemplateUpdated(oldValue, newValue);
+export interface ItemsSource {
+    length: number;
+
+    getItem(index: number): any;
 }
 
-function onItemTemplateChanged(accordion: Accordion, oldValue, newValue) {
-    accordion.templateUpdated(oldValue, newValue);
-}
-
-function onFooterTemplateChanged(accordion: Accordion, oldValue, newValue) {
-    accordion.footerTemplateUpdated(oldValue, newValue);
-}
-
-function onItemsChanged(accordion: Accordion, oldValue, newValue) {
-    accordion.updateNativeItems(oldValue, newValue);
-}
-
-function onSelectedIndexChanged(accordion: Accordion, oldValue, newValue) {
-    if (accordion && accordion.items && types.isNumber(newValue)) {
-        accordion.updateNativeIndex(oldValue, newValue);
-        // accordion.notify({
-        //     eventName: Accordion.selectedIndexChangedEvent,
-        //     object: accordion,
-        //     oldIndex: oldValue,
-        //     newIndex: newValue
-        // });
-    }
-}
-
-export abstract class Accordion extends View {
-    private _selectedIndexes;
+@CSSType('Accordion')
+export abstract class AccordionBase extends View {
+    public static headerLoadingEvent = 'headerLoading';
+    public static footerLoadingEvent = 'footerLoading';
+    public static itemHeaderLoadingEvent = 'itemHeaderLoading';
+    public static itemContentLoadingEvent = 'itemContentLoading';
+    public static itemHeaderTapEvent = 'itemHeaderTap';
+    public static itemContentTapEvent = 'itemContentTap';
+    public static loadMoreItemsEvent = 'loadMoreItems';
     private _allowMultiple: boolean = false;
     public _effectiveRowHeight: number = autoEffectiveRowHeight;
-    public static selectedIndexChangedEvent = "selectedIndexChanged";
-    items: any;
-    headerTemplate: any;
-    itemTemplate: any;
-    footerTemplate: any;
-    selectedIndex: number;
-    constructor() {
-        super();
+    public rowHeight: Length;
+    public iosEstimatedRowHeight: Length;
+    public static selectedIndexesChangedEvent = 'selectedIndexesChanged';
+    public static knownFunctions = ['itemHeaderTemplateSelector', 'itemContentTemplateSelector', 'headerTemplateSelector',
+        'footerTemplateSelector', 'itemIdGenerator', 'childIdGenerator'];
+    public items: any[] | ItemsSource;
+
+    public itemHeaderTemplate: string | Template;
+    public itemHeaderTemplates: string | Array<KeyedTemplate>;
+
+    public itemContentTemplate: string | Template;
+    public itemContentTemplates: string | Array<KeyedTemplate>;
+
+    public headerTemplate: string | Template;
+    public headerTemplates: string | Array<KeyedTemplate>;
+
+    public footerTemplate: string | Template;
+    public footerTemplates: string | Array<KeyedTemplate>;
+
+    public selectedIndexes: any;
+
+    public childItems: string = 'items';
+
+
+    private _itemIdGenerator: (item: any, index: number, items: any) => number = (_item: any, index: number) => index;
+
+    get itemIdGenerator(): (item: any, index: number, items: any) => number {
+        return this._itemIdGenerator;
     }
+
+    set itemIdGenerator(generatorFn: (item: any, index: number, items: any) => number) {
+        this._itemIdGenerator = generatorFn;
+    }
+
+
+    private _childIdGenerator: (item: any, index: number, childIndex: number, items: any) => number = (_item: any, index: number) => index;
+
+    get childIdGenerator(): (item: any, index: number, childIndex: number, items: any) => number {
+        return this._itemIdGenerator;
+    }
+
+    set childIdGenerator(generatorFn: (item: any, index: number, childIndex: number, items: any) => number) {
+        this._childIdGenerator = generatorFn;
+    }
+
+
+    private _headerTemplateSelector: (item: any, index: number, items: any) => string;
+    private _headerTemplateSelectorBindable = new Label();
+    public _defaultHeaderTemplate: KeyedTemplate = {
+        key: 'default',
+        createView: () => {
+            if (this.headerTemplate) {
+                return parse(this.headerTemplate, this);
+            }
+            return undefined;
+        }
+    }
+
+    public _headerTemplatesInternal = new Array<KeyedTemplate>(this._defaultHeaderTemplate);
+
+
+    private _itemHeaderTemplateSelector: (item: any, index: number, items: any) => string;
+    private _itemHeaderTemplateSelectorBindable = new Label();
+    public _defaultItemHeaderTemplate: KeyedTemplate = {
+        key: 'default',
+        createView: () => {
+            if (this.itemHeaderTemplate) {
+                return parse(this.itemHeaderTemplate, this);
+            }
+            return undefined;
+        }
+    }
+
+    public _itemHeaderTemplatesInternal = new Array<KeyedTemplate>(this._defaultItemHeaderTemplate);
+
+
+    private _itemContentTemplateSelector: (item: any, index: number, items: any) => string;
+    private _itemContentTemplateSelectorBindable = new Label();
+    public _defaultItemContentTemplate: KeyedTemplate = {
+        key: 'default',
+        createView: () => {
+            if (this.itemContentTemplate) {
+                return parse(this.itemContentTemplate, this);
+            }
+            return undefined;
+        }
+    }
+
+    public _itemContentTemplatesInternal = new Array<KeyedTemplate>(this._defaultItemContentTemplate);
+
+    private _footerTemplateSelector: (item: any, index: number, items: any) => string;
+    private _footerTemplateSelectorBindable = new Label();
+    public _defaultFooterTemplate: KeyedTemplate = {
+        key: 'default',
+        createView: () => {
+            if (this.footerTemplate) {
+                return parse(this.footerTemplate, this);
+            }
+            return undefined;
+        }
+    }
+
+    public _footerTemplatesInternal = new Array<KeyedTemplate>(this._defaultFooterTemplate);
+
+
+    get headerTemplateSelector(): string | ((item: any, index: number, items: any) => string) {
+        return this._headerTemplateSelector;
+    }
+
+    set headerTemplateSelector(value: string | ((item: any, index: number, items: any) => string)) {
+        if (typeof value === 'string') {
+            this._headerTemplateSelectorBindable.bind({
+                sourceProperty: null,
+                targetProperty: 'templateKey',
+                expression: value
+            });
+            this._headerTemplateSelector = (item: any, index: number, items: any) => {
+                item['$index'] = index;
+                this._headerTemplateSelectorBindable.bindingContext = item;
+                return this._headerTemplateSelectorBindable.get('templateKey');
+            };
+        }
+        else if (typeof value === 'function') {
+            this._headerTemplateSelector = value;
+        }
+    }
+
+
+    get itemHeaderTemplateSelector(): string | ((item: any, index: number, items: any) => string) {
+        return this._itemHeaderTemplateSelector;
+    }
+
+    set itemHeaderTemplateSelector(value: string | ((item: any, index: number, items: any) => string)) {
+        if (typeof value === 'string') {
+            this._itemHeaderTemplateSelectorBindable.bind({
+                sourceProperty: null,
+                targetProperty: 'templateKey',
+                expression: value
+            });
+            this._itemHeaderTemplateSelector = (item: any, index: number, items: any) => {
+                item['$index'] = index;
+                this._itemHeaderTemplateSelectorBindable.bindingContext = item;
+                return this._itemHeaderTemplateSelectorBindable.get('templateKey');
+            };
+        }
+        else if (typeof value === 'function') {
+            this._itemHeaderTemplateSelector = value;
+        }
+    }
+
+    get itemContentTemplateSelector(): string | ((item: any, index: number, items: any) => string) {
+        return this._itemContentTemplateSelector;
+    }
+
+    set itemContentTemplateSelector(value: string | ((item: any, index: number, items: any) => string)) {
+        if (typeof value === 'string') {
+            this._itemContentTemplateSelectorBindable.bind({
+                sourceProperty: null,
+                targetProperty: 'templateKey',
+                expression: value
+            });
+            this._itemContentTemplateSelector = (item: any, index: number, items: any) => {
+                item['$childIndex'] = index;
+                this._itemContentTemplateSelectorBindable.bindingContext = item;
+                return this._itemContentTemplateSelectorBindable.get('templateKey');
+            };
+        }
+        else if (typeof value === 'function') {
+            this._itemContentTemplateSelector = value;
+        }
+    }
+
+
+    get footerTemplateSelector(): string | ((item: any, index: number, items: any) => string) {
+        return this._footerTemplateSelector;
+    }
+
+    set footerTemplateSelector(value: string | ((item: any, index: number, items: any) => string)) {
+        if (typeof value === 'string') {
+            this._footerTemplateSelectorBindable.bind({
+                sourceProperty: null,
+                targetProperty: 'templateKey',
+                expression: value
+            });
+            this._footerTemplateSelector = (item: any, index: number, items: any) => {
+                item['$index'] = index;
+                this._footerTemplateSelectorBindable.bindingContext = item;
+                return this._footerTemplateSelectorBindable.get('templateKey');
+            };
+        }
+        else if (typeof value === 'function') {
+            this._footerTemplateSelector = value;
+        }
+    }
+
+
+    public _getHeaderTemplate(index: number): KeyedTemplate {
+        let templateKey = 'default';
+        if (this.headerTemplateSelector) {
+            let dataItem = this._getParentData(index);
+            templateKey = this._headerTemplateSelector(dataItem, index, this.items);
+        }
+
+        for (let i = 0, length = this._headerTemplatesInternal.length; i < length; i++) {
+            if (this._headerTemplatesInternal[i].key === templateKey) {
+                return this._headerTemplatesInternal[i];
+            }
+        }
+
+        // This is the default template
+        return this._headerTemplatesInternal[0];
+    }
+
+
+    public _getItemHeaderTemplate(index: number): KeyedTemplate {
+        let templateKey = 'default';
+        if (this.itemHeaderTemplateSelector) {
+            let dataItem = this._getParentData(index);
+            templateKey = this._itemHeaderTemplateSelector(dataItem, index, this.items);
+        }
+
+        for (let i = 0, length = this._itemHeaderTemplatesInternal.length; i < length; i++) {
+            if (this._itemHeaderTemplatesInternal[i].key === templateKey) {
+                return this._itemHeaderTemplatesInternal[i];
+            }
+        }
+
+        // This is the default template
+        return this._itemHeaderTemplatesInternal[0];
+    }
+
+    public _getHasHeader(): boolean {
+        const length = this.headerTemplates ? this.headerTemplates.length : 0;
+        return !!(this.headerTemplate || (length > 0));
+    }
+
+    public _getHasFooter(): boolean {
+        const length = this.footerTemplates ? this.footerTemplates.length : 0;
+        return !!(this.footerTemplate || (length > 0));
+    }
+
+
+    public _getItemContentTemplate(index: number, childIndex: number): KeyedTemplate {
+        let templateKey = 'default';
+        if (this.itemContentTemplateSelector) {
+            let dataItem = this._getChildData(index, this._getHasHeader() ? childIndex - 1 : childIndex);
+            const items = (<ItemsSource>this.items).getItem ? (<ItemsSource>this.items).getItem(index)[this.childItems] : this.items[this.childItems];
+            templateKey = this._itemContentTemplateSelector(dataItem, childIndex, items);
+        }
+
+        for (let i = 0, length = this._itemContentTemplatesInternal.length; i < length; i++) {
+            if (this._itemContentTemplatesInternal[i].key === templateKey) {
+                return this._itemContentTemplatesInternal[i];
+            }
+        }
+
+        // This is the default template
+        return this._itemContentTemplatesInternal[0];
+    }
+
+    public _getFooterTemplate(index: number): KeyedTemplate {
+        let templateKey = 'default';
+        if (this.footerTemplateSelector) {
+            let dataItem = this._getParentData(index);
+            templateKey = this._footerTemplateSelector(dataItem, index, this.items);
+        }
+
+        for (let i = 0, length = this._footerTemplatesInternal.length; i < length; i++) {
+            if (this._footerTemplatesInternal[i].key === templateKey) {
+                return this._footerTemplatesInternal[i];
+            }
+        }
+
+        // This is the default template
+        return this._footerTemplatesInternal[0];
+    }
+
+
+    public _getDefaultHeaderContent(index: number): View {
+        let lbl = new Label();
+        lbl.bind({
+            targetProperty: 'text',
+            sourceProperty: '$value'
+        });
+        return lbl;
+    }
+
+
+    public _getDefaultItemHeaderContent(index: number): View {
+        let lbl = new Label();
+        lbl.bind({
+            targetProperty: 'text',
+            sourceProperty: '$value'
+        });
+        return lbl;
+    }
+
+    public _getDefaultItemContentContent(index: number, childIndex: number): View {
+        let lbl = new Label();
+        lbl.bind({
+            targetProperty: 'text',
+            sourceProperty: '$value'
+        });
+        return lbl;
+    }
+
+
+    public _getDefaultFooterContent(index: number): View {
+        let lbl = new Label();
+        lbl.bind({
+            targetProperty: 'text',
+            sourceProperty: '$value'
+        });
+        return lbl;
+    }
+
+
+    public _prepareHeaderItem(item: View, index: number) {
+        if (item) {
+            item.bindingContext = this._getParentData(index);
+        }
+    }
+
+    public _prepareItemHeader(item: View, index: number) {
+        if (item) {
+            item.bindingContext = this._getParentData(index);
+        }
+    }
+
+    public _prepareItemContent(item: View, index: number, childIndex: number) {
+        if (item) {
+            item.bindingContext = this._getChildData(index, childIndex);
+        }
+    }
+
+    public _prepareFooterItem(item: View, index: number) {
+        if (item) {
+            item.bindingContext = this._getParentData(index);
+        }
+    }
+
+    public _onRowHeightPropertyChanged(oldValue: Length, newValue: Length) {
+        this.refresh();
+    }
+
+    protected updateEffectiveRowHeight(): void {
+        rowHeightProperty.coerce(this);
+    }
+
 
     _getParentData(parentIndex: number) {
         let items = <any>this.items;
@@ -72,111 +408,7 @@ export abstract class Accordion extends View {
 
     _getChildData(parentIndex: number, childIndex: number) {
         let items = <any>this.items;
-        return items.getItem ? items.getItem(parentIndex)['items'][childIndex] : items[parentIndex]['items'][childIndex];
-    }
-
-    get headerTextBold(): boolean {
-        return (<any>this.style).headerTextBold;
-    }
-
-    set headerTextBold(value: boolean) {
-        (<any>this.style).headerTextBold = value;
-    }
-
-    get headerHeight(): number {
-        return (<any>this.style).headerHeight;
-    }
-
-    set headerHeight(value: number) {
-        (<any>this.style).headerHeight = value;
-    }
-
-    get headerTextColor(): string {
-        return (<any>this.style).headerTextColor;
-    }
-
-    set headerTextColor(value: string) {
-        (<any>this.style).headerTextColor = value;
-    }
-
-    get headerColor(): string {
-        return (<any>this.style).headerColor;
-    }
-
-    set headerColor(value: string) {
-        (<any>this.style).headerColor = value;
-    }
-
-    get headerTextAlignment(): string {
-        return (<any>this.style).headerTextAlignment;
-    }
-
-    set headerTextAlignment(value: string) {
-        (<any>this.style).headerTextAlignment = value;
-    }
-
-    get headerTextSize(): number {
-        return (<any>this.style).headerTextSize;
-    }
-
-    set headerTextSize(value: number) {
-        (<any>this.style).headerTextSize = value;
-    }
-
-    get footerTextBold(): boolean {
-        return (<any>this.style).footerTextBold;
-    }
-
-    set footerTextBold(value: boolean) {
-        (<any>this.style).footerTextBold = value;
-    }
-
-    get footerHeight(): number {
-        return (<any>this.style).footerHeight;
-    }
-
-    set footerHeight(value: number) {
-        (<any>this.style).footerHeight = value;
-    }
-
-    get footerTextColor(): string {
-        return (<any>this.style).footerTextColor;
-    }
-
-    set footerTextColor(value: string) {
-        (<any>this.style).footerTextColor = value;
-    }
-
-    get footerColor(): string {
-        return (<any>this.style).footerColor;
-    }
-
-    set footerColor(value: string) {
-        (<any>this.style).footerColor = value;
-    }
-
-    get footerTextAlignment(): string {
-        return (<any>this.style).footerTextAlignment;
-    }
-
-    set footerTextAlignment(value: string) {
-        (<any>this.style).footerTextAlignment = value;
-    }
-
-    get footerTextSize(): number {
-        return (<any>this.style).footerTextSize;
-    }
-
-    set footerTextSize(value: number) {
-        (<any>this.style).footerTextSize = value;
-    }
-
-    get selectedIndexes() {
-        return this._selectedIndexes;
-    }
-
-    set selectedIndexes(indexes) {
-        this._selectedIndexes = indexes;
+        return items.getItem ? items.getItem(parentIndex)[this.childItems][childIndex] : items[parentIndex][this.childItems][childIndex];
     }
 
     get allowMultiple() {
@@ -195,71 +427,25 @@ export abstract class Accordion extends View {
         this.style.separatorColor = value;
     }
 
+    public abstract refresh(): void;
+
+    public _onItemsChanged(args: ChangedData<any>) {
+        this.refresh();
+    }
+
+
     public abstract updateNativeItems(oldItems: Array<any>, newItems: Array<any>): void;
 
-    public abstract addItem(view: any): void;
-
-    public abstract updateNativeIndex(oldData, newData): void;
+    public abstract updateNativeIndexes(oldData, newData): void;
 
     public abstract groupCollapsed(index: number): void;
 
     public abstract groupExpanded(index: number): void;
 
-    public abstract headerTemplateUpdated(oldData, newData): void;
+    public abstract expandAll(): void;
 
-    public abstract templateUpdated(oldData, newData): void;
-
-    public abstract footerTemplateUpdated(oldData, newData): void;
 }
 
-
-export const footerTextSizeProperty = new CssProperty<Style, number>({
-    name: 'footerTextSize',
-    cssName: 'footer-text-size',
-    valueConverter: (v) => parseInt(v)
-});
-
-footerTextSizeProperty.register(Style);
-
-export type TextAlignment = "left" | "center" | "right";
-export const footerTextAlignmentProperty = new CssProperty<Style, TextAlignment>({
-    name: 'footerTextAlignment',
-    cssName: 'footer-text-align'
-});
-
-footerTextAlignmentProperty.register(Style);
-
-export const footerColorProperty = new CssProperty<Style, string>({
-    name: 'footerColor',
-    cssName: 'footer-color'
-});
-
-footerColorProperty.register(Style);
-
-
-export const footerTextColorProperty = new CssProperty<Style, string>({
-    name: 'footerTextColor',
-    cssName: 'footer-text-color'
-});
-
-footerTextColorProperty.register(Style);
-
-export const footerHeightProperty = new CssProperty<Style, number>({
-    name: 'footerHeight',
-    cssName: 'footer-height',
-    valueConverter: (v) => parseInt(v)
-});
-
-footerHeightProperty.register(Style);
-
-
-export const footerTextBoldProperty = new CssProperty<Style, boolean>({
-    name: 'footerTextBold',
-    cssName: 'footer-text-bold',
-    valueConverter: (v) => Boolean(v)
-});
-
-footerTextBoldProperty.register(Style);
 
 export const separatorColorProperty = new CssProperty<Style, string>({
     name: 'separatorColor',
@@ -270,96 +456,146 @@ export const separatorColorProperty = new CssProperty<Style, string>({
 separatorColorProperty.register(Style);
 
 
-export const headerTextSizeProperty = new CssProperty<Style, number>({
-    name: 'headerTextSize',
-    cssName: 'header-text-size',
-    valueConverter: (v) => parseInt(v)
-});
-
-headerTextSizeProperty.register(Style);
-
-
-export const headerTextAlignmentProperty = new CssProperty<Style, TextAlignment>({
-    name: 'headerTextAlignment',
-    cssName: 'header-text-align'
-});
-
-headerTextAlignmentProperty.register(Style);
-
-export const headerColorProperty = new CssProperty<Style, string>({
-    name: 'headerColor',
-    cssName: 'header-color'
-});
-
-headerColorProperty.register(Style);
-
-
-export const headerTextColorProperty = new CssProperty<Style, string>({
-    name: 'headerTextColor',
-    cssName: 'header-text-color'
-});
-
-headerTextColorProperty.register(Style);
-
-export const headerHeightProperty = new CssProperty<Style, number>({
-    name: 'headerHeight',
-    cssName: 'header-height',
-    valueConverter: (v) => parseInt(v)
-});
-
-headerHeightProperty.register(Style);
-
-
-export const headerTextBoldProperty = new CssProperty<Style, boolean>({
-    name: 'headerTextBold',
-    cssName: 'header-text-bold',
-    valueConverter: (v) => Boolean(v)
-});
-
-headerTextBoldProperty.register(Style);
-
-
-export const headerTemplateProperty = new Property<Accordion, string>({
-    name: "headerTemplate",
+export const headerTemplateProperty = new Property<AccordionBase, string>({
+    name: 'headerTemplate',
     affectsLayout: true,
-    valueChanged: onHeaderTemplateChanged
+    valueChanged: (target) => {
+        target.refresh();
+    }
 });
-headerTemplateProperty.register(Accordion);
+headerTemplateProperty.register(AccordionBase);
 
-export const itemTemplateProperty = new Property<Accordion, string>({
-    name: "itemTemplate",
-    affectsLayout: true,
-    valueChanged: onItemTemplateChanged
-});
-itemTemplateProperty.register(Accordion);
+export const headerTemplatesProperty = new Property<AccordionBase, string | Array<KeyedTemplate>>({
+    name: 'headerTemplates', valueConverter: (value) => {
+        if (typeof value === 'string') {
+            return parseMultipleTemplates(value);
+        }
 
-export const footerTemplateProperty = new Property<Accordion, string>({
-    name: "footerTemplate",
-    affectsLayout: true,
-    valueChanged: onFooterTemplateChanged
-});
-
-footerTemplateProperty.register(Accordion);
-
-export const itemsProperty = new Property<Accordion, any>({
-    name: "items",
-    affectsLayout: true,
-    valueChanged: onItemsChanged
-});
-
-itemsProperty.register(Accordion);
-
-export const selectedIndexProperty = new CoercibleProperty<Accordion, number>({
-    name: "selectedIndex",
-    defaultValue: -1,
-    valueChanged: onSelectedIndexChanged,
-    coerceValue: (target, value) => {
-        const max = target.items ? target.items.length - 1 : 0;
-        value = Math.min(value, max);
-        value = Math.max(value, 0);
         return value;
-    },
-    valueConverter: (v) => parseInt(v)
+    }
+});
+headerTemplatesProperty.register(AccordionBase);
+
+export const itemHeaderTemplateProperty = new Property<AccordionBase, string>({
+    name: 'itemHeaderTemplate',
+    affectsLayout: true,
+    valueChanged: (target) => {
+        target.refresh();
+    }
+});
+itemHeaderTemplateProperty.register(AccordionBase);
+
+
+export const itemHeaderTemplatesProperty = new Property<AccordionBase, string | Array<KeyedTemplate>>({
+    name: 'itemHeaderTemplates', valueConverter: (value) => {
+        if (typeof value === 'string') {
+            return parseMultipleTemplates(value);
+        }
+
+        return value;
+    }
 });
 
-selectedIndexProperty.register(Accordion);
+itemHeaderTemplatesProperty.register(AccordionBase);
+
+export const itemContentTemplateProperty = new Property<AccordionBase, string>({
+    name: 'itemContentTemplate',
+    affectsLayout: true,
+    valueChanged: (target) => {
+        target.refresh();
+    }
+});
+itemContentTemplateProperty.register(AccordionBase);
+
+export const itemContentTemplatesProperty = new Property<AccordionBase, string | Array<KeyedTemplate>>({
+    name: 'itemContentTemplates', valueConverter: (value) => {
+        if (typeof value === 'string') {
+            return parseMultipleTemplates(value);
+        }
+
+        return value;
+    }
+});
+itemContentTemplatesProperty.register(AccordionBase);
+
+export const footerTemplateProperty = new Property<AccordionBase, string>({
+    name: 'footerTemplate',
+    affectsLayout: true,
+    valueChanged: (target) => {
+        target.refresh();
+    }
+});
+
+footerTemplateProperty.register(AccordionBase);
+
+
+export const footerTemplatesProperty = new Property<AccordionBase, string | Array<KeyedTemplate>>({
+    name: 'footerTemplates', valueConverter: (value) => {
+        if (typeof value === 'string') {
+            return parseMultipleTemplates(value);
+        }
+
+        return value;
+    }
+});
+footerTemplatesProperty.register(AccordionBase);
+
+export const itemsProperty = new Property<AccordionBase, any>({
+    name: 'items',
+    affectsLayout: true,
+    valueChanged: (target, oldValue, newValue) => {
+        if (oldValue instanceof Observable) {
+            removeWeakEventListener(oldValue, ObservableArray.changeEvent, target._onItemsChanged, target);
+        }
+
+        if (newValue instanceof Observable) {
+            addWeakEventListener(newValue, ObservableArray.changeEvent, target._onItemsChanged, target);
+        }
+
+        target.refresh();
+    }
+});
+
+itemsProperty.register(AccordionBase);
+
+
+export const selectedIndexesProperty = new Property<AccordionBase, any>({
+    name: 'selectedIndexes',
+    defaultValue: [],
+    valueChanged: (target, oldValue, newValue) => {
+
+        target.notify({
+            eventName: AccordionBase.selectedIndexesChangedEvent,
+            object: target,
+            oldIndex: oldValue,
+            newIndex: newValue
+        });
+
+        target.updateNativeIndexes(oldValue, newValue);
+    }
+});
+
+selectedIndexesProperty.register(AccordionBase);
+
+
+const defaultRowHeight: Length = 'auto';
+/**
+ * Represents the observable property backing the rowHeight property of each Accordion instance.
+ */
+export const rowHeightProperty = new CoercibleProperty<AccordionBase, Length>({
+    name: 'rowHeight', defaultValue: defaultRowHeight, equalityComparer: Length.equals,
+    coerceValue: (target, value) => {
+        // We coerce to default value if we don't have display density.
+        return target.nativeViewProtected ? value : defaultRowHeight;
+    },
+    valueChanged: (target, oldValue, newValue) => {
+        target._effectiveRowHeight = Length.toDevicePixels(newValue, autoEffectiveRowHeight);
+        target._onRowHeightPropertyChanged(oldValue, newValue);
+    }, valueConverter: Length.parse
+});
+rowHeightProperty.register(AccordionBase);
+
+export const iosEstimatedRowHeightProperty = new Property<AccordionBase, Length>({
+    name: 'iosEstimatedRowHeight', valueConverter: (v) => Length.parse(v)
+});
+iosEstimatedRowHeightProperty.register(AccordionBase);

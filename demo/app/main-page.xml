@@ -1,28 +1,35 @@
-<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page"
       xmlns:accordion="nativescript-accordion">
+    <StackLayout class="p-20">
+        <Button text="View Multi Template" tap="goToMulti"/>
+        <accordion:Accordion height="100%" items="{{items}}" allowMultiple="false" selectedIndexes="{{selectedIndexes}}">
 
-        <accordion:Accordion items="{{items}}" headerTextBold="true" headerColor="pink"  headerTextColor="blue" allowMultiple="true"  selectedIndex="1">
             <accordion:Accordion.headerTemplate>
-                <GridLayout columns="auto,*">
-                    <Label color="black" text="{{title}}"/>
-                    <Label col="1" text="+"/>
-                </GridLayout>
+                <StackLayout>
+                    <Label backgroundColor="green" text="{{headerText}}"/>
+                </StackLayout>
             </accordion:Accordion.headerTemplate>
 
-            <accordion:Accordion.itemTemplate>
-                <StackLayout headerText="First">
-                    <Image src="{{image}}"/>
-                    <Label backgroundColor="green" text="{{text}}"/>
+
+            <accordion:Accordion.itemHeaderTemplate>
+                <GridLayout height="100">
+                    <Label height="100%" text="{{title}}"/>
+                </GridLayout>
+            </accordion:Accordion.itemHeaderTemplate>
+
+            <accordion:Accordion.itemContentTemplate>
+                <StackLayout>
+                    <Image decodeWidth="400" decodeHeight="400" loadMode="async" src="{{image}}"/>
+                    <Label text="{{text}}"/>
                 </StackLayout>
-            </accordion:Accordion.itemTemplate>
+            </accordion:Accordion.itemContentTemplate>
 
 
             <accordion:Accordion.footerTemplate>
-                <GridLayout backgroundColor="yellow" columns="auto,*">
-                    <Label text="{{footer}}"/>
-                    <Label col="1" text="-"/>
-                </GridLayout>
+                <StackLayout>
+                    <Label backgroundColor="yellow" text="{{footerText}}"/>
+                </StackLayout>
             </accordion:Accordion.footerTemplate>
-
         </accordion:Accordion>
+    </StackLayout>
 </Page>

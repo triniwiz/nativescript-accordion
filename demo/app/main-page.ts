@@ -1,20 +1,15 @@
-import * as observable from "data/observable";
-import * as pages from "ui/page";
-import { HelloWorldModel } from "./main-view-model";
-import * as app from "application";
-import { View } from "ui/core/view";
-import * as keyFrame from "ui/animation/keyframe-animation";
-let page;
-import * as enums from "ui/enums";
-import { Page } from "ui/page";
-import { clearInterval } from "timer";
-import { StackLayout } from "ui/layouts/stack-layout";
-import { Image } from "ui/image";
-import * as imgSrc from "image-source";
-import { Color } from "color";
-import { Button } from "ui/button";
+import * as observable from 'tns-core-modules/data/observable';
+import * as pages from 'tns-core-modules/ui/page';
+import { HelloWorldModel } from './main-view-model';
+import { topmost } from 'tns-core-modules/ui/frame';
+
+// Event handler for Page 'loaded' event attached in main-page.xml
 export function pageLoaded(args: observable.EventData) {
     // Get the event sender
-    page = <pages.Page>args.object;
+    let page = <pages.Page>args.object;
     page.bindingContext = new HelloWorldModel();
+}
+
+export function goToMulti(args) {
+    topmost().navigate('multi/multi-page');
 }

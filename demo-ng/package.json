@@ -1,41 +1,37 @@
 {
-  "description": "NativeScript Application",
-  "license": "SEE LICENSE IN <your-license-filename>",
-  "readme": "NativeScript Application",
-  "repository": "<fill-your-repository-here>",
-  "nativescript": {
-    "id": "org.nativescript.demong",
-    "tns-ios": {
-      "version": "3.1.0"
+    "nativescript": {
+        "id": "org.nativescript.demong",
+        "tns-android": {
+            "version": "4.2.0"
+        },
+        "tns-ios": {
+            "version": "4.2.0"
+        }
     },
-    "tns-android": {
-      "version": "3.1.0"
-    }
-  },
-  "dependencies": {
-    "@angular/common": "~4.1.0",
-    "@angular/compiler": "~4.1.0",
-    "@angular/core": "~4.1.0",
-    "@angular/forms": "~4.1.0",
-    "@angular/http": "~4.1.0",
-    "@angular/platform-browser": "~4.1.0",
-    "@angular/platform-browser-dynamic": "~4.1.0",
-    "@angular/router": "~4.1.0",
-    "nativescript-accordion": "file:..",
-    "nativescript-angular": "~3.1.0",
-    "nativescript-theme-core": "~1.0.2",
-    "reflect-metadata": "~0.1.8",
-    "rxjs": "~5.0.1",
-    "tns-core-modules": "^3.1.0",
-    "zone.js": "~0.8.4"
-  },
-  "devDependencies": {
-    "babel-traverse": "6.23.1",
-    "babel-types": "6.23.0",
-    "babylon": "6.16.1",
-    "lazy": "1.0.11",
-    "nativescript-dev-android-snapshot": "^0.*.*",
-    "nativescript-dev-typescript": "^0.3.5",
-    "typescript": "~2.3.0"
-  }
+    "description": "NativeScript Application",
+    "license": "SEE LICENSE IN <your-license-filename>",
+    "repository": "<fill-your-repository-here>",
+    "dependencies": {
+        "@angular/animations": "~6.1.0",
+        "@angular/common": "~6.1.0",
+        "@angular/compiler": "~6.1.0",
+        "@angular/core": "~6.1.0",
+        "@angular/forms": "~6.1.0",
+        "@angular/http": "~6.1.0",
+        "@angular/platform-browser": "~6.1.0",
+        "@angular/platform-browser-dynamic": "~6.1.0",
+        "@angular/router": "~6.1.0",
+        "nativescript-angular": "~6.1.0",
+        "nativescript-theme-core": "~1.0.4",
+        "reflect-metadata": "~0.1.8",
+        "rxjs": "~6.2.0",
+        "tns-core-modules": "~4.2.0",
+        "zone.js": "^0.8.26"
+    },
+    "devDependencies": {
+        "typescript": "~2.7.2",
+        "nativescript-dev-typescript": "~0.7.0",
+        "@nativescript/schematics": "~0.3.0"
+    },
+    "readme": "NativeScript Application"
 }

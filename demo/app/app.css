@@ -1,10 +1,1 @@
-﻿.message {
-  color: #000;
-  font-size: 20;
-  horizontal-align: center;
-  padding:20;
-}
-@keyframes hide {
-  from { height: 100 }
-  to { height: 0 }
-}
+﻿@import '~nativescript-theme-core/css/core.light.css';
