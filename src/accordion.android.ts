@@ -22,7 +22,7 @@ function notifyForItemAtIndex(owner, nativeView: any, view: any, eventName: stri
     let args = {
         eventName: eventName,
         object: owner,
-        parentIndex: parentIndex,
+        index: parentIndex,
         childIndex: childIndex,
         view: view,
         ios: undefined,
@@ -36,7 +36,7 @@ function notifyForHeaderOrFooterAtIndex(owner, nativeView: any, view: any, event
     let args = {
         eventName: eventName,
         object: owner,
-        parentIndex: parentIndex,
+        index: parentIndex,
         view: view,
         ios: undefined,
         android: nativeView
@@ -129,7 +129,6 @@ export class Accordion extends AccordionBase {
                     android: view
                 };
                 owner.notify(args);
-
                 return false;
             }
         }));
@@ -256,7 +255,6 @@ export class Accordion extends AccordionBase {
     public updateNativeItems(oldItems: any, newItems: any) {
     }
 
-
     _selectedIndexUpdatedFromNative(newIndex: number[]) {
         selectedIndexesProperty.nativeValueChange(this, newIndex);
     }
@@ -280,7 +278,7 @@ export class Accordion extends AccordionBase {
     }
 
     public expandItem(id: number) {
-        this.nativeView.expandGroup(id);
+        this.nativeView.expandGroup(id, true);
     }
 
     public collapseItem(id: number) {
@@ -502,7 +500,8 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
 
         let view: View;
         if (convertView) {
-            view = owner._realizedItemHeaderTemplates.get(template.key).get(convertView);
+            const cachedItemHeader = owner._realizedItemHeaderTemplates.get(template.key);
+            view = cachedItemHeader ? cachedItemHeader.get(convertView) : null;
             if (!view) {
                 // throw new Error(`There is no entry with key '${convertView}' in the realized views cache for template with key'${template.key}'.`);
                 view = template.createView();
@@ -523,7 +522,7 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
 
         if (args.view) {
             if (owner._effectiveRowHeight > -1) {
-                args.view.height = owner.rowHeight;
+                args.view.height = owner.itemHeaderRowHeight;
             }
             else {
                 args.view.height = <Length>unsetValue;
@@ -576,10 +575,10 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
         }
 
         let totalItemCount = (owner.items ? owner.items.length : 0) + (owner._getHasHeader() ? 1 : 0) + (owner._getHasFooter() ? 1 : 0);
+
         if (groupPosition === (totalItemCount - 1)) {
             owner.notify({eventName: AccordionBase.loadMoreItemsEvent, object: owner});
         }
-
 
         if (childPosition === 0 && owner._getHasHeader()) {
             let template = owner._getHeaderTemplate(groupPosition);
@@ -610,7 +609,7 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
 
             if (args.view) {
                 if (owner._effectiveRowHeight > -1) {
-                    args.view.height = owner.rowHeight;
+                    args.view.height = owner.itemContentRowHeight;
                 }
                 else {
                     args.view.height = <Length>unsetValue;
@@ -646,7 +645,6 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
             return convertView;
         }
 
-
         if (isLastChild && owner._getHasFooter()) {
             let template = owner._getFooterTemplate(groupPosition);
 
@@ -676,7 +674,7 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
 
             if (args.view) {
                 if (owner._effectiveRowHeight > -1) {
-                    args.view.height = owner.rowHeight;
+                    args.view.height = owner.itemContentRowHeight;
                 }
                 else {
                     args.view.height = <Length>unsetValue;
@@ -727,7 +725,7 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
             view = template.createView();
         }
 
-        let args = notifyForItemAtIndex(owner, view ? view.nativeView : null, view, AccordionBase.itemContentLoadingEvent, groupPosition, childPosition);
+        let args = notifyForItemAtIndex(owner, view ? view.nativeView : null, view, AccordionBase.itemContentLoadingEvent, groupPosition, (childPosition - (owner._getHasHeader() ? 1 : 0)));
 
         owner.notify(args);
 
@@ -738,7 +736,7 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
 
         if (args.view) {
             if (owner._effectiveRowHeight > -1) {
-                args.view.height = owner.rowHeight;
+                args.view.height = owner.itemContentRowHeight;
             }
             else {
                 args.view.height = <Length>unsetValue;

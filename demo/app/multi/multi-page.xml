@@ -28,13 +28,13 @@
 
             <Accordion.itemHeaderTemplates>
                 <template key="odd">
-                    <StackLayout>
+                    <StackLayout backgroundColor="white">
                         <Label text="{{title}}"/>
                     </StackLayout>
                 </template>
 
                 <template key="even">
-                    <StackLayout>
+                    <StackLayout backgroundColor="white">
                         <Label text="{{title}}"/>
                         <Image decodeWidth="400" decodeHeight="400" loadMode="async" src="{{image}}"/>
                     </StackLayout>

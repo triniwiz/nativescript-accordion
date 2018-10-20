@@ -2,7 +2,7 @@
       xmlns:accordion="nativescript-accordion">
     <StackLayout class="p-20">
         <Button text="View Multi Template" tap="goToMulti"/>
-        <accordion:Accordion height="100%" items="{{items}}" allowMultiple="false" selectedIndexes="{{selectedIndexes}}">
+        <accordion:Accordion iosEstimatedItemHeaderRowHeight="400" height="100%" items="{{items}}" allowMultiple="false" selectedIndexes="{{selectedIndexes}}">
 
             <accordion:Accordion.headerTemplate>
                 <StackLayout>
@@ -12,7 +12,7 @@
 
 
             <accordion:Accordion.itemHeaderTemplate>
-                <GridLayout>
+                <GridLayout backgroundColor="white">
                     <Label height="100%" text="{{title}}"/>
                 </GridLayout>
             </accordion:Accordion.itemHeaderTemplate>

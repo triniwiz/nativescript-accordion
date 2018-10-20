@@ -51,8 +51,10 @@ export abstract class AccordionBase extends View {
     public static loadMoreItemsEvent = 'loadMoreItems';
     private _allowMultiple: boolean = false;
     public _effectiveRowHeight: number = autoEffectiveRowHeight;
-    public rowHeight: Length;
-    public iosEstimatedRowHeight: Length;
+    itemHeaderRowHeight: Length;
+    itemContentRowHeight: Length;
+    iosEstimatedItemHeaderRowHeight: Length;
+    iosEstimatedItemContentRowHeight: Length;
     public static selectedIndexesChangedEvent = 'selectedIndexesChanged';
     public static knownFunctions = ['itemHeaderTemplateSelector', 'itemContentTemplateSelector', 'headerTemplateSelector',
         'footerTemplateSelector', 'itemIdGenerator', 'childIdGenerator'];
@@ -282,13 +284,13 @@ export abstract class AccordionBase extends View {
         return this._itemHeaderTemplatesInternal[0];
     }
 
-    public _getHasHeader(): boolean {
-        const length = this.headerTemplates ? this.headerTemplates.length : 0;
+    public _getHasHeader = (): boolean => {
+        const length = this._headerTemplatesInternal ? this._headerTemplatesInternal.length : 0;
         return !!(this.headerTemplate || (length > 0));
     }
 
-    public _getHasFooter(): boolean {
-        const length = this.footerTemplates ? this.footerTemplates.length : 0;
+    public _getHasFooter = (): boolean => {
+        const length = this._footerTemplatesInternal ? this._footerTemplatesInternal.length : 0;
         return !!(this.footerTemplate || (length > 0));
     }
 
@@ -392,14 +394,22 @@ export abstract class AccordionBase extends View {
         }
     }
 
-    public _onRowHeightPropertyChanged(oldValue: Length, newValue: Length) {
+    public _onItemHeaderRowHeightPropertyChanged(oldValue: Length, newValue: Length) {
         this.refresh();
     }
 
-    protected updateEffectiveRowHeight(): void {
-        rowHeightProperty.coerce(this);
+    public _onItemContentRowHeightPropertyChanged(oldValue: Length, newValue: Length) {
+        this.refresh();
     }
 
+    protected updateEffectiveItemHeaderRowHeight(): void {
+        itemHeaderRowHeightProperty.coerce(this);
+    }
+
+
+    protected updateEffectiveItemContentRowHeight(): void {
+        itemContentRowHeightProperty.coerce(this);
+    }
 
     _getParentData(parentIndex: number) {
         let items = <any>this.items;
@@ -588,23 +598,39 @@ selectedIndexesProperty.register(AccordionBase);
 
 
 const defaultRowHeight: Length = 'auto';
-/**
- * Represents the observable property backing the rowHeight property of each Accordion instance.
- */
-export const rowHeightProperty = new CoercibleProperty<AccordionBase, Length>({
-    name: 'rowHeight', defaultValue: defaultRowHeight, equalityComparer: Length.equals,
+
+export const itemHeaderRowHeightProperty = new CoercibleProperty<AccordionBase, Length>({
+    name: 'itemHeaderRowHeight', defaultValue: defaultRowHeight, equalityComparer: Length.equals,
     coerceValue: (target, value) => {
         // We coerce to default value if we don't have display density.
         return target.nativeViewProtected ? value : defaultRowHeight;
     },
     valueChanged: (target, oldValue, newValue) => {
         target._effectiveRowHeight = Length.toDevicePixels(newValue, autoEffectiveRowHeight);
-        target._onRowHeightPropertyChanged(oldValue, newValue);
+        target._onItemHeaderRowHeightPropertyChanged(oldValue, newValue);
     }, valueConverter: Length.parse
 });
-rowHeightProperty.register(AccordionBase);
+itemHeaderRowHeightProperty.register(AccordionBase);
 
-export const iosEstimatedRowHeightProperty = new Property<AccordionBase, Length>({
-    name: 'iosEstimatedRowHeight', valueConverter: (v) => Length.parse(v)
+export const itemContentRowHeightProperty = new CoercibleProperty<AccordionBase, Length>({
+    name: 'itemContentRowHeight', defaultValue: defaultRowHeight, equalityComparer: Length.equals,
+    coerceValue: (target, value) => {
+        // We coerce to default value if we don't have display density.
+        return target.nativeViewProtected ? value : defaultRowHeight;
+    },
+    valueChanged: (target, oldValue, newValue) => {
+        target._effectiveRowHeight = Length.toDevicePixels(newValue, autoEffectiveRowHeight);
+        target._onItemContentRowHeightPropertyChanged(oldValue, newValue);
+    }, valueConverter: Length.parse
 });
-iosEstimatedRowHeightProperty.register(AccordionBase);
+itemContentRowHeightProperty.register(AccordionBase);
+
+export const iosEstimatedItemHeaderRowHeightProperty = new Property<AccordionBase, Length>({
+    name: 'iosEstimatedItemHeaderRowHeight', valueConverter: (v) => Length.parse(v)
+});
+iosEstimatedItemHeaderRowHeightProperty.register(AccordionBase);
+
+export const iosEstimatedItemContentRowHeightProperty = new Property<AccordionBase, Length>({
+    name: 'iosEstimatedItemContentRowHeight', valueConverter: (v) => Length.parse(v)
+});
+iosEstimatedItemContentRowHeightProperty.register(AccordionBase);

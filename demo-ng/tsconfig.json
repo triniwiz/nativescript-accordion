@@ -22,8 +22,14 @@
             ]
         }
     },
+    "include": [
+        "../src",
+        "**/*"
+    ],
     "exclude": [
         "node_modules",
-        "platforms"
+        "../src/node_modules",
+        "platforms",
+        "**/*.spec.ts"
     ]
 }

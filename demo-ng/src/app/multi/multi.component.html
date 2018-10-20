@@ -1,0 +1,67 @@
+<ActionBar title="Multi Templates">
+	<NavigationButton text="Go back" android.systemIcon="ic_menu_back" (tap)="goBack()"></NavigationButton>
+</ActionBar>
+
+<GridLayout columns="*" rows="auto,auto,*">
+	<Button row="0" text="Expand All" (tap)="expandAll()"></Button>
+	<Button row="1" text="Collapse All" (tap)="collapseAll()"></Button>
+	<Accordion #accordion row="2" height="100%" allowMultiple="true" childItems="children" [items]="items"
+			   [headerTemplateSelector]="headerTemplateSelector"
+			   [itemHeaderTemplateSelector]="itemHeaderTemplateSelector"
+			   [itemContentTemplateSelector]="itemContentTemplateSelector"
+			   [footerTemplateSelector]="footerTemplateSelector"
+	>
+		<ng-template let-i="index" let-item="item" acTemplateKey="header-odd">
+			<StackLayout>
+				<Label backgroundColor="green" [text]="item.headerText"></Label>
+			</StackLayout>
+		</ng-template>
+
+		<ng-template let-i="index" let-item="item" acTemplateKey="header-even">
+			<StackLayout>
+				<Label backgroundColor="orange" [text]="item.headerText"></Label>
+			</StackLayout>
+		</ng-template>
+
+		<ng-template let-i="index" let-item="item" acTemplateKey="title-odd">
+			<StackLayout backgroundColor="white">
+				<Label [text]="item.title"></Label>
+			</StackLayout>
+		</ng-template>
+
+		<ng-template let-i="index" let-item="item" acTemplateKey="title-even">
+			<StackLayout backgroundColor="white">
+				<Label [text]="item.title"></Label>
+				<Image height="100" width="100" decodeWidth="400" decodeHeight="400" loadMode="async"
+					   [src]="item.image"></Image>
+			</StackLayout>
+		</ng-template>
+
+
+		<ng-template let-i="index" let-item="item" acTemplateKey="content-odd">
+			<StackLayout>
+				<Image decodeWidth="400" decodeHeight="400" loadMode="async" [src]="item.image"></Image>
+				<Label [text]="item.text"></Label>
+			</StackLayout>
+		</ng-template>
+
+		<ng-template let-i="index" let-item="item" acTemplateKey="content-even">
+			<StackLayout>
+				<Image decodeWidth="400" decodeHeight="400" loadMode="async" [src]="item.image"></Image>
+				<Label [text]="item.text"></Label>
+			</StackLayout>
+		</ng-template>
+
+		<ng-template let-i="index" let-item="item" acTemplateKey="footer-odd">
+			<StackLayout>
+				<Label backgroundColor="yellow" [text]="item.footerText"></Label>
+			</StackLayout>
+		</ng-template>
+
+		<ng-template let-i="index" let-item="item" acTemplateKey="footer-even">
+			<StackLayout>
+				<Label backgroundColor="blue" [text]="item.footerText"></Label>
+			</StackLayout>
+		</ng-template>
+	</Accordion>
+</GridLayout>

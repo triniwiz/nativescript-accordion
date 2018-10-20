@@ -4,7 +4,8 @@ import {
     AccordionBase,
     footerTemplatesProperty,
     headerTemplatesProperty,
-    iosEstimatedRowHeightProperty,
+    iosEstimatedItemContentRowHeightProperty,
+    iosEstimatedItemHeaderRowHeightProperty,
     itemContentTemplatesProperty,
     itemHeaderTemplatesProperty,
     selectedIndexesProperty
@@ -28,12 +29,13 @@ function notifyForItemAtIndex(owner, nativeView: any, view: any, eventName: stri
     let args = {
         eventName: eventName,
         object: owner,
-        parentIndex: indexPath.section,
+        index: indexPath.section,
         childIndex: indexPath.row,
         view: view,
         ios: nativeView,
         android: undefined
     };
+
     owner.notify(args);
     return args;
 }
@@ -42,7 +44,7 @@ function notifyForHeaderOrFooterAtIndex(owner, nativeView: any, view: any, event
     let args = {
         eventName: eventName,
         object: owner,
-        parentIndex: parentIndex,
+        index: parentIndex,
         view: view,
         ios: nativeView,
         android: undefined
@@ -51,16 +53,12 @@ function notifyForHeaderOrFooterAtIndex(owner, nativeView: any, view: any, event
     return args;
 }
 
-const AccordionViewCellReuseIdentifier = 'AccordionCellReuseIdentifier';
-const AccordionViewHeaderCellReuseIdentifier = 'AccordionHeaderCellReuseIdentifier';
-const AccordionViewFooterCellReuseIdentifier = 'AccordionFooterCellReuseIdentifier';
 const DefaultAccordionHeaderViewHeight = 44.0;
-const AccordionHeaderViewReuseIdentifier = 'AccordionHeaderViewReuseIdentifier';
-const AccordionFooterViewReuseIdentifier = 'AccordionFooterViewReuseIdentifier';
 
 
 interface ChildItemIndex {
     _accordionChildItemIndex?: number;
+    _accordionItemIndex?: number;
 }
 
 interface ItemIndex {
@@ -96,8 +94,8 @@ export class Accordion extends AccordionBase {
     private _map: Map<AccordionCell, ChildItemView>;
     private _mapItemHeader: Map<AccordionHeader, ItemView>;
     private _mapItemContent: Map<AccordionCell, ChildItemView>;
-    private _mapHeader: Map<AccordionHeader, ItemView>;
-    private _mapFooter: Map<AccordionHeader, ItemView>;
+    private _mapHeader: Map<AccordionHeaderCell, ItemView>;
+    private _mapFooter: Map<AccordionFooterCell, ItemView>;
 
     constructor() {
         super();
@@ -108,8 +106,8 @@ export class Accordion extends AccordionBase {
         this._map = new Map<AccordionCell, ChildItemView>();
         this._mapItemContent = new Map<AccordionCell, ChildItemView>();
         this._mapItemHeader = new Map<AccordionHeader, ItemView>();
-        this._mapHeader = new Map<AccordionHeader, ItemView>();
-        this._mapFooter = new Map<AccordionHeader, ItemView>();
+        this._mapHeader = new Map<AccordionHeaderCell, ItemView>();
+        this._mapFooter = new Map<AccordionFooterCell, ItemView>();
     }
 
 
@@ -120,13 +118,14 @@ export class Accordion extends AccordionBase {
     public initNativeView() {
         super.initNativeView();
         const nativeView = this.nativeViewProtected;
-        nativeView.registerClassForCellReuseIdentifier(AccordionCell.class(), AccordionViewCellReuseIdentifier);
-        nativeView.registerClassForCellReuseIdentifier(AccordionHeaderCell.class(), AccordionViewHeaderCellReuseIdentifier);
-        nativeView.registerClassForCellReuseIdentifier(AccordionFooterCell.class(), AccordionViewFooterCellReuseIdentifier);
-        nativeView.registerClassForHeaderFooterViewReuseIdentifier(AccordionHeader.class(), AccordionHeaderViewReuseIdentifier);
-        nativeView.autoresizingMask = UIViewAutoresizing.None;
+        nativeView.registerClassForCellReuseIdentifier(AccordionCell.class(), this._defaultItemContentTemplate.key);
+        nativeView.registerClassForCellReuseIdentifier(AccordionHeaderCell.class(), this._defaultHeaderTemplate.key);
+        nativeView.registerClassForCellReuseIdentifier(AccordionFooterCell.class(), this._defaultFooterTemplate.key);
+        nativeView.registerClassForHeaderFooterViewReuseIdentifier(AccordionHeader.class(), this._defaultItemHeaderTemplate.key);
+        // nativeView.autoresizingMask = UIViewAutoresizing.None;
         nativeView.estimatedRowHeight = DEFAULT_HEIGHT;
         nativeView.rowHeight = UITableViewAutomaticDimension;
+        nativeView.sectionHeaderHeight = UITableViewAutomaticDimension;
         if (this.separatorColor) {
             this.ios.separatorColor = new Color(this.separatorColor).ios;
         }
@@ -188,7 +187,6 @@ export class Accordion extends AccordionBase {
         this._footerHeights[index] = value;
     }
 
-
     public disposeNativeView() {
         this.ios.delegate = null;
         if (this._indexSet) {
@@ -248,7 +246,6 @@ export class Accordion extends AccordionBase {
         selectedIndexesProperty.nativeValueChange(this, newIndexes);
     }
 
-
     public scrollToIndex(index: number) {
         if (this.ios) {
             this.ios.scrollToRowAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(index, 0),
@@ -277,7 +274,7 @@ export class Accordion extends AccordionBase {
         super.onLayout(left, top, right, bottom);
         this._map.forEach((childView, accordionCell) => {
             let rowHeight = this._effectiveRowHeight;
-            let cellHeight = rowHeight > 0 ? rowHeight : this.getItemContentHeight(childView._accordionChildItemIndex);
+            let cellHeight = rowHeight > 0 ? rowHeight : this.getItemContentHeight(parseInt(`${childView._accordionItemIndex + 1}${childView._accordionChildItemIndex}`));
             if (cellHeight) {
                 let width = layout.getMeasureSpecSize(this.widthMeasureSpec);
                 View.layoutChild(this, childView, 0, 0, width, cellHeight);
@@ -317,6 +314,26 @@ export class Accordion extends AccordionBase {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         this._map.forEach((childView, accordionCell) => {
+            // @ts-ignore
+            View.measureChild(this, childView, childView._currentWidthMeasureSpec, childView._currentHeightMeasureSpec);
+        });
+
+        this._mapItemHeader.forEach((childView, accordionHeader) => {
+            // @ts-ignore
+            View.measureChild(this, childView, childView._currentWidthMeasureSpec, childView._currentHeightMeasureSpec);
+        });
+
+        this._mapItemContent.forEach((childView, accordionCell) => {
+            // @ts-ignore
+            View.measureChild(this, childView, childView._currentWidthMeasureSpec, childView._currentHeightMeasureSpec);
+        });
+
+        this._mapHeader.forEach((childView, accordionHeaderCell) => {
+            // @ts-ignore
+            View.measureChild(this, childView, childView._currentWidthMeasureSpec, childView._currentHeightMeasureSpec);
+        });
+
+        this._mapFooter.forEach((childView, accordionFooterCell) => {
             // @ts-ignore
             View.measureChild(this, childView, childView._currentWidthMeasureSpec, childView._currentHeightMeasureSpec);
         });
@@ -371,7 +388,7 @@ export class Accordion extends AccordionBase {
             return height;
         }
 
-        return this.ios.estimatedRowHeight;
+        return this.ios.estimatedSectionHeaderHeight;
     }
 
     public _prepareCell(cell: AccordionCell, indexPath: NSIndexPath): number {
@@ -379,11 +396,22 @@ export class Accordion extends AccordionBase {
         try {
             this._preparingCell = true;
             let view: ChildItemView = cell.view;
+
             if (!view) {
                 view = this._getItemContentTemplate(indexPath.section, indexPath.row).createView();
             }
 
-            let args = notifyForItemAtIndex(this, cell, view, AccordionBase.itemContentLoadingEvent, indexPath);
+            let args = {
+                eventName: AccordionBase.itemContentLoadingEvent,
+                object: this,
+                index: indexPath.section,
+                childIndex: (indexPath.row - (this._getHasHeader() ? 1 : 0)),
+                view: view,
+                ios: null,
+                android: undefined
+            };
+
+            this.notify(args);
             view = args.view || this._getDefaultItemContentContent(indexPath.section, indexPath.row);
 
             // Proxy containers should not get treated as layouts.
@@ -398,13 +426,14 @@ export class Accordion extends AccordionBase {
             if (!cell.view) {
                 cell.owner = new WeakRef(view);
             } else if (cell.view !== view) {
-                this._removeContainer(cell);
+                this._removeItemContentContainer(cell);
                 (<UIView>cell.view.nativeViewProtected).removeFromSuperview();
                 cell.owner = new WeakRef(view);
             }
 
             this._prepareItemContent(view, indexPath.section, indexPath.row);
-            view._accordionChildItemIndex = indexPath.section;
+            view._accordionChildItemIndex = indexPath.row;
+            view._accordionItemIndex = indexPath.section;
             this._map.set(cell, view);
 
             // We expect that views returned from itemLoading are new (e.g. not reused).
@@ -423,7 +452,7 @@ export class Accordion extends AccordionBase {
     public _prepareItemHeaderView(header: AccordionHeader, section: number): number {
         let headerHeight: number;
         try {
-            // this._preparingCell = true;
+            this._preparingCell = true;
             let view: ItemView = header.view;
             if (!view) {
                 view = this._getItemHeaderTemplate(section).createView();
@@ -444,7 +473,7 @@ export class Accordion extends AccordionBase {
             if (!header.view) {
                 header.owner = new WeakRef(view);
             } else if (header.view !== view) {
-                this._removeHeaderContainer(header);
+                this._removeItemHeaderContainer(header);
                 (<UIView>header.view.nativeViewProtected).removeFromSuperview();
                 header.owner = new WeakRef(view);
             }
@@ -475,7 +504,17 @@ export class Accordion extends AccordionBase {
                 view = this._getHeaderTemplate(indexPath.section).createView();
             }
 
-            let args = notifyForItemAtIndex(this, cell, view, AccordionBase.footerLoadingEvent, indexPath);
+            let args = {
+                eventName: AccordionBase.footerLoadingEvent,
+                object: this,
+                index: indexPath.section,
+                view: view,
+                ios: null,
+                android: undefined
+            };
+
+            this.notify(args);
+
             view = args.view || this._getDefaultHeaderContent(indexPath.row);
 
             // Proxy containers should not get treated as layouts.
@@ -490,7 +529,7 @@ export class Accordion extends AccordionBase {
             if (!cell.view) {
                 cell.owner = new WeakRef(view);
             } else if (cell.view !== view) {
-                this._removeContainer(cell);
+                this._removeHeaderContainer(cell);
                 (<UIView>cell.view.nativeViewProtected).removeFromSuperview();
                 cell.owner = new WeakRef(view);
             }
@@ -521,7 +560,17 @@ export class Accordion extends AccordionBase {
                 view = this._getFooterTemplate(indexPath.section).createView();
             }
 
-            let args = notifyForItemAtIndex(this, cell, view, AccordionBase.headerLoadingEvent, indexPath);
+            let args = {
+                eventName: AccordionBase.headerLoadingEvent,
+                object: this,
+                index: indexPath.section,
+                view: view,
+                ios: null,
+                android: undefined
+            };
+
+            this.notify(args);
+
             view = args.view || this._getDefaultFooterContent(indexPath.section);
 
             // Proxy containers should not get treated as layouts.
@@ -536,7 +585,7 @@ export class Accordion extends AccordionBase {
             if (!cell.view) {
                 cell.owner = new WeakRef(view);
             } else if (cell.view !== view) {
-                this._removeContainer(cell);
+                this._removeFooterContainer(cell);
                 (<UIView>cell.view.nativeViewProtected).removeFromSuperview();
                 cell.owner = new WeakRef(view);
             }
@@ -558,7 +607,7 @@ export class Accordion extends AccordionBase {
         return cellHeight;
     }
 
-    public _removeHeaderContainer(header: AccordionHeader): void {
+    public _removeItemHeaderContainer(header: AccordionHeader): void {
         let view: ItemView = header.view;
         // This is to clear the StackLayout that is used to wrap ProxyViewContainer instances.
         if (!(view.parent instanceof Accordion)) {
@@ -574,7 +623,24 @@ export class Accordion extends AccordionBase {
         this._mapItemHeader.delete(header);
     }
 
-    public _removeContainer(cell: AccordionCell): void {
+    public _removeItemContentContainer(cell: AccordionCell): void {
+        let view: ChildItemView = cell.view;
+        // This is to clear the StackLayout that is used to wrap ProxyViewContainer instances.
+        if (!(view.parent instanceof Accordion)) {
+            this._removeView(view.parent);
+        }
+
+        // No need to request layout when we are removing cells.
+        const preparing = this._preparingCell;
+        this._preparingCell = true;
+        view.parent._removeView(view);
+        view._accordionChildItemIndex = undefined;
+        view._accordionItemIndex = undefined;
+        this._preparingCell = preparing;
+        this._map.delete(cell);
+    }
+
+    public _removeHeaderContainer(cell: AccordionHeaderCell): void {
         let view: ChildItemView = cell.view;
         // This is to clear the StackLayout that is used to wrap ProxyViewContainer instances.
         if (!(view.parent instanceof Accordion)) {
@@ -587,7 +653,23 @@ export class Accordion extends AccordionBase {
         view.parent._removeView(view);
         view._accordionChildItemIndex = undefined;
         this._preparingCell = preparing;
-        this._map.delete(cell);
+        this._mapHeader.delete(cell);
+    }
+
+    public _removeFooterContainer(cell: AccordionFooterCell): void {
+        let view: ChildItemView = cell.view;
+        // This is to clear the StackLayout that is used to wrap ProxyViewContainer instances.
+        if (!(view.parent instanceof Accordion)) {
+            this._removeView(view.parent);
+        }
+
+        // No need to request layout when we are removing cells.
+        const preparing = this._preparingCell;
+        this._preparingCell = true;
+        view.parent._removeView(view);
+        view._accordionChildItemIndex = undefined;
+        this._preparingCell = preparing;
+        this._mapFooter.delete(cell);
     }
 
     get _childrenCount(): number {
@@ -676,7 +758,7 @@ export class Accordion extends AccordionBase {
                 this._expandedViews.set(index, true);
                 this._indexSet.addIndex(index);
             } else {
-                this._expandedViews.set(index, false);
+                this._expandedViews.delete(index);
                 this._indexSet.removeIndex(index);
                 this.itemCollapsed(index);
             }
@@ -734,7 +816,29 @@ export class Accordion extends AccordionBase {
         });
     }
 
-    public _onRowHeightPropertyChanged(oldValue: Length, newValue: Length) {
+    public _onItemHeaderRowHeightPropertyChanged(oldValue: Length, newValue: Length) {
+        const value = layout.toDeviceIndependentPixels(this._effectiveRowHeight);
+        const nativeView = this.ios;
+
+        if (value < 0) {
+            nativeView.sectionHeaderHeight = UITableViewAutomaticDimension;
+            nativeView.estimatedSectionHeaderHeight = DEFAULT_HEIGHT;
+            this._delegate = UITableViewDelegateImpl.initWithOwner(new WeakRef(this));
+        }
+        else {
+            nativeView.sectionHeaderHeight = value;
+            nativeView.estimatedSectionHeaderHeight = value;
+            this._delegate = UITableViewRowHeightDelegateImpl.initWithOwner(new WeakRef(this));
+        }
+
+        if (this.isLoaded) {
+            nativeView.delegate = this._delegate;
+        }
+
+        super._onItemHeaderRowHeightPropertyChanged(oldValue, newValue);
+    }
+
+    public _onItemContentRowHeightPropertyChanged(oldValue: Length, newValue: Length) {
         const value = layout.toDeviceIndependentPixels(this._effectiveRowHeight);
         const nativeView = this.ios;
 
@@ -753,7 +857,7 @@ export class Accordion extends AccordionBase {
             nativeView.delegate = this._delegate;
         }
 
-        super._onRowHeightPropertyChanged(oldValue, newValue);
+        super._onItemContentRowHeightPropertyChanged(oldValue, newValue);
     }
 
     [itemHeaderTemplatesProperty.getDefault](): KeyedTemplate[] {
@@ -823,12 +927,21 @@ export class Accordion extends AccordionBase {
         this.refresh();
     }
 
-
-    [iosEstimatedRowHeightProperty.getDefault](): Length {
+    [iosEstimatedItemHeaderRowHeightProperty.getDefault](): Length {
         return DEFAULT_HEIGHT;
     }
 
-    [iosEstimatedRowHeightProperty.setNative](value: Length) {
+    [iosEstimatedItemHeaderRowHeightProperty.setNative](value: Length) {
+        const nativeView = this.ios;
+        const estimatedHeight = Length.toDevicePixels(value, 0);
+        nativeView.estimatedSectionHeaderHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
+    }
+
+    [iosEstimatedItemContentRowHeightProperty.getDefault](): Length {
+        return DEFAULT_HEIGHT;
+    }
+
+    [iosEstimatedItemContentRowHeightProperty.setNative](value: Length) {
         const nativeView = this.ios;
         const estimatedHeight = Length.toDevicePixels(value, 0);
         nativeView.estimatedRowHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
@@ -885,14 +998,15 @@ class AccordionHeaderTap extends NSObject {
                 owner._expandedViews.set(current, true);
                 owner._indexSet.addIndex(current);
             } else {
-                owner._expandedViews.set(current, false);
+                owner._expandedViews.delete(current);
                 owner._indexSet.removeIndex(current);
                 owner.itemCollapsed(current);
             }
             /**
              * Call reload to expand or collapse section
              */
-            // owner.ios.reloadData();
+            //owner.ios.beginUpdates();
+            //owner.ios.endUpdates();
             reloadSection(current);
             owner._selectedIndexesUpdatedFromNative(Array.from(owner._expandedViews.keys()));
         } else {
@@ -925,7 +1039,6 @@ class AccordionHeaderTap extends NSObject {
              */
             // owner.ios.reloadData();
 
-
         }
 
     }
@@ -938,8 +1051,24 @@ class AccordionHeaderTap extends NSObject {
 export class AccordionHeader extends UITableViewHeaderFooterView {
     public owner: WeakRef<any>;
 
+    public static initWithEmptyBackground(): AccordionHeader {
+        const header = <AccordionHeader>AccordionHeader.new();
+        header.contentView.backgroundColor = null;
+        return header;
+    }
+
     get view() {
         return this.owner ? this.owner.get() : null;
+    }
+
+    public willMoveToSuperview(newSuperview: UIView): void {
+        let parent = <Accordion>(this.view ? this.view.parent : null);
+
+        // When inside ListView and there is no newSuperview this cell is
+        // removed from native visual tree so we remove it from our tree too.
+        if (parent && !newSuperview) {
+            parent._removeItemHeaderContainer(this);
+        }
     }
 }
 
@@ -964,7 +1093,7 @@ export class AccordionCell extends UITableViewCell {
         // When inside ListView and there is no newSuperview this cell is
         // removed from native visual tree so we remove it from our tree too.
         if (parent && !newSuperview) {
-            parent._removeContainer(this);
+            parent._removeItemContentContainer(this);
         }
     }
 
@@ -996,7 +1125,7 @@ export class AccordionHeaderCell extends UITableViewCell {
         // When inside ListView and there is no newSuperview this cell is
         // removed from native visual tree so we remove it from our tree too.
         if (parent && !newSuperview) {
-            parent._removeContainer(this);
+            parent._removeHeaderContainer(this);
         }
     }
 
@@ -1028,7 +1157,7 @@ export class AccordionFooterCell extends UITableViewCell {
         // When inside ListView and there is no newSuperview this cell is
         // removed from native visual tree so we remove it from our tree too.
         if (parent && !newSuperview) {
-            parent._removeContainer(this);
+            parent._removeFooterContainer(this);
         }
     }
 
@@ -1092,7 +1221,7 @@ export class AccordionDataSource extends NSObject implements UITableViewDataSour
             return cell;
         }
 
-        if (indexPath.row === total - 1 && owner._getHasFooter()) {
+        if (indexPath.row === total - 1 && owner._getHasFooter) {
             if (owner) {
                 let template = owner._getFooterTemplate(indexPath.section);
                 cell = <AccordionFooterCell>(tableView.dequeueReusableCellWithIdentifier(`footer-${template.key}`) || AccordionFooterCell.initWithEmptyBackground());
@@ -1126,7 +1255,8 @@ export class AccordionDataSource extends NSObject implements UITableViewDataSour
                 // from 'tableViewHeightForRowAtIndexPath' method too (in iOS 7.1) and we don't want to arrange the fake cell.
                 let width = layout.getMeasureSpecSize(owner.widthMeasureSpec);
                 let rowHeight = owner._effectiveRowHeight;
-                let cellHeight = rowHeight > 0 ? rowHeight : owner.getItemContentHeight(indexPath.row);
+
+                let cellHeight = rowHeight > 0 ? rowHeight : owner.getItemContentHeight(parseInt(`${indexPath.section + 1 }${indexPath.row}`));
                 View.layoutChild(owner, cellView, 0, 0, width, cellHeight ? cellHeight : 0);
             }
         }
@@ -1183,21 +1313,10 @@ class UITableViewRowHeightDelegateImpl extends NSObject implements UITableViewDe
     public tableViewHeightForHeaderInSection(tableView: UITableView, section: number) {
         let owner = this._owner.get();
         if (!owner) {
-            return tableView.estimatedRowHeight;
+            return tableView.estimatedSectionHeaderHeight;
         }
-
         return layout.toDeviceIndependentPixels(owner._effectiveRowHeight);
     }
-
-    public tableViewHeightForFooterInSection(tableView: UITableView, section: number) {
-        let owner = this._owner.get();
-        if (!owner) {
-            return tableView.estimatedRowHeight;
-        }
-
-        return layout.toDeviceIndependentPixels(owner._effectiveRowHeight);
-    }
-
 }
 
 export class UITableViewDelegateImpl extends NSObject implements UITableViewDelegate {
@@ -1264,6 +1383,7 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
         }
 
         height = owner.getItemContentHeight(parseInt(`${indexPath.section + 1 }${indexPath.row}`));
+
         if (height === undefined) {
             // in iOS8+ after call to scrollToRowAtIndexPath:atScrollPosition:animated: this method is called before tableViewCellForRowAtIndexPath so we need fake cell to measure its content.
             const template = owner._getItemContentTemplate(indexPath.section, indexPath.row);
@@ -1282,7 +1402,7 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
     public tableViewHeightForHeaderInSection(tableView: UITableView, section: number) {
         const owner = this._owner.get();
         if (!owner) {
-            return tableView.estimatedRowHeight;
+            return tableView.estimatedSectionHeaderHeight;
         }
 
         let height = owner.getItemHeaderHeight(section);
@@ -1291,7 +1411,7 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
             const template = owner._getItemHeaderTemplate(section);
             let header = this._measureItemHeaderMap.get(template.key);
             if (!header) {
-                header = (<any>tableView.dequeueReusableHeaderFooterViewWithIdentifier(`item-header-${template.key}`)) || AccordionHeader.new();
+                header = (<any>tableView.dequeueReusableHeaderFooterViewWithIdentifier(`item-header-${template.key}`)) || AccordionHeader.initWithEmptyBackground();
                 this._measureItemHeaderMap.set(template.key, header);
             }
 
@@ -1323,7 +1443,7 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
         let header;
         if (owner) {
             let template = owner._getItemHeaderTemplate(section);
-            header = <AccordionHeader>(tableView.dequeueReusableHeaderFooterViewWithIdentifier(`item-header-${template.key}`) || AccordionHeader.new());
+            header = <AccordionHeader>(tableView.dequeueReusableHeaderFooterViewWithIdentifier(`item-header-${template.key}`) || AccordionHeader.initWithEmptyBackground());
             owner._prepareItemHeaderView(header, section);
 
             let cellView: View = header.view;
@@ -1337,7 +1457,7 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
             }
         }
         else {
-            header = AccordionHeader.new();
+            header = AccordionHeader.initWithEmptyBackground();
         }
         header.addGestureRecognizer(tapGesture);
         header.tag = section;

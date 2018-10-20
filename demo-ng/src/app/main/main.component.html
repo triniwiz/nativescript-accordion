@@ -1,0 +1,33 @@
+<ActionBar title="Welcome to NativeScript-Angular!"></ActionBar>
+<StackLayout class="p-20">
+	<Button text="View Multi Template" (tap)="goToMulti()"></Button>
+	<Accordion height="100%" [items]="items" allowMultiple="false" [selectedIndexes]="selectedIndexes">
+
+		<ng-template let-i="index" let-item="item" acTemplateKey="header">
+			<StackLayout>
+				<Label backgroundColor="green" [text]="item.headerText"></Label>
+			</StackLayout>
+		</ng-template>
+
+
+		<ng-template let-i="index" let-item="item" acTemplateKey="title">
+			<GridLayout backgroundColor="white">
+				<Label height="100%" [text]="item.title"></Label>
+			</GridLayout>
+		</ng-template>
+
+		<ng-template let-i="index" let-item="item" acTemplateKey="content">
+			<StackLayout>
+				<Image width="300" height="300" decodeWidth="400" decodeHeight="400" [src]="item.image"></Image>
+				<Label [text]="item.text"></Label>
+			</StackLayout>
+		</ng-template>
+
+
+		<ng-template let-i="index" let-item="item" acTemplateKey="footer">
+			<StackLayout>
+				<Label backgroundColor="yellow" [text]="item.footerText"></Label>
+			</StackLayout>
+		</ng-template>
+	</Accordion>
+</StackLayout>

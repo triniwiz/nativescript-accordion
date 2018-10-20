@@ -20,8 +20,13 @@
         "noImplicitUseStrict": false,
         "noFallthroughCasesInSwitch": true
     },
-    "exclude": [
-        "node_modules"
+    "files": [
+        "node_modules/tns-platform-declarations/android.d.ts",
+        "node_modules/tns-platform-declarations/ios.d.ts",
+        "angular/index.ts",
+        "accordion.android.ts",
+        "accordion.ios.ts",
+        "accordion.common.ts"
     ],
     "compileOnSave": false
 }
