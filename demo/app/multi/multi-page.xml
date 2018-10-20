@@ -1,0 +1,76 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page"
+      xmlns:accordion="nativescript-accordion">
+    <StackLayout class="p-20">
+        <Button text="Expand All" tap="expandAll"></Button>
+        <Button text="Collapse All" tap="collapseAll"></Button>
+        <accordion:Accordion childItems="children" id="accordion" selectedIndexesChange="onChange" height="100%"
+                             items="{{items}}" allowMultiple="true" selectedIndexes="{{selectedIndexes}}"
+                             headerTemplateSelector="$index % 2 !== 0 ? 'odd' : 'even'"
+                             itemHeaderTemplateSelector="$index % 2 !== 0  ? 'odd' : 'even'"
+                             itemContentTemplateSelector="$childIndex % 2 !== 0  ? 'odd' : 'even'"
+                             footerTemplateSelector="$index % 2 !== 0 ? 'odd' : 'even'"
+        >
+
+            <Accordion.headerTemplates>
+                <template key="odd">
+                    <StackLayout>
+                        <Label backgroundColor="green" text="{{headerText}}"/>
+                    </StackLayout>
+                </template>
+
+                <template key="even">
+                    <StackLayout>
+                        <Label backgroundColor="orange" text="{{headerText}}"/>
+                    </StackLayout>
+                </template>
+            </Accordion.headerTemplates>
+
+
+            <Accordion.itemHeaderTemplates>
+                <template key="odd">
+                    <StackLayout backgroundColor="white">
+                        <Label text="{{title}}"/>
+                    </StackLayout>
+                </template>
+
+                <template key="even">
+                    <StackLayout backgroundColor="white">
+                        <Label text="{{title}}"/>
+                        <Image decodeWidth="400" decodeHeight="400" loadMode="async" src="{{image}}"/>
+                    </StackLayout>
+                </template>
+            </Accordion.itemHeaderTemplates>
+
+            <Accordion.itemContentTemplates>
+                <template key="odd">
+                    <StackLayout>
+                        <Image decodeWidth="400" decodeHeight="400" loadMode="async" src="{{image}}"/>
+                        <Label text="{{text}}"/>
+                    </StackLayout>
+                </template>
+
+                <template key="even">
+                    <StackLayout>
+                        <Image decodeWidth="400" decodeHeight="400" loadMode="async" src="{{image}}"/>
+                        <Label text="{{text}}"/>
+                    </StackLayout>
+                </template>
+            </Accordion.itemContentTemplates>
+
+            <Accordion.footerTemplates>
+                <template key="odd">
+                    <StackLayout>
+                        <Label backgroundColor="yellow" text="{{footerText}}"/>
+                    </StackLayout>
+                </template>
+
+                <template key="even">
+                    <StackLayout>
+                        <Label backgroundColor="blue" text="{{footerText}}"/>
+                    </StackLayout>
+                </template>
+            </Accordion.footerTemplates>
+
+        </accordion:Accordion>
+    </StackLayout>
+</Page>

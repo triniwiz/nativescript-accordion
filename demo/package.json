@@ -1,24 +1,33 @@
 {
   "nativescript": {
     "id": "org.nativescript.demo",
-    "tns-ios": {
-      "version": "3.0.0"
-    },
     "tns-android": {
-      "version": "3.0.0"
+      "version": "5.0.0-rc-2018-10-15-143937-09"
+    },
+    "tns-ios": {
+      "version": "5.0.0-rc-2018-10-17-161243-01"
     }
   },
   "dependencies": {
-    "nativescript-accordion": "file:..",
-    "tns-core-modules": "^3.0.0"
+    "nativescript-theme-core": "^1.0.4",
+    "nativescript-unit-test-runner": "^0.3.4",
+    "nativescript-accordion": "file:../src",
+    "tns-core-modules": "^4.2.0"
   },
   "devDependencies": {
-    "babel-traverse": "6.12.0",
-    "babel-types": "6.11.1",
-    "babylon": "6.8.4",
-    "filewalker": "0.1.2",
-    "lazy": "1.0.11",
-    "nativescript-dev-typescript": "^0.3.2",
-    "typescript": "^2.2.0"
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.3.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-nativescript-launcher": "^0.4.0",
+    "nativescript-css-loader": "~0.26.1",
+    "nativescript-dev-typescript": "~0.7.2",
+    "nativescript-dev-webpack": "~0.15.1",
+    "tns-platform-declarations": "^4.2.0",
+    "tslint": "~5.4.3",
+    "typescript": "~2.8.2"
+  },
+  "scripts": {
+    "build.plugin": "cd ../src && npm run build",
+    "ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**'"
   }
 }

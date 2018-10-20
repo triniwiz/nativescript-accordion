@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "declaration": true,
+        "removeComments": true,
+        "noLib": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "skipLibCheck": true,
+        "lib": ["es6", "dom"],
+        "sourceMap": true,
+        "pretty": true,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "noEmitHelpers": true,
+        "noEmitOnError": false,
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "noImplicitUseStrict": false,
+        "noFallthroughCasesInSwitch": true
+    },
+    "files": [
+        "node_modules/tns-platform-declarations/android.d.ts",
+        "node_modules/tns-platform-declarations/ios.d.ts",
+        "angular/index.ts",
+        "accordion.android.ts",
+        "accordion.ios.ts",
+        "accordion.common.ts"
+    ],
+    "compileOnSave": false
+}
