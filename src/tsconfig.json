@@ -28,5 +28,8 @@
         "accordion.ios.ts",
         "accordion.common.ts"
     ],
-    "compileOnSave": false
+    "compileOnSave": false,
+    "angularCompilerOptions": {
+        "skipTemplateCodegen": true
+    }
 }

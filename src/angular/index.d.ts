@@ -40,6 +40,8 @@ export interface AccordionItemsView {
     itemHeaderTemplateSelector: string | ((item: any, index: number, items: any) => string);
     itemContentTemplateSelector: string | ((item: any, index: number, items: any) => string);
     footerTemplateSelector: string | ((item: any, index: number, items: any) => string);
+    _getHasHeader: any;
+    _getHasFooter: any;
     refresh(): void;
     on(event: 'headerLoading', callback: (args: EventData) => void, thisArg?: any): any;
     off(event: 'headerLoading', callback: (args: EventData) => void, thisArg?: any): any;
