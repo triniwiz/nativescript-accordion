@@ -104,6 +104,10 @@ export class Accordion extends AccordionBase {
     @profile
     public createNativeView() {
         const nativeView = new android.widget.ExpandableListView(this._context);
+
+        nativeView.setDivider(new android.graphics.drawable.ColorDrawable(new Color('transparent').android));
+        nativeView.setDividerHeight(1);
+
         if (this.separatorColor) {
             nativeView.setDivider(new android.graphics.drawable.ColorDrawable(new Color(this.separatorColor).android));
             nativeView.setDividerHeight(1);

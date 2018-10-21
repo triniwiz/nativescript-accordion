@@ -68,7 +68,7 @@ selectedIndexes = [0,3]
         </accordion:Accordion>
 ```
 
-## Multi Template
+### Multi Template
 
 ```xml
 <accordion:Accordion childItems="children" id="accordion" selectedIndexesChange="onChange" height="100%"

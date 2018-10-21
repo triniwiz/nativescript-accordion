@@ -58,6 +58,9 @@ module.exports = function accordion(Vue) {
 			this.getItemContext = (item, index) =>
 				getItemContext(item, index, this.$props[ '+alias' ], this.$props[ '+index' ]);
 
+			this.getChildItemContext = (item, parentIndex, index) =>
+				getChildItemContext(item, parentIndex, index, this.$props[ '+alias' ], this.$props[ '+index' ]);
+
 			this.selectorFn = (item, type) => selectorFn(this.$templates, item, type);
 
 			this.$refs.accordion.setAttribute('items', this.items);
@@ -131,8 +134,8 @@ module.exports = function accordion(Vue) {
 			);
 			this.$refs.accordion.setAttribute(
 				'_itemContentTemplateSelector',
-				(item, index) => {
-					return this.selectorFn(this.getItemContext(item, index), 'content');
+				(item, parentIndex, index) => {
+					return this.selectorFn(this.getChildItemContext(item, parentIndex, index), 'content');
 				}
 			);
 
@@ -222,7 +225,7 @@ module.exports = function accordion(Vue) {
 					name = 'content'
 				}
 
-				const context = this.getItemContext(currentItem, childIndex);
+				const context = this.getChildItemContext(currentItem, index, childIndex);
 				const oldVnode = args.view && args.view[ Vue.VUE_VIEW ];
 				args.view = this.$templates.patchTemplate(name, context, oldVnode);
 			},
@@ -232,12 +235,22 @@ module.exports = function accordion(Vue) {
 		}
 	};
 
-	function getItemContext(item, index, alias, index_alias, type) {
+	function getItemContext(item, index, alias, index_alias) {
 		return {
 			[ alias ]: item,
 			[ index_alias ]: index,
 			$even: index % 2 === 0,
 			$odd: index % 2 !== 0
+		};
+	}
+
+	function getChildItemContext(item, parentIndex, index, alias, index_alias) {
+		return {
+			[ alias ]: item,
+			[ index_alias ]: index,
+			$even: index % 2 === 0,
+			$odd: index % 2 !== 0,
+			$parentIndex: parentIndex
 		};
 	}
 

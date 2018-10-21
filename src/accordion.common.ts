@@ -110,9 +110,7 @@ export abstract class AccordionBase extends View {
             return undefined;
         }
     }
-
     public _headerTemplatesInternal = new Array<KeyedTemplate>(this._defaultHeaderTemplate);
-
 
     private _itemHeaderTemplateSelector: (item: any, index: number, items: any) => string;
     private _itemHeaderTemplateSelectorBindable = new Label();
@@ -125,11 +123,9 @@ export abstract class AccordionBase extends View {
             return undefined;
         }
     }
-
     public _itemHeaderTemplatesInternal = new Array<KeyedTemplate>(this._defaultItemHeaderTemplate);
 
-
-    private _itemContentTemplateSelector: (item: any, index: number, items: any) => string;
+    private _itemContentTemplateSelector: (item: any, parent: number, index: number, items: any) => string;
     private _itemContentTemplateSelectorBindable = new Label();
     public _defaultItemContentTemplate: KeyedTemplate = {
         key: 'default',
@@ -203,19 +199,20 @@ export abstract class AccordionBase extends View {
         }
     }
 
-    get itemContentTemplateSelector(): string | ((item: any, index: number, items: any) => string) {
+    get itemContentTemplateSelector(): string | ((item: any, parentIndex: number, index: number, items: any) => string) {
         return this._itemContentTemplateSelector;
     }
 
-    set itemContentTemplateSelector(value: string | ((item: any, index: number, items: any) => string)) {
+    set itemContentTemplateSelector(value: string | ((item: any, parentIndex: number, index: number, items: any) => string)) {
         if (typeof value === 'string') {
             this._itemContentTemplateSelectorBindable.bind({
                 sourceProperty: null,
                 targetProperty: 'templateKey',
                 expression: value
             });
-            this._itemContentTemplateSelector = (item: any, index: number, items: any) => {
+            this._itemContentTemplateSelector = (item: any, parentIndex: number, index: number, items: any) => {
                 item['$childIndex'] = index;
+                item['$parentIndex'] = parentIndex;
                 this._itemContentTemplateSelectorBindable.bindingContext = item;
                 return this._itemContentTemplateSelectorBindable.get('templateKey');
             };
@@ -300,7 +297,7 @@ export abstract class AccordionBase extends View {
         if (this.itemContentTemplateSelector) {
             let dataItem = this._getChildData(index, this._getHasHeader() ? childIndex - 1 : childIndex);
             const items = (<ItemsSource>this.items).getItem ? (<ItemsSource>this.items).getItem(index)[this.childItems] : this.items[this.childItems];
-            templateKey = this._itemContentTemplateSelector(dataItem, childIndex, items);
+            templateKey = this._itemContentTemplateSelector(dataItem, index, childIndex, items);
         }
 
         for (let i = 0, length = this._itemContentTemplatesInternal.length; i < length; i++) {

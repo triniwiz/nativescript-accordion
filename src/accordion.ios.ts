@@ -126,6 +126,9 @@ export class Accordion extends AccordionBase {
         nativeView.estimatedRowHeight = DEFAULT_HEIGHT;
         nativeView.rowHeight = UITableViewAutomaticDimension;
         nativeView.sectionHeaderHeight = UITableViewAutomaticDimension;
+
+        this.ios.separatorColor = UIColor.clearColor;
+
         if (this.separatorColor) {
             this.ios.separatorColor = new Color(this.separatorColor).ios;
         }
