@@ -10,6 +10,15 @@ export declare class ItemContext {
     odd: boolean;
     constructor($implicit?: any, item?: any, index?: number, even?: boolean, odd?: boolean);
 }
+export declare class ChildItemContext {
+    $implicit: any;
+    item: any;
+    parentIndex: number;
+    index: number;
+    even: boolean;
+    odd: boolean;
+    constructor($implicit?: any, item?: any, parentIndex?: number, index?: number, even?: boolean, odd?: boolean);
+}
 export interface SetupItemViewArgs {
     view: EmbeddedViewRef<any>;
     data: any;
@@ -69,7 +78,9 @@ export declare abstract class AccordionItemsComponent implements DoCheck, OnDest
     onItemContentLoading(args: ItemEventData): void;
     onFooterLoading(args: ItemEventData): void;
     setupViewRef(viewRef: EmbeddedViewRef<ItemContext>, data: any, index: number): void;
+    setupChildViewRef(viewRef: EmbeddedViewRef<ChildItemContext>, data: any, parentIndex: number, index: number): void;
     protected getItemTemplateViewFactory(template: TemplateRef<ItemContext>): () => View;
+    protected getChildItemTemplateViewFactory(template: TemplateRef<ChildItemContext>): () => View;
     private detectChangesOnChild(viewRef, index);
     ngDoCheck(): void;
 }

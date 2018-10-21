@@ -68,7 +68,7 @@ export declare abstract class AccordionBase extends View {
     _footerTemplatesInternal: KeyedTemplate[];
     headerTemplateSelector: string | ((item: any, index: number, items: any) => string);
     itemHeaderTemplateSelector: string | ((item: any, index: number, items: any) => string);
-    itemContentTemplateSelector: string | ((item: any, index: number, items: any) => string);
+    itemContentTemplateSelector: string | ((item: any, parentIndex: number, index: number, items: any) => string);
     footerTemplateSelector: string | ((item: any, index: number, items: any) => string);
     _getHeaderTemplate(index: number): KeyedTemplate;
     _getItemHeaderTemplate(index: number): KeyedTemplate;

@@ -48,6 +48,18 @@ export class ItemContext {
     }
 }
 
+export class ChildItemContext {
+    constructor(
+        public $implicit?: any,
+        public item?: any,
+        public parentIndex?: number,
+        public index?: number,
+        public even?: boolean,
+        public odd?: boolean
+    ) {
+    }
+}
+
 export interface SetupItemViewArgs {
     view: EmbeddedViewRef<any>;
     data: any;
@@ -147,7 +159,6 @@ export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, Aft
     }
 
     ngAfterContentInit() {
-
         this.setItemTemplates();
     }
 
@@ -216,7 +227,7 @@ export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, Aft
 
             this.accordionItemsView.itemContentTemplates = templates;
         } else {
-            this.getItemTemplateViewFactory(this.itemContentTemplate);
+            this.getChildItemTemplateViewFactory(this.itemContentTemplate);
         }
 
         if (this._templateFooterMap) {
@@ -272,7 +283,7 @@ export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, Aft
 
             const keyedTemplate = {
                 key,
-                createView: this.getItemTemplateViewFactory(template)
+                createView: this.getChildItemTemplateViewFactory(template)
             };
 
             this._templateItemContentMap.set(key, keyedTemplate);
@@ -356,7 +367,6 @@ export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, Aft
         this.detectChangesOnChild(viewRef, index);
     }
 
-
     @profile
     public onItemContentLoading(args: ItemEventData) {
         if (!args.view && !this.itemContentTemplate) {
@@ -369,7 +379,7 @@ export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, Aft
         const items = (<any>args.object).items;
         const currentItem = typeof items.getItem === 'function' ? items.getItem(index)[childItems][childIndex] : items[index][childItems][childIndex];
 
-        let viewRef: EmbeddedViewRef<ItemContext>;
+        let viewRef: EmbeddedViewRef<ChildItemContext>;
 
         if (args.view) {
 
@@ -382,16 +392,15 @@ export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, Aft
         }
 
         if (!viewRef) {
-            viewRef = this.loader.createEmbeddedView(this.itemContentTemplate, new ItemContext(), 0);
+            viewRef = this.loader.createEmbeddedView(this.itemContentTemplate, new ChildItemContext(), 0);
             args.view = getItemViewRoot(viewRef);
             args.view[NG_VIEW] = viewRef;
         }
 
-        this.setupViewRef(viewRef, currentItem, childIndex);
+        this.setupChildViewRef(viewRef, currentItem, index, childIndex);
 
         this.detectChangesOnChild(viewRef, index);
     }
-
 
     @profile
     public onFooterLoading(args: ItemEventData) {
@@ -437,9 +446,31 @@ export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, Aft
         this.setupItemView.next({view: viewRef, data: data, index: index, context: context});
     }
 
+    public setupChildViewRef(viewRef: EmbeddedViewRef<ChildItemContext>, data: any, parentIndex: number, index: number): void {
+        const context = viewRef.context;
+        context.$implicit = data;
+        context.item = data;
+        context.parentIndex = parentIndex;
+        context.index = index;
+        context.even = (index % 2 === 0);
+        context.odd = !context.even;
+
+        this.setupItemView.next({view: viewRef, data: data, index: index, context: context});
+    }
+
     protected getItemTemplateViewFactory(template: TemplateRef<ItemContext>): () => View {
         return () => {
             const viewRef = this.loader.createEmbeddedView(template, new ItemContext(), 0);
+            const resultView = getItemViewRoot(viewRef);
+            resultView[NG_VIEW] = viewRef;
+
+            return resultView;
+        };
+    }
+
+    protected getChildItemTemplateViewFactory(template: TemplateRef<ChildItemContext>): () => View {
+        return () => {
+            const viewRef = this.loader.createEmbeddedView(template, new ChildItemContext(), 0);
             const resultView = getItemViewRoot(viewRef);
             resultView[NG_VIEW] = viewRef;
 
@@ -505,10 +536,12 @@ export class TemplateKeyDirective {
     providers: [{provide: ACCORDION_ITEMS_COMPONENT, useExisting: forwardRef(() => AccordionComponent)}]
 })
 export class AccordionComponent extends AccordionItemsComponent {
+    // @ts-ignore
     public get nativeElement(): Accordion {
         return this.accordionItemsView;
     }
 
+    // @ts-ignore
     protected accordionItemsView: Accordion;
 
     constructor(_elementRef: ElementRef,
