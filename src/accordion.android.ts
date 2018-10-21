@@ -1,5 +1,5 @@
 import { Color } from 'tns-core-modules/color';
-import { KeyedTemplate, Length, unsetValue, View } from 'tns-core-modules/ui/core/view';
+import { KeyedTemplate, View } from 'tns-core-modules/ui/core/view';
 import * as common from './accordion.common';
 import {
     AccordionBase,
@@ -525,11 +525,8 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
 
 
         if (args.view) {
-            if (owner._effectiveRowHeight > -1) {
+            if (owner._effectiveItemHeaderRowHeight > -1) {
                 args.view.height = owner.itemHeaderRowHeight;
-            }
-            else {
-                args.view.height = <Length>unsetValue;
             }
 
             owner._prepareItemHeader(args.view, groupPosition);
@@ -612,11 +609,8 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
 
 
             if (args.view) {
-                if (owner._effectiveRowHeight > -1) {
-                    args.view.height = owner.itemContentRowHeight;
-                }
-                else {
-                    args.view.height = <Length>unsetValue;
+                if (owner._effectiveHeaderRowHeight > -1) {
+                    args.view.height = owner.footerRowHeight;
                 }
 
                 owner._prepareHeaderItem(args.view, groupPosition);
@@ -677,11 +671,8 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
 
 
             if (args.view) {
-                if (owner._effectiveRowHeight > -1) {
+                if (owner._effectiveFooterRowHeight > -1) {
                     args.view.height = owner.itemContentRowHeight;
-                }
-                else {
-                    args.view.height = <Length>unsetValue;
                 }
 
                 owner._prepareFooterItem(args.view, groupPosition);
@@ -739,11 +730,8 @@ class AccordionListAdapter extends android.widget.BaseExpandableListAdapter {
 
 
         if (args.view) {
-            if (owner._effectiveRowHeight > -1) {
+            if (owner._effectiveItemContentRowHeight > -1) {
                 args.view.height = owner.itemContentRowHeight;
-            }
-            else {
-                args.view.height = <Length>unsetValue;
             }
 
             owner._prepareItemContent(args.view, groupPosition, childPosition);
