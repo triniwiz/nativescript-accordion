@@ -82,6 +82,8 @@ export interface AccordionItemsView {
     itemHeaderTemplateSelector: string | ((item: any, index: number, items: any) => string);
     itemContentTemplateSelector: string | ((item: any, index: number, items: any) => string);
     footerTemplateSelector: string | ((item: any, index: number, items: any) => string);
+    _getHasHeader: any;
+    _getHasFooter: any;
 
     refresh(): void;
 
@@ -171,13 +173,15 @@ export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, Aft
 
     private setItemTemplates() {
 
-        // The itemTemplateQuery may be changed after list items are added that contain <template> inside,
-        // so cache and use only the original template to avoid errors.
-        this.headerTemplate = this.itemTemplateQuery;
         this.itemHeaderTemplate = this.itemTemplateQuery;
-        this.itemContentTemplate = this.itemTemplateQuery;
-        this.footerTemplate = this.itemTemplateQuery;
 
+        this.accordionItemsView._getHasHeader = () => {
+            return false;
+        };
+
+        this.accordionItemsView._getHasFooter = () => {
+            return false;
+        };
         if (this._templateHeaderMap) {
             const templates: KeyedTemplate[] = [];
             this._templateHeaderMap.forEach(value => {
@@ -190,9 +194,12 @@ export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, Aft
                 };
             }
 
+            if (templates.length > 0) {
+                this.accordionItemsView._getHasHeader = () => {
+                    return true;
+                };
+            }
             this.accordionItemsView.headerTemplates = templates;
-        } else {
-            this.getItemTemplateViewFactory(this.headerTemplate);
         }
 
         if (this._templateItemHeaderMap) {
@@ -226,8 +233,6 @@ export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, Aft
             }
 
             this.accordionItemsView.itemContentTemplates = templates;
-        } else {
-            this.getChildItemTemplateViewFactory(this.itemContentTemplate);
         }
 
         if (this._templateFooterMap) {
@@ -242,9 +247,13 @@ export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, Aft
                 };
             }
 
+            if (templates.length > 0) {
+                this.accordionItemsView._getHasFooter = () => {
+                    return true;
+                };
+            }
+
             this.accordionItemsView.footerTemplates = templates;
-        } else {
-            this.getItemTemplateViewFactory(this.footerTemplate);
         }
     }
 

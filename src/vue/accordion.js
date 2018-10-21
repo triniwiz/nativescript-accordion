@@ -74,6 +74,11 @@ module.exports = function accordion(Vue) {
 				}
 			});
 
+			if (headerTemplates.length > 0) {
+				this.$refs.accordion.setAttribute('_getHasHeader', () => {
+					return false;
+				});
+			}
 			const itemContentTemplates = this.$templates.getKeyedTemplates().filter(item => {
 				if (item.key === 'content') {
 					return item;
@@ -102,6 +107,13 @@ module.exports = function accordion(Vue) {
 					return item;
 				}
 			});
+
+			if (footerTemplates.length > 0) {
+				this.$refs.accordion.setAttribute('_getHasFooter', () => {
+					return false;
+				});
+			}
+
 
 			this.$refs.accordion.setAttribute(
 				'_headerTemplatesInternal',

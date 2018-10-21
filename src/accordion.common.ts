@@ -282,13 +282,14 @@ export abstract class AccordionBase extends View {
     }
 
     public _getHasHeader = (): boolean => {
-        const length = this._headerTemplatesInternal ? this._headerTemplatesInternal.length : 0;
-        return !!(this.headerTemplate || (length > 0));
+        const contains = this._headerTemplatesInternal && this._headerTemplatesInternal.length > 0;
+        return !!(this.headerTemplate || contains);
+
     }
 
     public _getHasFooter = (): boolean => {
-        const length = this._footerTemplatesInternal ? this._footerTemplatesInternal.length : 0;
-        return !!(this.footerTemplate || (length > 0));
+        const contains = this._footerTemplatesInternal && this._footerTemplatesInternal.length > 0;
+        return !!(this.headerTemplate || contains);
     }
 
 
