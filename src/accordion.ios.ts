@@ -4,6 +4,8 @@ import {
     AccordionBase,
     footerTemplatesProperty,
     headerTemplatesProperty,
+    iosEstimatedFooterRowHeightProperty,
+    iosEstimatedHeaderRowHeightProperty,
     iosEstimatedItemContentRowHeightProperty,
     iosEstimatedItemHeaderRowHeightProperty,
     itemContentTemplatesProperty,
@@ -276,7 +278,7 @@ export class Accordion extends AccordionBase {
     public onLayout(left: number, top: number, right: number, bottom: number): void {
         super.onLayout(left, top, right, bottom);
         this._map.forEach((childView, accordionCell) => {
-            let rowHeight = this._effectiveRowHeight;
+            let rowHeight = this._effectiveItemContentRowHeight;
             let cellHeight = rowHeight > 0 ? rowHeight : this.getItemContentHeight(parseInt(`${childView._accordionItemIndex + 1}${childView._accordionChildItemIndex}`));
             if (cellHeight) {
                 let width = layout.getMeasureSpecSize(this.widthMeasureSpec);
@@ -285,7 +287,7 @@ export class Accordion extends AccordionBase {
         });
 
         this._mapItemHeader.forEach((childView, accordionHeader) => {
-            let rowHeight = this._effectiveRowHeight;
+            let rowHeight = this._effectiveItemHeaderRowHeight;
             let cellHeight = rowHeight > 0 ? rowHeight : this.getItemHeaderHeight(childView._accordionItemIndex);
             if (cellHeight) {
                 let width = layout.getMeasureSpecSize(this.widthMeasureSpec);
@@ -294,7 +296,7 @@ export class Accordion extends AccordionBase {
         });
 
         this._mapHeader.forEach((childView, accordionHeaderCell) => {
-            let rowHeight = this._effectiveRowHeight;
+            let rowHeight = this._effectiveHeaderRowHeight;
             let cellHeight = rowHeight > 0 ? rowHeight : this.getItemHeaderHeight(childView._accordionItemIndex);
             if (cellHeight) {
                 let width = layout.getMeasureSpecSize(this.widthMeasureSpec);
@@ -304,7 +306,7 @@ export class Accordion extends AccordionBase {
 
 
         this._mapFooter.forEach((childView, accordionFooterCell) => {
-            let rowHeight = this._effectiveRowHeight;
+            let rowHeight = this._effectiveFooterRowHeight;
             let cellHeight = rowHeight > 0 ? rowHeight : this.getItemHeaderHeight(childView._accordionItemIndex);
             if (cellHeight) {
                 let width = layout.getMeasureSpecSize(this.widthMeasureSpec);
@@ -344,7 +346,7 @@ export class Accordion extends AccordionBase {
 
     private _layoutHeaderCell(cellView: View, indexPath: NSIndexPath): number {
         if (cellView) {
-            const rowHeight = this._effectiveRowHeight;
+            const rowHeight = this._effectiveHeaderRowHeight;
             const heightMeasureSpec: number = rowHeight >= 0 ? layout.makeMeasureSpec(rowHeight, layout.EXACTLY) : infinity;
             const measuredSize = View.measureChild(this, cellView, this.widthMeasureSpec, heightMeasureSpec);
             const height = measuredSize.measuredHeight;
@@ -357,7 +359,7 @@ export class Accordion extends AccordionBase {
 
     private _layoutFooterCell(cellView: View, indexPath: NSIndexPath): number {
         if (cellView) {
-            const rowHeight = this._effectiveRowHeight;
+            const rowHeight = this._effectiveFooterRowHeight;
             const heightMeasureSpec: number = rowHeight >= 0 ? layout.makeMeasureSpec(rowHeight, layout.EXACTLY) : infinity;
             const measuredSize = View.measureChild(this, cellView, this.widthMeasureSpec, heightMeasureSpec);
             const height = measuredSize.measuredHeight;
@@ -370,7 +372,7 @@ export class Accordion extends AccordionBase {
 
     private _layoutCell(cellView: View, indexPath: NSIndexPath): number {
         if (cellView) {
-            const rowHeight = this._effectiveRowHeight;
+            const rowHeight = this._effectiveItemContentRowHeight;
             const heightMeasureSpec: number = rowHeight >= 0 ? layout.makeMeasureSpec(rowHeight, layout.EXACTLY) : infinity;
             const measuredSize = View.measureChild(this, cellView, this.widthMeasureSpec, heightMeasureSpec);
             const height = measuredSize.measuredHeight;
@@ -383,7 +385,7 @@ export class Accordion extends AccordionBase {
 
     private _layoutHeader(cellView: View, section: number): number {
         if (cellView) {
-            const rowHeight = this._effectiveRowHeight;
+            const rowHeight = this._effectiveItemHeaderRowHeight;
             const heightMeasureSpec: number = rowHeight >= 0 ? layout.makeMeasureSpec(rowHeight, layout.EXACTLY) : infinity;
             const measuredSize = View.measureChild(this, cellView, this.widthMeasureSpec, heightMeasureSpec);
             const height = measuredSize.measuredHeight;
@@ -819,8 +821,30 @@ export class Accordion extends AccordionBase {
         });
     }
 
+    public _onHeaderRowHeightPropertyChanged(oldValue: Length, newValue: Length) {
+        const value = layout.toDeviceIndependentPixels(this._effectiveHeaderRowHeight);
+        const nativeView = this.ios;
+
+        if (value < 0) {
+            nativeView.sectionHeaderHeight = UITableViewAutomaticDimension;
+            nativeView.estimatedSectionHeaderHeight = DEFAULT_HEIGHT;
+            this._delegate = UITableViewDelegateImpl.initWithOwner(new WeakRef(this));
+        }
+        else {
+            nativeView.sectionHeaderHeight = value;
+            nativeView.estimatedSectionHeaderHeight = value;
+            this._delegate = UITableViewRowHeightDelegateImpl.initWithOwner(new WeakRef(this));
+        }
+
+        if (this.isLoaded) {
+            nativeView.delegate = this._delegate;
+        }
+
+        super._onItemHeaderRowHeightPropertyChanged(oldValue, newValue);
+    }
+
     public _onItemHeaderRowHeightPropertyChanged(oldValue: Length, newValue: Length) {
-        const value = layout.toDeviceIndependentPixels(this._effectiveRowHeight);
+        const value = layout.toDeviceIndependentPixels(this._effectiveItemHeaderRowHeight);
         const nativeView = this.ios;
 
         if (value < 0) {
@@ -842,7 +866,7 @@ export class Accordion extends AccordionBase {
     }
 
     public _onItemContentRowHeightPropertyChanged(oldValue: Length, newValue: Length) {
-        const value = layout.toDeviceIndependentPixels(this._effectiveRowHeight);
+        const value = layout.toDeviceIndependentPixels(this._effectiveItemContentRowHeight);
         const nativeView = this.ios;
 
         if (value < 0) {
@@ -861,6 +885,28 @@ export class Accordion extends AccordionBase {
         }
 
         super._onItemContentRowHeightPropertyChanged(oldValue, newValue);
+    }
+
+    public _onFooterRowHeightPropertyChanged(oldValue: Length, newValue: Length) {
+        const value = layout.toDeviceIndependentPixels(this._effectiveFooterRowHeight);
+        const nativeView = this.ios;
+
+        if (value < 0) {
+            nativeView.sectionHeaderHeight = UITableViewAutomaticDimension;
+            nativeView.estimatedSectionHeaderHeight = DEFAULT_HEIGHT;
+            this._delegate = UITableViewDelegateImpl.initWithOwner(new WeakRef(this));
+        }
+        else {
+            nativeView.sectionHeaderHeight = value;
+            nativeView.estimatedSectionHeaderHeight = value;
+            this._delegate = UITableViewRowHeightDelegateImpl.initWithOwner(new WeakRef(this));
+        }
+
+        if (this.isLoaded) {
+            nativeView.delegate = this._delegate;
+        }
+
+        super._onItemHeaderRowHeightPropertyChanged(oldValue, newValue);
     }
 
     [itemHeaderTemplatesProperty.getDefault](): KeyedTemplate[] {
@@ -930,6 +976,16 @@ export class Accordion extends AccordionBase {
         this.refresh();
     }
 
+    [iosEstimatedHeaderRowHeightProperty.getDefault](): Length {
+        return DEFAULT_HEIGHT;
+    }
+
+    [iosEstimatedHeaderRowHeightProperty.setNative](value: Length) {
+        const nativeView = this.ios;
+        const estimatedHeight = Length.toDevicePixels(value, 0);
+        nativeView.estimatedSectionHeaderHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
+    }
+
     [iosEstimatedItemHeaderRowHeightProperty.getDefault](): Length {
         return DEFAULT_HEIGHT;
     }
@@ -948,6 +1004,17 @@ export class Accordion extends AccordionBase {
         const nativeView = this.ios;
         const estimatedHeight = Length.toDevicePixels(value, 0);
         nativeView.estimatedRowHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
+    }
+
+
+    [iosEstimatedFooterRowHeightProperty.getDefault](): Length {
+        return DEFAULT_HEIGHT;
+    }
+
+    [iosEstimatedFooterRowHeightProperty.setNative](value: Length) {
+        const nativeView = this.ios;
+        const estimatedHeight = Length.toDevicePixels(value, 0);
+        nativeView.estimatedSectionHeaderHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
     }
 }
 
@@ -1008,8 +1075,6 @@ class AccordionHeaderTap extends NSObject {
             /**
              * Call reload to expand or collapse section
              */
-            //owner.ios.beginUpdates();
-            //owner.ios.endUpdates();
             reloadSection(current);
             owner._selectedIndexesUpdatedFromNative(Array.from(owner._expandedViews.keys()));
         } else {
@@ -1212,7 +1277,7 @@ export class AccordionDataSource extends NSObject implements UITableViewDataSour
                     // Arrange cell views. We do it here instead of _layoutCell because _layoutCell is called
                     // from 'tableViewHeightForRowAtIndexPath' method too (in iOS 7.1) and we don't want to arrange the fake cell.
                     let width = layout.getMeasureSpecSize(owner.widthMeasureSpec);
-                    let rowHeight = owner._effectiveRowHeight;
+                    let rowHeight = owner._effectiveHeaderRowHeight;
                     let cellHeight = rowHeight > 0 ? rowHeight : owner.getHeaderHeight(indexPath.row);
                     View.layoutChild(owner, cellView, 0, 0, width, cellHeight ? cellHeight : 0);
                 }
@@ -1235,7 +1300,7 @@ export class AccordionDataSource extends NSObject implements UITableViewDataSour
                     // Arrange cell views. We do it here instead of _layoutCell because _layoutCell is called
                     // from 'tableViewHeightForRowAtIndexPath' method too (in iOS 7.1) and we don't want to arrange the fake cell.
                     let width = layout.getMeasureSpecSize(owner.widthMeasureSpec);
-                    let rowHeight = owner._effectiveRowHeight;
+                    let rowHeight = owner._effectiveFooterRowHeight;
                     let cellHeight = rowHeight > 0 ? rowHeight : owner.getFooterHeight(indexPath.row);
                     View.layoutChild(owner, cellView, 0, 0, width, cellHeight ? cellHeight : 0);
                 }
@@ -1257,7 +1322,7 @@ export class AccordionDataSource extends NSObject implements UITableViewDataSour
                 // Arrange cell views. We do it here instead of _layoutCell because _layoutCell is called
                 // from 'tableViewHeightForRowAtIndexPath' method too (in iOS 7.1) and we don't want to arrange the fake cell.
                 let width = layout.getMeasureSpecSize(owner.widthMeasureSpec);
-                let rowHeight = owner._effectiveRowHeight;
+                let rowHeight = owner._effectiveItemContentRowHeight;
 
                 let cellHeight = rowHeight > 0 ? rowHeight : owner.getItemContentHeight(parseInt(`${indexPath.section + 1 }${indexPath.row}`));
                 View.layoutChild(owner, cellView, 0, 0, width, cellHeight ? cellHeight : 0);
@@ -1310,7 +1375,16 @@ class UITableViewRowHeightDelegateImpl extends NSObject implements UITableViewDe
             return tableView.estimatedRowHeight;
         }
 
-        return layout.toDeviceIndependentPixels(owner._effectiveRowHeight);
+        const total = tableView.numberOfRowsInSection(indexPath.section);
+
+        if (indexPath.row === 0 && owner._getHasHeader()) {
+            return layout.toDeviceIndependentPixels(owner._effectiveHeaderRowHeight);
+        } else if (indexPath.row === total - 1 && owner._getHasFooter) {
+            return layout.toDeviceIndependentPixels(owner._effectiveFooterRowHeight);
+        } else {
+            return layout.toDeviceIndependentPixels(owner._effectiveItemContentRowHeight);
+        }
+
     }
 
     public tableViewHeightForHeaderInSection(tableView: UITableView, section: number) {
@@ -1318,7 +1392,7 @@ class UITableViewRowHeightDelegateImpl extends NSObject implements UITableViewDe
         if (!owner) {
             return tableView.estimatedSectionHeaderHeight;
         }
-        return layout.toDeviceIndependentPixels(owner._effectiveRowHeight);
+        return layout.toDeviceIndependentPixels(owner._effectiveItemHeaderRowHeight);
     }
 }
 
@@ -1454,7 +1528,7 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
                 // Arrange cell views. We do it here instead of _layoutCell because _layoutCell is called
                 // from 'tableViewHeightForRowAtIndexPath' method too (in iOS 7.1) and we don't want to arrange the fake cell.
                 let width = layout.getMeasureSpecSize(owner.widthMeasureSpec);
-                let rowHeight = owner._effectiveRowHeight;
+                let rowHeight = owner._effectiveItemHeaderRowHeight;
                 let cellHeight = rowHeight > 0 ? rowHeight : owner.getItemHeaderHeight(section);
                 View.layoutChild(owner, cellView, 0, 0, width, cellHeight ? cellHeight : 0);
             }
