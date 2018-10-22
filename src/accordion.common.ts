@@ -14,7 +14,7 @@ import { Observable } from 'tns-core-modules/data/observable';
 import { ChangedData, ObservableArray } from 'tns-core-modules/data/observable-array';
 import { addWeakEventListener, removeWeakEventListener } from 'tns-core-modules/ui/core/weak-event-listener';
 import { Label } from 'tns-core-modules/ui/label';
-
+import { isIOS } from 'tns-core-modules/platform';
 const autoEffectiveRowHeight = -1;
 
 export module knownCollections {
@@ -303,7 +303,8 @@ export abstract class AccordionBase extends View {
     public _getItemContentTemplate(index: number, childIndex: number): KeyedTemplate {
         let templateKey = 'default';
         if (this.itemContentTemplateSelector) {
-            let dataItem = this._getChildData(index, this._getHasHeader() ? childIndex - 1 : childIndex);
+            const _childIndex = (isIOS ? childIndex - 1 : childIndex);
+            let dataItem = this._getChildData(index, this._getHasHeader() ? _childIndex - 1 : _childIndex);
             const items = (<ItemsSource>this.items).getItem ? (<ItemsSource>this.items).getItem(index)[this.childItems] : this.items[this.childItems];
             templateKey = this._itemContentTemplateSelector(dataItem, index, childIndex, items);
         }

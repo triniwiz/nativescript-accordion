@@ -6,7 +6,7 @@
 			<Accordion row="1" for="item of items">
 
 				<v-template name="header">
-					<StackLayout>
+					<StackLayout height="100">
 						<Label backgroundColor="green" :text="item.headerText"></Label>
 					</StackLayout>
 				</v-template>
@@ -19,10 +19,10 @@
 				</v-template>
 
 				<v-template name="content">
-					<StackLayout>
-						<Image decodeWidth="400" decodeHeight="400" loadMode="async" :src="item.image"></Image>
-						<Label :text="item.text"></Label>
-					</StackLayout>
+					<GridLayout rows="auto,auto">
+						<Image decodeWidth="300" decodeHeight="300" loadMode="async" :src="item.image"></Image>
+						<Label row="1" :text="item.text"></Label>
+					</GridLayout>
 				</v-template>
 
 
