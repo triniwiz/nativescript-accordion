@@ -14,7 +14,9 @@ export class HelloWorldModel extends Observable {
                 headerText: 'First',
                 footerText: '4',
                 image: 'http://placehold.it/120x120&text=First',
-                items: [{image: '~/images/a9ff17db85f8136619feb0d5a200c0e4.png', text: 'Stop'}, {
+                items: [
+                    {image: '~/images/a9ff17db85f8136619feb0d5a200c0e4.png', text: 'Stop'},
+                    {
                     text: 'Drop',
                     image: '~/images/shazam.jpg'
                 }]

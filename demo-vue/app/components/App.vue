@@ -20,7 +20,7 @@
 
 				<v-template name="content">
 					<GridLayout rows="auto,auto">
-						<Image decodeWidth="300" decodeHeight="300" loadMode="async" :src="item.image"></Image>
+						<Image height="300" decodeWidth="300" decodeHeight="300" loadMode="async" :src="item.image"></Image>
 						<Label row="1" :text="item.text"></Label>
 					</GridLayout>
 				</v-template>
