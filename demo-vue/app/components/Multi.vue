@@ -28,7 +28,7 @@
 				<v-template if="$even" name="title-even">
 					<StackLayout backgroundColor="white">
 						<Label :text="item.title"></Label>
-						<Image height="100" width="100" decodeWidth="400" decodeHeight="400" loadMode="async"
+						<Image height="50" decodeWidth="50" decodeHeight="50" loadMode="async"
 							   :src="item.image"></Image>
 					</StackLayout>
 				</v-template>
@@ -36,27 +36,27 @@
 
 				<v-template if="$odd" name="content-odd">
 					<StackLayout>
-						<Image decodeWidth="400" decodeHeight="400" loadMode="async" :src="item.image"></Image>
-						<Label :text="item.text"></Label>
+						<Image height="100" decodeWidth="100" decodeHeight="100" loadMode="async" :src="item.image"></Image>
+						<Label height="200" :text="item.text"></Label>
 					</StackLayout>
 				</v-template>
 
 				<v-template if="$even" name="content-even">
-					<StackLayout>
-						<Image decodeWidth="400" decodeHeight="400" loadMode="async" :src="item.image"></Image>
-						<Label :text="item.text"></Label>
+					<StackLayout backgroundColor="red">
+						<Image height="100" decodeWidth="100" decodeHeight="100" loadMode="async" :src="item.image"></Image>
+						<Label backgroundColor="yellow" :text="item.text"></Label>
 					</StackLayout>
 				</v-template>
 
 				<v-template if="$odd" name="footer-odd">
-					<StackLayout>
-						<Label backgroundColor="yellow" :text="item.footerText"></Label>
+					<StackLayout backgroundColor="yellow">
+						<Label :text="item.footerText"></Label>
 					</StackLayout>
 				</v-template>
 
 				<v-template if="$even" name="footer-even">
-					<StackLayout>
-						<Label backgroundColor="blue" :text="item.footerText"></Label>
+					<StackLayout backgroundColor="blue">
+						<Label  :text="item.footerText"></Label>
 					</StackLayout>
 				</v-template>
 			</Accordion>
@@ -70,13 +70,14 @@
 			return {
 				items: [
 					{
-						title: '1',
+						title: '1 Title',
 						footer: '10',
 						headerText: 'First',
 						footerText: '4',
 						image: 'http://placehold.it/120x120&text=First',
 						children: [
-							{ image: '~/assets/images/a9ff17db85f8136619feb0d5a200c0e4.png', text: 'Someone' },
+							{ image: '~/assets/images/a9ff17db85f8136619feb0d5a200c0e4.png',
+								text: 'Someone' },
 							{
 								text: 'Help',
 								image: '~/assets/images/svg.jpg'
@@ -84,7 +85,7 @@
 						]
 					},
 					{
-						title: '2',
+						title: '2 Title',
 						footer: '20',
 						headerText: 'Second',
 						footerText: '5',
@@ -95,7 +96,7 @@
 						}, { text: 'Stop', image: '~/assets/images/f29.png' } ]
 					},
 					{
-						title: '3',
+						title: '3 Title',
 						footer: '30',
 						headerText: 'Third',
 						footerText: '6',
@@ -106,7 +107,7 @@
 						} ]
 					},
 					{
-						title: '4',
+						title: '4 Title',
 						footer: '40',
 						headerText: 'Fourth',
 						footerText: '7',

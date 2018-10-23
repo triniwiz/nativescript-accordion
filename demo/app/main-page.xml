@@ -2,32 +2,32 @@
       xmlns:accordion="nativescript-accordion">
     <StackLayout class="p-20">
         <Button text="View Multi Template" tap="goToMulti"/>
-        <accordion:Accordion iosEstimatedItemHeaderRowHeight="400" height="100%" items="{{items}}" allowMultiple="false" selectedIndexes="{{selectedIndexes}}">
+        <accordion:Accordion height="100%" items="{{items}}" allowMultiple="false" selectedIndexes="{{selectedIndexes}}">
 
             <accordion:Accordion.headerTemplate>
-                <StackLayout>
-                    <Label backgroundColor="green" text="{{headerText}}"/>
+                <StackLayout  backgroundColor="green" >
+                    <Label text="{{headerText}}"/>
                 </StackLayout>
             </accordion:Accordion.headerTemplate>
 
 
             <accordion:Accordion.itemHeaderTemplate>
-                <GridLayout backgroundColor="white">
+                <GridLayout backgroundColor="blue">
                     <Label height="100%" text="{{title}}"/>
                 </GridLayout>
             </accordion:Accordion.itemHeaderTemplate>
 
             <accordion:Accordion.itemContentTemplate>
-                <StackLayout>
-                    <Image decodeWidth="400" decodeHeight="400" loadMode="async" src="{{image}}"/>
+                <StackLayout backgroundColor="orange">
+                    <Image height="200" decodeWidth="200" decodeHeight="200"  src="{{image}}"/>
                     <Label text="{{text}}"/>
                 </StackLayout>
             </accordion:Accordion.itemContentTemplate>
 
 
             <accordion:Accordion.footerTemplate>
-                <StackLayout>
-                    <Label backgroundColor="yellow" text="{{footerText}}"/>
+                <StackLayout backgroundColor="yellow">
+                    <Label text="{{footerText}}"/>
                 </StackLayout>
             </accordion:Accordion.footerTemplate>
         </accordion:Accordion>

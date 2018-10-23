@@ -14,6 +14,7 @@ import { Observable } from 'tns-core-modules/data/observable';
 import { ChangedData, ObservableArray } from 'tns-core-modules/data/observable-array';
 import { addWeakEventListener, removeWeakEventListener } from 'tns-core-modules/ui/core/weak-event-listener';
 import { Label } from 'tns-core-modules/ui/label';
+import { isIOS } from 'tns-core-modules/platform';
 
 const autoEffectiveRowHeight = -1;
 
@@ -132,7 +133,7 @@ export abstract class AccordionBase extends View {
     }
     public _itemHeaderTemplatesInternal = new Array<KeyedTemplate>(this._defaultItemHeaderTemplate);
 
-    private _itemContentTemplateSelector: (item: any, parent: number, index: number, items: any) => string;
+    private _itemContentTemplateSelector: (item: any, parentIndex: number, index: number, items: any) => string;
     private _itemContentTemplateSelectorBindable = new Label();
     public _defaultItemContentTemplate: KeyedTemplate = {
         key: 'default',
@@ -218,7 +219,7 @@ export abstract class AccordionBase extends View {
                 expression: value
             });
             this._itemContentTemplateSelector = (item: any, parentIndex: number, index: number, items: any) => {
-                item['$childIndex'] = index;
+                item['$index'] = index;
                 item['$parentIndex'] = parentIndex;
                 this._itemContentTemplateSelectorBindable.bindingContext = item;
                 return this._itemContentTemplateSelectorBindable.get('templateKey');
@@ -228,7 +229,6 @@ export abstract class AccordionBase extends View {
             this._itemContentTemplateSelector = value;
         }
     }
-
 
     get footerTemplateSelector(): string | ((item: any, index: number, items: any) => string) {
         return this._footerTemplateSelector;
@@ -252,7 +252,6 @@ export abstract class AccordionBase extends View {
         }
     }
 
-
     public _getHeaderTemplate(index: number): KeyedTemplate {
         let templateKey = 'default';
         if (this.headerTemplateSelector) {
@@ -269,7 +268,6 @@ export abstract class AccordionBase extends View {
         // This is the default template
         return this._headerTemplatesInternal[0];
     }
-
 
     public _getItemHeaderTemplate(index: number): KeyedTemplate {
         let templateKey = 'default';
@@ -289,21 +287,21 @@ export abstract class AccordionBase extends View {
     }
 
     public _getHasHeader = (): boolean => {
-        const contains = this._headerTemplatesInternal && this._headerTemplatesInternal.length > 0;
+        const contains = this._headerTemplatesInternal && this._headerTemplatesInternal.length > 1;
         return !!(this.headerTemplate || contains);
 
     }
 
     public _getHasFooter = (): boolean => {
-        const contains = this._footerTemplatesInternal && this._footerTemplatesInternal.length > 0;
-        return !!(this.headerTemplate || contains);
+        const contains = this._footerTemplatesInternal && this._footerTemplatesInternal.length > 1;
+        return !!(this.footerTemplate || contains);
     }
-
 
     public _getItemContentTemplate(index: number, childIndex: number): KeyedTemplate {
         let templateKey = 'default';
         if (this.itemContentTemplateSelector) {
-            let dataItem = this._getChildData(index, this._getHasHeader() ? childIndex - 1 : childIndex);
+            const _childIndex = (isIOS ? childIndex - 1 : childIndex);
+            let dataItem = this._getChildData(index, this._getHasHeader() ? _childIndex - 1 : _childIndex);
             const items = (<ItemsSource>this.items).getItem ? (<ItemsSource>this.items).getItem(index)[this.childItems] : this.items[this.childItems];
             templateKey = this._itemContentTemplateSelector(dataItem, index, childIndex, items);
         }
@@ -650,7 +648,6 @@ export const itemContentRowHeightProperty = new CoercibleProperty<AccordionBase,
     }, valueConverter: Length.parse
 });
 itemContentRowHeightProperty.register(AccordionBase);
-
 
 export const footerRowHeightProperty = new CoercibleProperty<AccordionBase, Length>({
     name: 'footerRowHeight', defaultValue: defaultRowHeight, equalityComparer: Length.equals,

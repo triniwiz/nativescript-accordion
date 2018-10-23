@@ -13,7 +13,7 @@
 	>
 		<ng-template let-i="index" let-item="item" acTemplateKey="header-odd">
 			<StackLayout>
-				<Label backgroundColor="green" [text]="item.headerText"></Label>
+				<Label height="88" backgroundColor="green" [text]="item.headerText"></Label>
 			</StackLayout>
 		</ng-template>
 
@@ -24,7 +24,7 @@
 		</ng-template>
 
 		<ng-template let-i="index" let-item="item" acTemplateKey="title-odd">
-			<StackLayout backgroundColor="white">
+			<StackLayout>
 				<Label [text]="item.title"></Label>
 			</StackLayout>
 		</ng-template>
@@ -32,7 +32,7 @@
 		<ng-template let-i="index" let-item="item" acTemplateKey="title-even">
 			<StackLayout backgroundColor="white">
 				<Label [text]="item.title"></Label>
-				<Image height="100" width="100" decodeWidth="400" decodeHeight="400" loadMode="async"
+				<Image height="100" width="100" decodeWidth="100" decodeHeight="100" loadMode="async"
 					   [src]="item.image"></Image>
 			</StackLayout>
 		</ng-template>
@@ -40,15 +40,15 @@
 
 		<ng-template let-i="index" let-item="item" acTemplateKey="content-odd">
 			<StackLayout>
-				<Image decodeWidth="400" decodeHeight="400" loadMode="async" [src]="item.image"></Image>
-				<Label [text]="item.text"></Label>
+				<Image height="100" decodeWidth="100" decodeHeight="100" loadMode="async" [src]="item.image"></Image>
+				<Label height="44" [text]="item.text"></Label>
 			</StackLayout>
 		</ng-template>
 
 		<ng-template let-i="index" let-item="item" acTemplateKey="content-even">
 			<StackLayout>
-				<Image decodeWidth="400" decodeHeight="400" loadMode="async" [src]="item.image"></Image>
-				<Label [text]="item.text"></Label>
+				<Image height="100" decodeWidth="100" decodeHeight="100" loadMode="async" [src]="item.image"></Image>
+				<Label height="10" [text]="item.text"></Label>
 			</StackLayout>
 		</ng-template>
 
@@ -60,7 +60,7 @@
 
 		<ng-template let-i="index" let-item="item" acTemplateKey="footer-even">
 			<StackLayout>
-				<Label backgroundColor="blue" [text]="item.footerText"></Label>
+				<Label height="44" backgroundColor="blue" [text]="item.footerText"></Label>
 			</StackLayout>
 		</ng-template>
 	</Accordion>
