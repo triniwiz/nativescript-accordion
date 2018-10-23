@@ -93,7 +93,7 @@ export class Accordion extends AccordionBase {
     private _accordion;
     public widthMeasureSpec: number;
     public heightMeasureSpec: number;
-    nativeViewProtected: UITableView;
+    nativeViewProtected: UITableViewImpl;
     _dataSource: AccordionDataSource;
     _delegate;
     private _map: Map<AccordionItemContentCell, ChildItemView>;
@@ -117,8 +117,13 @@ export class Accordion extends AccordionBase {
 
 
     public createNativeView() {
-        return UITableView.new();
+        return UITableViewImpl.initWithOwner(new WeakRef<Accordion>(this));
     }
+
+    estimatedItemHeaderRowHeight = DEFAULT_HEIGHT;
+    estimatedItemContentRowHeight = DEFAULT_HEIGHT;
+    estimatedHeaderRowHeight = DEFAULT_HEIGHT;
+    estimatedFooterRowHeight = DEFAULT_HEIGHT;
 
     public initNativeView() {
         super.initNativeView();
@@ -133,6 +138,7 @@ export class Accordion extends AccordionBase {
 
         this.ios.separatorColor = UIColor.clearColor;
 
+        this.ios.tableFooterView = UIView.new();
         if (this.separatorColor) {
             this.ios.separatorColor = new Color(this.separatorColor).ios;
         }
@@ -290,7 +296,7 @@ export class Accordion extends AccordionBase {
 
         this._map.forEach((childView, accordionCell) => {
             let rowHeight = this._effectiveItemContentRowHeight;
-            let cellHeight = rowHeight > 0 ? rowHeight : this.getItemContentHeight(parseInt(`${childView._accordionItemIndex + 1}${childView._accordionChildItemIndex}`));
+            let cellHeight = rowHeight > 0 ? rowHeight : this.getItemContentHeight(parseInt(`${childView._accordionItemIndex + 1}${childView._accordionChildItemIndex - 1 - (this._getHasHeader() ? 1 : 0)}`));
             if (cellHeight) {
                 let width = layout.getMeasureSpecSize(this.widthMeasureSpec);
                 View.layoutChild(this, childView, 0, 0, width, cellHeight);
@@ -357,7 +363,7 @@ export class Accordion extends AccordionBase {
             return height;
         }
 
-        return this.ios.estimatedRowHeight;
+        return this.ios.estimatedItemHeaderRowHeight;
     }
 
     private _layoutHeaderCell(cellView: View, indexPath: NSIndexPath): number {
@@ -370,7 +376,7 @@ export class Accordion extends AccordionBase {
             return height;
         }
 
-        return this.ios.estimatedRowHeight;
+        return this.ios.estimatedHeaderRowHeight;
     }
 
     private _layoutItemContentCell(cellView: View, indexPath: NSIndexPath): number {
@@ -379,11 +385,11 @@ export class Accordion extends AccordionBase {
             const heightMeasureSpec: number = rowHeight >= 0 ? layout.makeMeasureSpec(rowHeight, layout.EXACTLY) : infinity;
             const measuredSize = View.measureChild(this, cellView, this.widthMeasureSpec, heightMeasureSpec);
             const height = measuredSize.measuredHeight;
-            this.setItemContentHeight(parseInt(`${indexPath.section + 1 }${indexPath.row}`), height);
+            this.setItemContentHeight(parseInt(`${indexPath.section + 1 }${indexPath.row - 1 - (this._getHasHeader() ? 1 : 0)}`), height);
             return height;
         }
 
-        return this.ios.estimatedRowHeight;
+        return this.ios.estimatedItemContentRowHeight;
     }
 
     private _layoutFooterCell(cellView: View, indexPath: NSIndexPath): number {
@@ -396,7 +402,7 @@ export class Accordion extends AccordionBase {
             return height;
         }
 
-        return this.ios.estimatedRowHeight;
+        return this.ios.estimatedFooterRowHeight;
     }
 
     public _prepareItemHeaderCell(cell: AccordionItemHeaderCell, indexPath: NSIndexPath): number {
@@ -740,19 +746,11 @@ export class Accordion extends AccordionBase {
             this.ios.reloadData();
             return;
         }
-        const array = NSMutableArray.array();
         for (let i = 0; i < length; i++) {
-            const child_items = (this.items as any).getItem ? (this.items as any).getItem(i)[this.childItems] : this.items[i][this.childItems];
-            const child_length = child_items.length + (this._getHasHeader() ? 1 : 0) + (this._getHasFooter() ? 1 : 0);
-            for (let c = 1; c < child_length; c++) {
-                const indexPath = NSIndexPath.indexPathForRowInSection(c, i);
-                array.addObject(indexPath);
-            }
-            // this._expandedViews.set(i, true);
-            //this._indexSet.addIndex(0);
+            this._expandedViews.set(i, true);
+            this._indexSet.addIndex(0);
         }
-        this.ios.insertRowsAtIndexPathsWithRowAnimation(<any>array, UITableViewRowAnimation.Automatic);
-        //this.ios.reloadData();
+        this.ios.reloadData();
     }
 
     collapseAll(): void {
@@ -1007,7 +1005,7 @@ export class Accordion extends AccordionBase {
     [iosEstimatedHeaderRowHeightProperty.setNative](value: Length) {
         const nativeView = this.ios;
         const estimatedHeight = Length.toDevicePixels(value, 0);
-        nativeView.estimatedSectionHeaderHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
+        nativeView.estimatedHeaderRowHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
     }
 
     [iosEstimatedItemHeaderRowHeightProperty.getDefault](): Length {
@@ -1017,7 +1015,7 @@ export class Accordion extends AccordionBase {
     [iosEstimatedItemHeaderRowHeightProperty.setNative](value: Length) {
         const nativeView = this.ios;
         const estimatedHeight = Length.toDevicePixels(value, 0);
-        nativeView.estimatedSectionHeaderHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
+        nativeView.estimatedItemHeaderRowHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
     }
 
     [iosEstimatedItemContentRowHeightProperty.getDefault](): Length {
@@ -1027,7 +1025,7 @@ export class Accordion extends AccordionBase {
     [iosEstimatedItemContentRowHeightProperty.setNative](value: Length) {
         const nativeView = this.ios;
         const estimatedHeight = Length.toDevicePixels(value, 0);
-        nativeView.estimatedRowHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
+        nativeView.estimatedItemContentRowHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
     }
 
 
@@ -1038,7 +1036,7 @@ export class Accordion extends AccordionBase {
     [iosEstimatedFooterRowHeightProperty.setNative](value: Length) {
         const nativeView = this.ios;
         const estimatedHeight = Length.toDevicePixels(value, 0);
-        nativeView.estimatedSectionHeaderHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
+        nativeView.estimatedFooterRowHeight = estimatedHeight < 0 ? DEFAULT_HEIGHT : estimatedHeight;
     }
 }
 
@@ -1199,7 +1197,6 @@ export class AccordionDataSource extends NSObject implements UITableViewDataSour
         let owner = this._owner.get();
         let cell: AccordionItemContentCell | AccordionItemHeaderCell | AccordionHeaderCell | AccordionFooterCell;
         const total = this.tableViewNumberOfRowsInSection(tableView, indexPath.section);
-
         if (indexPath.row === 0) {
             if (owner) {
                 let template = owner._getItemHeaderTemplate(indexPath.section);
@@ -1246,7 +1243,7 @@ export class AccordionDataSource extends NSObject implements UITableViewDataSour
             return cell;
         }
 
-        if (indexPath.row === total - 1 && owner._getHasFooter) {
+        if (indexPath.row !== 0 && indexPath.row === total - 1 && owner._getHasFooter()) {
             if (owner) {
                 let template = owner._getFooterTemplate(indexPath.section);
                 cell = <AccordionFooterCell>(tableView.dequeueReusableCellWithIdentifier(`footer-${template.key}`) || AccordionFooterCell.initWithEmptyBackground());
@@ -1281,7 +1278,7 @@ export class AccordionDataSource extends NSObject implements UITableViewDataSour
                 let width = layout.getMeasureSpecSize(owner.widthMeasureSpec);
                 let rowHeight = owner._effectiveItemContentRowHeight;
 
-                let cellHeight = rowHeight > 0 ? rowHeight : owner.getItemContentHeight(parseInt(`${indexPath.section + 1 }${indexPath.row}`));
+                let cellHeight = rowHeight > 0 ? rowHeight : owner.getItemContentHeight(parseInt(`${indexPath.section + 1 }${indexPath.row - 1 - (owner._getHasHeader() ? 1 : 0)}`));
                 View.layoutChild(owner, cellView, 0, 0, width, cellHeight ? cellHeight : 0);
             }
         } else {
@@ -1313,12 +1310,11 @@ export class UITableViewRowHeightDelegateImpl extends NSObject implements UITabl
 
     public tableViewWillSelectRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath): NSIndexPath {
         let owner = this._owner.get();
-        const data = owner._getChildData(indexPath.section, indexPath.row);
         const ios = tableView.cellForRowAtIndexPath(indexPath);
         const total = tableView.numberOfRowsInSection(indexPath.section);
         let args = {
             eventName: '',
-            data: data,
+            data: null,
             object: owner,
             childIndex: undefined,
             index: null,
@@ -1330,11 +1326,13 @@ export class UITableViewRowHeightDelegateImpl extends NSObject implements UITabl
         if (indexPath.row === 0) {
             handleTap(owner, indexPath.section, ios);
         } else if (indexPath.row === 1 && owner._getHasHeader()) {
-        } else if (indexPath.row === total - 1 && owner._getHasFooter) {
+        } else if (indexPath.row !== 0 && indexPath.row === total - 1 && owner._getHasFooter()) {
         } else {
+            const data = owner._getChildData(indexPath.section, indexPath.row);
             args.index = indexPath.section;
             args.childIndex = indexPath.row;
             args.eventName = AccordionBase.itemContentTapEvent;
+            args.data = data;
             owner.notify(args);
         }
         return indexPath;
@@ -1342,29 +1340,40 @@ export class UITableViewRowHeightDelegateImpl extends NSObject implements UITabl
 
     public tableViewDidSelectRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath): NSIndexPath {
         tableView.deselectRowAtIndexPathAnimated(indexPath, true);
-
         return indexPath;
     }
 
-    public tableViewHeightForRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath): number {
+    public tableViewHeightForRowAtIndexPath(tableView: UITableViewImpl, indexPath: NSIndexPath): number {
         let owner = this._owner.get();
-        if (!owner) {
-            return tableView.estimatedRowHeight;
-        }
 
         const total = tableView.numberOfRowsInSection(indexPath.section);
         if (indexPath.row === 0) {
+            if (!owner) {
+                return tableView.estimatedItemHeaderRowHeight;
+            }
+
             return layout.toDeviceIndependentPixels(owner._effectiveItemHeaderRowHeight);
         } else if (indexPath.row === 1 && owner._getHasHeader()) {
+            if (!owner) {
+                return tableView.estimatedHeaderRowHeight;
+            }
+
             return layout.toDeviceIndependentPixels(owner._effectiveHeaderRowHeight);
-        } else if (indexPath.row === total - 1 && owner._getHasFooter) {
+        } else if (indexPath.row !== 0 && indexPath.row === total - 1 && owner._getHasFooter()) {
+            if (!owner) {
+                return tableView.estimatedFooterRowHeight;
+            }
+
             return layout.toDeviceIndependentPixels(owner._effectiveFooterRowHeight);
         } else {
+            if (!owner) {
+                return tableView.estimatedItemContentRowHeight;
+            }
+
             return layout.toDeviceIndependentPixels(owner._effectiveItemContentRowHeight);
         }
 
     }
-
 
     public tableViewHeightForFooterInSection?(tableView: UITableView, section: number): number {
         return 0;
@@ -1394,17 +1403,19 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
         return delegate;
     }
 
-    public tableViewHeightForRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath) {
+    public tableViewHeightForRowAtIndexPath(tableView: UITableViewImpl, indexPath: NSIndexPath) {
 
         const owner = this._owner.get();
-        if (!owner) {
-            return tableView.estimatedRowHeight;
-        }
 
         let height;
         const total = tableView.numberOfRowsInSection(indexPath.section);
 
         if (indexPath.row === 0) {
+            if (!owner) {
+                return tableView.estimatedItemHeaderRowHeight;
+            }
+
+
             height = owner.getItemHeaderHeight(indexPath.section);
             if (height === undefined) {
                 // in iOS8+ after call to scrollToRowAtIndexPath:atScrollPosition:animated: this method is called before tableViewCellForRowAtIndexPath so we need fake cell to measure its content.
@@ -1422,6 +1433,10 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
         }
 
         if (indexPath.row === 1 && owner._getHasHeader()) {
+            if (!owner) {
+                return tableView.estimatedHeaderRowHeight;
+            }
+
             height = owner.getHeaderHeight(indexPath.section);
             if (height === undefined) {
                 // in iOS8+ after call to scrollToRowAtIndexPath:atScrollPosition:animated: this method is called before tableViewCellForRowAtIndexPath so we need fake cell to measure its content.
@@ -1438,7 +1453,11 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
             return layout.toDeviceIndependentPixels(height);
         }
 
-        if (indexPath.row === total - 1 && owner._getHasFooter()) {
+        if (indexPath.row !== 0 && indexPath.row === total - 1 && owner._getHasFooter()) {
+            if (!owner) {
+                return tableView.estimatedFooterRowHeight;
+            }
+
             let height = owner.getFooterHeight(indexPath.section);
             if (height === undefined) {
                 // in iOS8+ after call to scrollToRowAtIndexPath:atScrollPosition:animated: this method is called before tableViewCellForRowAtIndexPath so we need fake cell to measure its content.
@@ -1455,7 +1474,11 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
             return layout.toDeviceIndependentPixels(height);
         }
 
-        height = owner.getItemContentHeight(parseInt(`${indexPath.section + 1 }${indexPath.row}`));
+        if (!owner) {
+            return tableView.estimatedItemContentRowHeight;
+        }
+
+        height = owner.getItemContentHeight(parseInt(`${indexPath.section + 1 }${indexPath.row - 1 - (owner._getHasHeader() ? 1 : 0)}`));
 
         if (height === undefined) {
             // in iOS8+ after call to scrollToRowAtIndexPath:atScrollPosition:animated: this method is called before tableViewCellForRowAtIndexPath so we need fake cell to measure its content.
@@ -1474,13 +1497,12 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
 
     public tableViewWillSelectRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath): NSIndexPath {
         let owner = this._owner.get();
-        const data = owner._getChildData(indexPath.section, indexPath.row);
         const ios = tableView.cellForRowAtIndexPath(indexPath);
         const total = tableView.numberOfRowsInSection(indexPath.section);
 
         let args = {
             eventName: '',
-            data: data,
+            data: null,
             object: owner,
             childIndex: undefined,
             index: null,
@@ -1492,11 +1514,13 @@ export class UITableViewDelegateImpl extends NSObject implements UITableViewDele
         if (indexPath.row === 0) {
             handleTap(owner, indexPath.section, ios);
         } else if (indexPath.row === 1 && owner._getHasHeader()) {
-        } else if (indexPath.row === total - 1 && owner._getHasFooter) {
+        } else if (indexPath.row !== 0 && indexPath.row === total - 1 && owner._getHasFooter()) {
         } else {
+            const data = owner._getChildData(indexPath.section, indexPath.row);
             args.index = indexPath.section;
             args.childIndex = indexPath.row;
             args.eventName = AccordionBase.itemContentTapEvent;
+            args.data = data;
             owner.notify(args);
         }
         return indexPath;
@@ -1562,8 +1586,7 @@ function handleTap(owner, current, view) {
         /**
          * Call reload to expand or collapse section
          */
-        //reloadSection(current);
-        owner.ios.reloadData();
+        reloadSection(current);
         owner._selectedIndexesUpdatedFromNative(Array.from(owner._expandedViews.keys()));
     } else {
 
@@ -1571,26 +1594,23 @@ function handleTap(owner, current, view) {
             owner._expandedViews.delete(current);
             owner._indexSet.removeIndex(current);
             owner.itemCollapsed(current);
-            //reloadSection(current);
-            owner.ios.reloadData();
+            reloadSection(current);
+            // owner.ios.reloadData();
         } else if (owner._expandedViews.size > 0) {
             const old = owner._expandedViews.keys().next().value;
             owner._expandedViews.delete(old);
             owner._indexSet.removeIndex(old);
-            //reloadSection(old);
-            owner.ios.reloadData();
+            reloadSection(old);
             owner.itemCollapsed(old);
             owner._expandedViews.set(current, true);
             owner._indexSet.addIndex(current);
-            // reloadSection(current);
-            owner.ios.reloadData();
+            reloadSection(current);
             owner.itemExpanded(current);
         } else {
             owner._expandedViews.set(current, true);
             owner._indexSet.addIndex(current);
             owner.itemExpanded(current);
-            // reloadSection(current);
-            owner.ios.reloadData();
+            reloadSection(current);
         }
         owner._selectedIndexesUpdatedFromNative(Array.from(owner._expandedViews.keys()));
 
@@ -1599,5 +1619,19 @@ function handleTap(owner, current, view) {
          */
         // owner.ios.reloadData();
 
+    }
+}
+
+export class UITableViewImpl extends UITableView {
+    owner: WeakRef<Accordion>;
+    estimatedItemHeaderRowHeight = 0;
+    estimatedItemContentRowHeight = 0;
+    estimatedHeaderRowHeight = 0;
+    estimatedFooterRowHeight = 0;
+
+    public static initWithOwner(owner: WeakRef<Accordion>) {
+        const table = <UITableViewImpl>UITableViewImpl.new();
+        table.owner = owner;
+        return table;
     }
 }
