@@ -80,7 +80,7 @@ export interface AccordionItemsView {
     childItems: string;
     headerTemplateSelector: string | ((item: any, index: number, items: any) => string);
     itemHeaderTemplateSelector: string | ((item: any, index: number, items: any) => string);
-    itemContentTemplateSelector: string | ((item: any, index: number, items: any) => string);
+    itemContentTemplateSelector: string | ((item: any, parentIndex: number, index: number, items: any) => string);
     footerTemplateSelector: string | ((item: any, index: number, items: any) => string);
     _getHasHeader: any;
     _getHasFooter: any;
@@ -105,9 +105,9 @@ export interface AccordionItemsView {
 }
 
 export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, AfterContentInit {
-    public abstract get nativeElement(): AccordionItemsView;
+    public abstract get nativeElement(): any;
 
-    protected accordionItemsView: AccordionItemsView;
+    protected accordionItemsView: any;
     protected _items: any;
     protected _differ: IterableDiffer<KeyedTemplate>;
     protected _templateHeaderMap: Map<string, KeyedTemplate>;
@@ -227,7 +227,7 @@ export abstract class AccordionItemsComponent implements DoCheck, OnDestroy, Aft
             });
 
             if (templates.length === 1) {
-                this.accordionItemsView.itemContentTemplateSelector = (item: any, index: number, items: any) => {
+                this.accordionItemsView.itemContentTemplateSelector = (item: any, parentIndex: number, index: number, items: any) => {
                     return 'content';
                 };
             }
@@ -545,12 +545,11 @@ export class TemplateKeyDirective {
     providers: [{provide: ACCORDION_ITEMS_COMPONENT, useExisting: forwardRef(() => AccordionComponent)}]
 })
 export class AccordionComponent extends AccordionItemsComponent {
-    // @ts-ignore
+
     public get nativeElement(): Accordion {
         return this.accordionItemsView;
     }
 
-    // @ts-ignore
     protected accordionItemsView: Accordion;
 
     constructor(_elementRef: ElementRef,

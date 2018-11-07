@@ -38,7 +38,7 @@ export interface AccordionItemsView {
     childItems: string;
     headerTemplateSelector: string | ((item: any, index: number, items: any) => string);
     itemHeaderTemplateSelector: string | ((item: any, index: number, items: any) => string);
-    itemContentTemplateSelector: string | ((item: any, index: number, items: any) => string);
+    itemContentTemplateSelector: string | ((item: any, parentIndex: number, index: number, items: any) => string);
     footerTemplateSelector: string | ((item: any, index: number, items: any) => string);
     _getHasHeader: any;
     _getHasFooter: any;
@@ -54,8 +54,8 @@ export interface AccordionItemsView {
 }
 export declare abstract class AccordionItemsComponent implements DoCheck, OnDestroy, AfterContentInit {
     private _iterableDiffers;
-    readonly abstract nativeElement: AccordionItemsView;
-    protected accordionItemsView: AccordionItemsView;
+    readonly abstract nativeElement: any;
+    protected accordionItemsView: any;
     protected _items: any;
     protected _differ: IterableDiffer<KeyedTemplate>;
     protected _templateHeaderMap: Map<string, KeyedTemplate>;
