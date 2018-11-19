@@ -3,20 +3,20 @@ import { ItemEventData, ItemsSource } from 'tns-core-modules/ui/list-view';
 import { EventData, KeyedTemplate, Template, View } from 'tns-core-modules/ui/core/view';
 import { Accordion } from '../';
 export declare class ItemContext {
-    $implicit: any;
-    item: any;
-    index: number;
-    even: boolean;
-    odd: boolean;
+    $implicit?: any;
+    item?: any;
+    index?: number;
+    even?: boolean;
+    odd?: boolean;
     constructor($implicit?: any, item?: any, index?: number, even?: boolean, odd?: boolean);
 }
 export declare class ChildItemContext {
-    $implicit: any;
-    item: any;
-    parentIndex: number;
-    index: number;
-    even: boolean;
-    odd: boolean;
+    $implicit?: any;
+    item?: any;
+    parentIndex?: number;
+    index?: number;
+    even?: boolean;
+    odd?: boolean;
     constructor($implicit?: any, item?: any, parentIndex?: number, index?: number, even?: boolean, odd?: boolean);
 }
 export interface SetupItemViewArgs {
@@ -54,7 +54,7 @@ export interface AccordionItemsView {
 }
 export declare abstract class AccordionItemsComponent implements DoCheck, OnDestroy, AfterContentInit {
     private _iterableDiffers;
-    readonly abstract nativeElement: any;
+    abstract readonly nativeElement: any;
     protected accordionItemsView: any;
     protected _items: any;
     protected _differ: IterableDiffer<KeyedTemplate>;
@@ -73,7 +73,7 @@ export declare abstract class AccordionItemsComponent implements DoCheck, OnDest
     constructor(_elementRef: ElementRef, _iterableDiffers: IterableDiffers);
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
-    private setItemTemplates();
+    private setItemTemplates;
     registerTemplate(key: string, template: TemplateRef<ItemContext>): void;
     onHeaderLoading(args: ItemEventData): void;
     onItemHeaderLoading(args: ItemEventData): void;
@@ -83,7 +83,7 @@ export declare abstract class AccordionItemsComponent implements DoCheck, OnDest
     setupChildViewRef(viewRef: EmbeddedViewRef<ChildItemContext>, data: any, parentIndex: number, index: number): void;
     protected getItemTemplateViewFactory(template: TemplateRef<ItemContext>): () => View;
     protected getChildItemTemplateViewFactory(template: TemplateRef<ChildItemContext>): () => View;
-    private detectChangesOnChild(viewRef, index);
+    private detectChangesOnChild;
     ngDoCheck(): void;
 }
 export interface ComponentView {
