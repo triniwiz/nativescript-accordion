@@ -7,7 +7,8 @@ import {
     Property,
     Style,
     Template,
-    View
+    View,
+    ContainerView
 } from 'tns-core-modules/ui/core/view';
 import { parse, parseMultipleTemplates } from 'tns-core-modules/ui/builder';
 import { Observable } from 'tns-core-modules/data/observable';
@@ -42,7 +43,7 @@ export interface ItemsSource {
 }
 
 @CSSType('Accordion')
-export abstract class AccordionBase extends View {
+export abstract class AccordionBase extends ContainerView {
     public static headerLoadingEvent = 'headerLoading';
     public static footerLoadingEvent = 'footerLoading';
     public static itemHeaderLoadingEvent = 'itemHeaderLoading';

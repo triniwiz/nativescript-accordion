@@ -1,4 +1,4 @@
-import { CoercibleProperty, CssProperty, KeyedTemplate, Length, Property, Style, Template, View } from 'tns-core-modules/ui/core/view';
+import { CoercibleProperty, CssProperty, KeyedTemplate, Length, Property, Style, Template, View, ContainerView } from 'tns-core-modules/ui/core/view';
 import { ChangedData } from 'tns-core-modules/data/observable-array';
 export declare module knownCollections {
     const items = "items";
@@ -19,7 +19,7 @@ export interface ItemsSource {
     length: number;
     getItem(index: number): any;
 }
-export declare abstract class AccordionBase extends View {
+export declare abstract class AccordionBase extends ContainerView {
     static headerLoadingEvent: string;
     static footerLoadingEvent: string;
     static itemHeaderLoadingEvent: string;
